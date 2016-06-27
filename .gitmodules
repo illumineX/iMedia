@@ -1,6 +1,6 @@
 [submodule "ObjectiveFlickr"]
 	path = ObjectiveFlickr
-	url = g://github.com/illumineX/objectiveflickr
+	url = https://github.com/illumineX/objectiveflickr
 	fetchRecurseSubmodules = true
 [submodule "XPCKit"]
 	path = XPCKit
