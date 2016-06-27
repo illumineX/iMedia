@@ -157,14 +157,14 @@
     drawRect.size.height = height;
     
     [[myTableView backgroundColor] set];
-    NSRectFillUsingOperation(inClipRect,NSCompositeSourceOver);
+    NSRectFillUsingOperation(inClipRect,NSCompositingOperationSourceOver);
     
     while ((NSMinY(drawRect) <= NSHeight(clipRect)))
     {
         if (NSIntersectsRect(drawRect,clipRect))
         {
             [(NSColor*)[self.backgroundColors objectAtIndex:i%n] set];
-            NSRectFillUsingOperation(drawRect,NSCompositeSourceOver);
+            NSRectFillUsingOperation(drawRect,NSCompositingOperationSourceOver);
         }
         
         drawRect.origin.y += height;

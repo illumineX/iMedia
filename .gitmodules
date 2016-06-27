@@ -1,12 +1,12 @@
 [submodule "ObjectiveFlickr"]
 	path = ObjectiveFlickr
-	url = git://github.com/iMediaSandboxing/objectiveflickr.git
+	url = g://github.com/illumineX/objectiveflickr
 	fetchRecurseSubmodules = true
 [submodule "XPCKit"]
 	path = XPCKit
-	url = git://github.com/iMediaSandboxing/XPCKit.git
+	url = https://github.com/illumineX/XPCKit
 	fetchRecurseSubmodules = true
 [submodule "PhFacebook"]
 	path = PhFacebook
-	url = git://github.com/iMediaSandboxing/PhFacebook.git
+	url = https://github.com/illumineX/PhFacebook
 	fetchRecurseSubmodules = true

@@ -1260,10 +1260,15 @@ static NSMutableDictionary* sLibraryControllers = nil;
 				NSMutableAttributedString* title = [[[NSMutableAttributedString alloc] initWithString:name attributes:attributes] autorelease];
 				NSMutableAttributedString* space = [[[NSMutableAttributedString alloc] initWithString:@" " attributes:attributes] autorelease];
 				NSMutableAttributedString* warning = [[[NSMutableAttributedString alloc] initWithAttributedString:[icon attributedString]] autorelease];
-				[warning addAttribute:NSBaselineOffsetAttributeName value:[NSNumber numberWithFloat:-3.0] range:NSMakeRange(0,1)];
 				
 				[title appendAttributedString:space];
-				[title appendAttributedString:warning];
+
+				if (warning.length > 0)
+				{
+					[warning addAttribute:NSBaselineOffsetAttributeName value:[NSNumber numberWithFloat:-3.0] range:NSMakeRange(0,1)];
+					[title appendAttributedString:warning];
+				}
+				
 				[item setAttributedTitle:title];
 				
 				[icon release];

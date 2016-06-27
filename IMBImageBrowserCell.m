@@ -178,7 +178,7 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
 //		CGFloat dx = 16.0;
 //		CGFloat dy = 16.0;
 //		frame = NSMakeRect(x0-0.5*dx,y0-0.5*dy,dx,dy);
-//		[icon drawInRect:frame fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+//		[icon drawInRect:frame fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 //	}
 //}
 

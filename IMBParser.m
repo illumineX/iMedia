@@ -214,7 +214,12 @@
 		{
 			for (IMBNode* subnode in inNode.subnodes)
 			{
-				[self _populateNodeTree:subnode populatedNodeIdentifiers:inPopulatedNodeIdentifiers error:&error];
+                // Take care of the potential fact that inNode's folder might contain a symbolic link to itself.
+                // (thus causing an infinite recursion crash if not taken care of)
+                NSMutableArray *identifiersOfNodesToBePopulated = [NSMutableArray arrayWithArray:inPopulatedNodeIdentifiers];
+                [identifiersOfNodesToBePopulated removeObject:inNode.identifier];
+                
+				[self _populateNodeTree:subnode populatedNodeIdentifiers:identifiersOfNodesToBePopulated error:&error];
 				if (error) break;
 			}
 		}

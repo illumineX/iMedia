@@ -243,7 +243,7 @@
 	if (_badge) 
 	{
 		NSRect badgeRect = [self badgeRectForImageRect:rect];
-		[_badge drawInRect:badgeRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+		[_badge drawInRect:badgeRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 	}
 	
 	CGContextRestoreGState(context);
@@ -280,7 +280,7 @@
 			CGContextRef context = (CGContextRef) [[NSGraphicsContext currentContext] graphicsPort];
 			[self willDrawImageInRect:imageRect context:context];
 			NSRect badgeRect = [self badgeRectForImageRect:imageRect];
-			[_badge drawInRect:badgeRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+			[_badge drawInRect:badgeRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
             CGContextRestoreGState(context);
 		}
 	}
@@ -299,7 +299,7 @@
             
             CGContextRef context = (CGContextRef) [[NSGraphicsContext currentContext] graphicsPort];
             [self willDrawImageInRect:rect context:context];
-            [image drawInRect:rect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+            [image drawInRect:rect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
             CGContextRestoreGState(context);
         }
         

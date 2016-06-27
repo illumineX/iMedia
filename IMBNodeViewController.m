@@ -642,8 +642,13 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	{
         NSURL *aURL = [NSURL fileURLWithPath:path isDirectory:YES];
         
-        NSNumber *isDirectory;
-        if ([aURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:NULL] && [isDirectory boolValue])
+        NSNumber *isDirectory = nil;
+		[aURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:NULL];
+
+		NSNumber *isPackage = nil;
+		[aURL getResourceValue:&isPackage forKey:NSURLIsPackageKey error:NULL];
+		
+        if (isDirectory.boolValue == YES && isPackage.boolValue == NO)
 		{
 			[inOutlineView setDropItem:nil dropChildIndex:NSOutlineViewDropOnItemIndex]; // Target the whole view
 			return NSDragOperationCopy;
@@ -1511,12 +1516,14 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 		{
 			NSInteger row = [ibNodeOutlineView rowForItem:inNode];
 			[ibNodeOutlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
-			if ((inNode.accessibility == kIMBResourceIsAccessible) &&
-                !(inNode.isPopulated || inNode.isLoading))
+			[self _setView:ibNodeOutlineView needsDisplay:YES];
+			
+			if ((inNode.accessibility == kIMBResourceIsAccessible) && !(inNode.isPopulated || inNode.isLoading))
             {
                 [self.libraryController populateNode:inNode]; // Not redundant! Needed if selection doesn't change due to previous line!
-                [self.nodeOutlineView setNeedsDisplay];
+                [self _setView:ibNodeOutlineView needsDisplay:YES];
             }
+			
 			[self installObjectViewForNode:inNode];
 			[(IMBObjectViewController*)self.objectViewController setCurrentNode:inNode];
             self.selectedNodeIdentifier = inNode.identifier;
@@ -2079,11 +2086,22 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 
 // Use this method in your host app to tell the current object view (icon, list, or combo view)
-// that it needs to re-display itself (e.g. when a badge on an image needs to be updated)
+// that it needs to re-display itself (e.g. when a badge on an image needs to be updated). To be
+// on the safe side when the view hierarchy is layer-based, redraw the whole subtree...
 
 - (void) setObjectContainerViewNeedsDisplay:(BOOL)inFlag
 {
-	[ibObjectContainerView setNeedsDisplay:inFlag];
+	[self _setView:ibObjectContainerView needsDisplay:inFlag];
+}
+
+- (void) _setView:(NSView*)inView needsDisplay:(BOOL)inFlag
+{
+	[inView setNeedsDisplay:inFlag];
+
+	for (NSView* subview in inView.subviews)
+	{
+		[self _setView:subview needsDisplay:inFlag];
+	}
 }
 
 

@@ -119,10 +119,10 @@
 		3092C3191712F14100E52444 /* IMBFacebookAccessController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3092C3161712F14100E52444 /* IMBFacebookAccessController.h */; };
 		3092C31A1712F14100E52444 /* IMBFacebookAccessController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3092C3171712F14100E52444 /* IMBFacebookAccessController.m */; };
 		3094F7161715C0070016E810 /* PhFacebook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3094F7151715C0070016E810 /* PhFacebook.framework */; };
-		3094F7171715C0980016E810 /* PhFacebook.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3094F7151715C0070016E810 /* PhFacebook.framework */; };
+		3094F7171715C0980016E810 /* PhFacebook.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3094F7151715C0070016E810 /* PhFacebook.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		3099018E16637B93006C1212 /* NSBundle+iMedia.h in Headers */ = {isa = PBXBuildFile; fileRef = 3099018C16637B93006C1212 /* NSBundle+iMedia.h */; };
 		3099018F16637B93006C1212 /* NSBundle+iMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 3099018D16637B93006C1212 /* NSBundle+iMedia.m */; };
-		309901941663B2A3006C1212 /* im.edia.Aperture.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39AC152ACD1300E30C43 /* im.edia.Aperture.xpc */; };
+		309901941663B2A3006C1212 /* im.edia.Aperture.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39AC152ACD1300E30C43 /* im.edia.Aperture.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		309BA06917F0219500866E64 /* album_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 309BA06717F0219500866E64 /* album_512x512.png */; };
 		309BA06A17F0219500866E64 /* person_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 309BA06817F0219500866E64 /* person_512x512.png */; };
 		30B83AD01701AFDB000EC74E /* SBServiceMain.m in Sources */ = {isa = PBXBuildFile; fileRef = D08109A7151A052300201850 /* SBServiceMain.m */; };
@@ -134,7 +134,7 @@
 		30B83AD81701AFDB000EC74E /* SandboxingKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30421DE616A9943400311AC4 /* SandboxingKit.strings */; };
 		30B83ADF1701B11F000EC74E /* im.edia.Facebook.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 30B83ADE1701B11F000EC74E /* im.edia.Facebook.entitlements */; };
 		30B83AE01701B11F000EC74E /* im.edia.Facebook.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 30B83ADE1701B11F000EC74E /* im.edia.Facebook.entitlements */; };
-		30B83AE11701B1C8000EC74E /* im.edia.Facebook.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = 30B83ADC1701AFDB000EC74E /* im.edia.Facebook.xpc */; };
+		30B83AE11701B1C8000EC74E /* im.edia.Facebook.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = 30B83ADC1701AFDB000EC74E /* im.edia.Facebook.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		30BA9D221A9C8A3900FDFA3A /* IMBAppleMediaLibraryParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 30BA9D201A9C8A3900FDFA3A /* IMBAppleMediaLibraryParser.h */; };
 		30BA9D231A9C8A3900FDFA3A /* IMBAppleMediaLibraryParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 30BA9D211A9C8A3900FDFA3A /* IMBAppleMediaLibraryParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		30BA9D271A9C8AAE00FDFA3A /* IMBAppleMediaLibraryParserMessenger.h in Headers */ = {isa = PBXBuildFile; fileRef = 30BA9D251A9C8AAE00FDFA3A /* IMBAppleMediaLibraryParserMessenger.h */; };
@@ -169,7 +169,7 @@
 		30FD64661546AF6E0036BDE2 /* NSPasteboard+iMedia.h in Headers */ = {isa = PBXBuildFile; fileRef = 30FD64641546AF6E0036BDE2 /* NSPasteboard+iMedia.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30FD64671546AF6E0036BDE2 /* NSPasteboard+iMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FD64651546AF6E0036BDE2 /* NSPasteboard+iMedia.m */; };
 		30FD646B1546BAE90036BDE2 /* IMBApertureHeaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FCA064112368388009072AE /* IMBApertureHeaderViewController.m */; };
-		30FFEBFE150A0AA70009C1D0 /* im.edia.iPhoto.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = 30FFEBEC150A08DB0009C1D0 /* im.edia.iPhoto.xpc */; };
+		30FFEBFE150A0AA70009C1D0 /* im.edia.iPhoto.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = 30FFEBEC150A08DB0009C1D0 /* im.edia.iPhoto.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		6523FF231B0CE589004FD6D2 /* IMBItemizableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 30BC5C641AFF22BE002BF87F /* IMBItemizableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		8F47B39110C416050013ED25 /* IMBOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F47B38F10C416050013ED25 /* IMBOrderedDictionary.h */; };
@@ -279,7 +279,7 @@
 		D054AFF5152984FA00EBFA1C /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D09930FC1010FF9700C527B7 /* Quartz.framework */; };
 		D054AFF6152984FA00EBFA1C /* iMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* iMedia.framework */; };
 		D054AFF7152984FA00EBFA1C /* XPCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3089F94A151C8FDD00D56DC0 /* XPCKit.framework */; };
-		D054AFFF1529927E00EBFA1C /* im.edia.GarageBand.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D054AFFD152984FA00EBFA1C /* im.edia.GarageBand.xpc */; };
+		D054AFFF1529927E00EBFA1C /* im.edia.GarageBand.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D054AFFD152984FA00EBFA1C /* im.edia.GarageBand.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D054B0011529A65100EBFA1C /* IMBGarageBandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D02D17591081CF3B00142E8A /* IMBGarageBandParser.m */; };
 		D05D398F152A280F00E30C43 /* IMBFileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = D08E8D2D1019E8A5005D8614 /* IMBFileWatcher.m */; };
 		D05D3990152A280F00E30C43 /* IMBKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = D08E8D2A1019E89E005D8614 /* IMBKQueue.m */; };
@@ -315,7 +315,7 @@
 		D05D3A0E152AD0D000E30C43 /* XPCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3089F94A151C8FDD00D56DC0 /* XPCKit.framework */; };
 		D063A1EF1A28AC5500ED8BC3 /* ToolbarMovieFolderIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = D063A1EE1A28AC5500ED8BC3 /* ToolbarMovieFolderIcon.icns */; };
 		D065383615EFDC810081D8D3 /* IMBAccessRightsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D065383515EFDC810081D8D3 /* IMBAccessRightsViewController.xib */; };
-		D0680C3C1518CCCE00CED506 /* im.edia.Folder.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D0E96D021518C9BF004F3EE7 /* im.edia.Folder.xpc */; };
+		D0680C3C1518CCCE00CED506 /* im.edia.Folder.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D0E96D021518C9BF004F3EE7 /* im.edia.Folder.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D08070BF10442CD700891137 /* IMBMovieObjectViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = D08070BD10442CD700891137 /* IMBMovieObjectViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D08070C310442CE100891137 /* IMBAudioObjectViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = D08070C110442CE100891137 /* IMBAudioObjectViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D08070C810442DAE00891137 /* IMBAudioObjectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D08070C710442DAE00891137 /* IMBAudioObjectViewController.xib */; };
@@ -346,7 +346,7 @@
 		D08E8D7E1019EAB8005D8614 /* IMBFNSubscribeFileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = D08E8D7C1019EAB8005D8614 /* IMBFNSubscribeFileWatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D08E8D811019EB09005D8614 /* IMBFSEventsWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = D08E8D7F1019EB09005D8614 /* IMBFSEventsWatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D08E8D861019EB4D005D8614 /* IMBMainThreadProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = D08E8D841019EB4D005D8614 /* IMBMainThreadProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D08E8FB7101A0F0D005D8614 /* iMedia.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* iMedia.framework */; };
+		D08E8FB7101A0F0D005D8614 /* iMedia.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* iMedia.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D08F7B72152309A800505395 /* IMBImageObjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C2DD0C1025905A001B1198 /* IMBImageObjectViewController.m */; };
 		D08F7B73152309A800505395 /* IMBAudioObjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D08070C210442CE100891137 /* IMBAudioObjectViewController.m */; };
 		D08F7B74152309A800505395 /* IMBMovieObjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D08070BE10442CD700891137 /* IMBMovieObjectViewController.m */; };
@@ -362,16 +362,16 @@
 		D08F82B411E4A1C1006E618E /* IMBQLPreviewPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = D08F7F3E11E4974E006E618E /* IMBQLPreviewPanel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D0904DA8152CA51F003FDD08 /* IMBFileSystemObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = D0904DA6152CA51F003FDD08 /* IMBFileSystemObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D0904DA9152CA51F003FDD08 /* IMBFileSystemObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = D0904DA7152CA51F003FDD08 /* IMBFileSystemObserver.m */; };
-		D0904DAC152CAA4A003FDD08 /* im.edia.Lightroom.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39BD152ACD2400E30C43 /* im.edia.Lightroom.xpc */; };
-		D0904DAD152CAA4A003FDD08 /* im.edia.Flickr.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39CE152ACD3300E30C43 /* im.edia.Flickr.xpc */; };
-		D0904DAE152CAA4A003FDD08 /* im.edia.Safari.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39DF152ACD5E00E30C43 /* im.edia.Safari.xpc */; };
-		D0904DAF152CAA4A003FDD08 /* im.edia.Firefox.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39F0152ACD6800E30C43 /* im.edia.Firefox.xpc */; };
-		D0904DB0152CAA4A003FDD08 /* im.edia.FSEvents.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D3A01152ACD8800E30C43 /* im.edia.FSEvents.xpc */; };
-		D0904DB1152CAA4A003FDD08 /* im.edia.Chrome.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D3A13152AD0D000E30C43 /* im.edia.Chrome.xpc */; };
+		D0904DAC152CAA4A003FDD08 /* im.edia.Lightroom.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39BD152ACD2400E30C43 /* im.edia.Lightroom.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D0904DAD152CAA4A003FDD08 /* im.edia.Flickr.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39CE152ACD3300E30C43 /* im.edia.Flickr.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D0904DAE152CAA4A003FDD08 /* im.edia.Safari.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39DF152ACD5E00E30C43 /* im.edia.Safari.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D0904DAF152CAA4A003FDD08 /* im.edia.Firefox.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D39F0152ACD6800E30C43 /* im.edia.Firefox.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D0904DB0152CAA4A003FDD08 /* im.edia.FSEvents.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D3A01152ACD8800E30C43 /* im.edia.FSEvents.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D0904DB1152CAA4A003FDD08 /* im.edia.Chrome.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D05D3A13152AD0D000E30C43 /* im.edia.Chrome.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D0904DD8152D6F57003FDD08 /* ObjectiveFlickr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0C911C71521038F006655C9 /* ObjectiveFlickr.framework */; };
 		D0904DD9152D6F79003FDD08 /* XPCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3089F94A151C8FDD00D56DC0 /* XPCKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		D0904DDA152D6FBD003FDD08 /* XPCKit.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3089F94A151C8FDD00D56DC0 /* XPCKit.framework */; };
-		D0904DDB152D6FC4003FDD08 /* ObjectiveFlickr.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = D0C911C71521038F006655C9 /* ObjectiveFlickr.framework */; };
+		D0904DDA152D6FBD003FDD08 /* XPCKit.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3089F94A151C8FDD00D56DC0 /* XPCKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D0904DDB152D6FC4003FDD08 /* ObjectiveFlickr.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = D0C911C71521038F006655C9 /* ObjectiveFlickr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D0904DDC152D700E003FDD08 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E0C80104C72A200EE6B09 /* Security.framework */; };
 		D0904DE8152D717E003FDD08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30FFEBEE150A08DB0009C1D0 /* Foundation.framework */; };
 		D0904DE9152D717E003FDD08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30FFEBEE150A08DB0009C1D0 /* Foundation.framework */; };
@@ -552,7 +552,7 @@
 		D0F2DDC3152485130059DF8D /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D09930FC1010FF9700C527B7 /* Quartz.framework */; };
 		D0F2DDC4152485130059DF8D /* iMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* iMedia.framework */; };
 		D0F2DDC5152485130059DF8D /* XPCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3089F94A151C8FDD00D56DC0 /* XPCKit.framework */; };
-		D0F2DDCF152486360059DF8D /* im.edia.iTunes.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D0F2DDCB152485130059DF8D /* im.edia.iTunes.xpc */; };
+		D0F2DDCF152486360059DF8D /* im.edia.iTunes.xpc in Copy XPCServices */ = {isa = PBXBuildFile; fileRef = D0F2DDCB152485130059DF8D /* im.edia.iTunes.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D0FC9518108213A800973FEE /* IMBiTunesMovieParser.h in Headers */ = {isa = PBXBuildFile; fileRef = D0FC9516108213A800973FEE /* IMBiTunesMovieParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D0FDC62B1668ACC000181E15 /* iTunes11-icon-01.png in Resources */ = {isa = PBXBuildFile; fileRef = D0FDC5EB1668AC7100181E15 /* iTunes11-icon-01.png */; };
 		D0FDC62C1668ACC000181E15 /* iTunes11-icon-01@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0FDC5EC1668AC7200181E15 /* iTunes11-icon-01@2x.png */; };
@@ -2727,7 +2727,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0800;
 				TargetAttributes = {
 					307F9690183D090D004F87E0 = {
 						TestTargetID = 8DC2EF4F0486A6940098B216;
@@ -3442,13 +3442,16 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@rpath";
+				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_LDFLAGS[arch=x86_64]" = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.karelia.${PRODUCT_NAME:identifier}";
 				PRODUCT_NAME = iMedia;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -3460,12 +3463,14 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@rpath";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.karelia.${PRODUCT_NAME:identifier}";
 				PRODUCT_NAME = iMedia;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -3475,13 +3480,23 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D0760AC210C5027100F2119C /* IMBProject.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SYMROOT = "";
 			};
 			name = Debug;
@@ -3490,15 +3505,23 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D0760AC210C5027100F2119C /* IMBProject.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				PROVISIONING_PROFILE = "";
 				SYMROOT = "";
 			};
@@ -3539,6 +3562,7 @@
 				INFOPLIST_FILE = "iMedia Tests/iMedia Tests-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.karelia.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = xctest;
@@ -3574,6 +3598,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "iMedia Tests/iMedia Tests-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.karelia.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = xctest;
@@ -3584,8 +3609,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3607,6 +3632,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3616,8 +3642,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3633,6 +3659,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3642,8 +3669,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3665,6 +3692,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3674,8 +3702,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3691,6 +3719,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3720,8 +3749,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3743,6 +3772,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3752,8 +3782,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3769,6 +3799,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3778,8 +3809,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3801,6 +3832,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3810,8 +3842,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3827,6 +3859,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3836,8 +3869,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3859,6 +3892,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3868,8 +3902,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3885,6 +3919,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3894,8 +3929,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3917,6 +3952,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3926,8 +3962,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3943,6 +3979,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3952,8 +3989,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3975,6 +4012,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -3984,8 +4022,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -4001,6 +4039,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4010,8 +4049,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4033,6 +4072,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4042,8 +4082,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -4059,6 +4099,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4068,8 +4109,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4091,6 +4132,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4100,8 +4142,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -4117,6 +4159,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4126,8 +4169,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4149,6 +4192,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4158,8 +4202,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -4175,6 +4219,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4185,6 +4230,7 @@
 			baseConfigurationReference = D0CF005310C50908009EC68F /* IMBTargetDebug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TestApp/iMediaTester.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_ENABLE_OBJC_GC = unsupported;
 				INFOPLIST_FILE = "TestApp/TestApp-Info.plist";
@@ -4198,6 +4244,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.karelia.${PRODUCT_NAME:identifier}";
 				PRODUCT_NAME = "${TARGET_NAME}";
 			};
 			name = Debug;
@@ -4207,6 +4254,7 @@
 			baseConfigurationReference = D0CF005410C50908009EC68F /* IMBTargetRelease.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TestApp/iMediaTester.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_ENABLE_OBJC_GC = unsupported;
 				INFOPLIST_FILE = "TestApp/TestApp-Info.plist";
@@ -4220,6 +4268,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.karelia.${PRODUCT_NAME:identifier}";
 				PRODUCT_NAME = "${TARGET_NAME}";
 			};
 			name = Release;
@@ -4228,8 +4277,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4252,6 +4301,7 @@
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4261,8 +4311,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -4279,6 +4329,7 @@
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4288,8 +4339,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4311,6 +4362,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};
@@ -4320,8 +4372,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "$(TARGET_NAME).entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -4337,6 +4389,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks /Library/Frameworks";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "${EXECUTABLE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xpc;
 			};

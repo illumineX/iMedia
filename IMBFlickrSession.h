@@ -60,7 +60,7 @@
 @interface IMBFlickrSession: NSObject <OFFlickrAPIRequestDelegate> {
     @private
     NSError* _error;
-	OFFlickrAPIContext* __weak _flickrContextWeakRef;    
+	OFFlickrAPIContext* /*__weak*/ _flickrContextWeakRef;	// PB 31.03.16: Removed weak because Xcode 7.3 wouldn't compile it!
     OFFlickrAPIRequest* _request;
     NSDictionary* _response;
 }

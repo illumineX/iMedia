@@ -4,15 +4,15 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>${EXECUTABLE_NAME}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>${PRODUCT_NAME}</string>
-	<key>CFBundleDisplayName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
@@ -22,16 +22,16 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>3.0</string>
+	<key>LSBackgroundOnly</key>
+	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright (c) 2005-2012 by Karelia Software et al.</string>
 	<key>XPCService</key>
 	<dict>
-		<key>ServiceType</key>
-		<string>Application</string>
 		<key>RunLoopType</key>
 		<string>NSRunLoop</string>
+		<key>ServiceType</key>
+		<string>Application</string>
 	</dict>
-	<key>LSBackgroundOnly</key>
-	<true/>
 </dict>
 </plist>

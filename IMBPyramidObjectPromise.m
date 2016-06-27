@@ -296,7 +296,7 @@
 		if (lightroomIcon)
 		{
 			NSRect lightroomRect = NSMakeRect(256.0,230.0,128.0,128.0);
-			[lightroomIcon drawInRect:lightroomRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+			[lightroomIcon drawInRect:lightroomRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 		}	
 	}
 	
@@ -305,7 +305,7 @@
 	if (cautionIcon)
 	{
 		NSRect cautionRect = NSMakeRect(347.0,228.0,64.0,64.0);
-		[cautionIcon drawInRect:cautionRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+		[cautionIcon drawInRect:cautionRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 	}
 	
 	NSRect stringRect = NSMakeRect(64.0,64.0,512.0,156.0);

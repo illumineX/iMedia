@@ -247,59 +247,62 @@
 
 - (void) showProgressWheels
 {
-	// First get rid of any progress indicators that are not currently visible or no longer needed...
-	
-	NSRect visibleRect = self.visibleRect;
-	NSRange visibleRows = [self rowsInRect:visibleRect];
-	NSMutableArray* keysToRemove = [NSMutableArray array];
-	
-	for (NSString* row in _subviewsInVisibleRows)
+	if (self.dataSource)
 	{
-		NSInteger i = [row intValue];
-		IMBNode* node = [self nodeAtRow:i];
+		// First get rid of any progress indicators that are not currently visible or no longer needed...
 		
-		if (!NSLocationInRange(i,visibleRows) || node.badgeTypeNormal != kIMBBadgeTypeLoading)
-		{
-			NSProgressIndicator* wheel = [_subviewsInVisibleRows objectForKey:row];
-			[wheel stopAnimation:nil];
-			[wheel removeFromSuperview];
-			[keysToRemove addObject:row];
-		}
-	}
-	
-	[_subviewsInVisibleRows removeObjectsForKeys:keysToRemove];
-
-	// Then add progress indicators for all nodes that need one (currently loading) and are currently visible...
-	
-	for (NSInteger i=visibleRows.location; i<visibleRows.location+visibleRows.length; i++)
-	{
-		IMBNode* node = [self nodeAtRow:i];
-		NSString* row = [NSString stringWithFormat:@"%ld",(long)i];
-		NSProgressIndicator* wheel = [_subviewsInVisibleRows objectForKey:row];
+		NSRect visibleRect = self.visibleRect;
+		NSRange visibleRows = [self rowsInRect:visibleRect];
+		NSMutableArray* keysToRemove = [NSMutableArray array];
 		
-		if (node != nil && (node.badgeTypeNormal == kIMBBadgeTypeLoading))
+		for (NSString* row in _subviewsInVisibleRows)
 		{
-			NSRect badgeRect = [self badgeRectForRow:i];
-
-			if (wheel == nil)
+			NSInteger i = [row intValue];
+			IMBNode* node = [self nodeAtRow:i];
+			
+			if (!NSLocationInRange(i,visibleRows) || node.badgeTypeNormal != kIMBBadgeTypeLoading)
 			{
-				NSProgressIndicator* wheel = [[NSProgressIndicator alloc] initWithFrame:badgeRect];
-				
-				[wheel setAutoresizingMask:NSViewNotSizable];
-				[wheel setStyle:NSProgressIndicatorSpinningStyle];
-				[wheel setControlSize:NSSmallControlSize];
-				[wheel setUsesThreadedAnimation:YES];
-				[wheel setIndeterminate:YES];
-				
-				[_subviewsInVisibleRows setObject:wheel forKey:row];
-				[self addSubview:wheel];
-				[wheel startAnimation:nil];
-				[wheel release];
+				NSProgressIndicator* wheel = [_subviewsInVisibleRows objectForKey:row];
+				[wheel stopAnimation:nil];
+				[wheel removeFromSuperview];
+				[keysToRemove addObject:row];
 			}
-			else
+		}
+		
+		[_subviewsInVisibleRows removeObjectsForKeys:keysToRemove];
+
+		// Then add progress indicators for all nodes that need one (currently loading) and are currently visible...
+		
+		for (NSInteger i=visibleRows.location; i<visibleRows.location+visibleRows.length; i++)
+		{
+			IMBNode* node = [self nodeAtRow:i];
+			NSString* row = [NSString stringWithFormat:@"%ld",(long)i];
+			NSProgressIndicator* wheel = [_subviewsInVisibleRows objectForKey:row];
+			
+			if (node != nil && (node.badgeTypeNormal == kIMBBadgeTypeLoading))
 			{
-				// Update the frame in case we for instance just showed the scroll bar and require an offset
-				[wheel setFrame:badgeRect];
+				NSRect badgeRect = [self badgeRectForRow:i];
+
+				if (wheel == nil)
+				{
+					NSProgressIndicator* wheel = [[NSProgressIndicator alloc] initWithFrame:badgeRect];
+					
+					[wheel setAutoresizingMask:NSViewNotSizable];
+					[wheel setStyle:NSProgressIndicatorSpinningStyle];
+					[wheel setControlSize:NSSmallControlSize];
+					[wheel setUsesThreadedAnimation:YES];
+					[wheel setIndeterminate:YES];
+					
+					[_subviewsInVisibleRows setObject:wheel forKey:row];
+					[self addSubview:wheel];
+					[wheel startAnimation:nil];
+					[wheel release];
+				}
+				else
+				{
+					// Update the frame in case we for instance just showed the scroll bar and require an offset
+					[wheel setFrame:badgeRect];
+				}
 			}
 		}
 	}

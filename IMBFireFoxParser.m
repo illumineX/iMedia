@@ -270,7 +270,7 @@
 	if (nil == inOldNode)	// create the initial node
 	{
 		NSImage* icon = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:self.appPath];;
-		[icon setScalesWhenResized:YES];
+//		[icon setScalesWhenResized:YES];
 		[icon setSize:NSMakeSize(16.0,16.0)];
 		
 		node.name = @"Firefox";
@@ -436,7 +436,7 @@
 			{
 				// Get generic icon, and shrink it down to favicon size for consistency.
 				sGenericIcon = [[[NSWorkspace imb_threadSafeWorkspace] iconForFileType:(NSString *)kUTTypeURL] retain];
-				[sGenericIcon setScalesWhenResized:YES];
+//				[sGenericIcon setScalesWhenResized:YES];
 				[sGenericIcon setSize:NSMakeSize(16.0,16.0)];
 			}
 			object.imageRepresentationType = IKImageBrowserNSImageRepresentationType;
