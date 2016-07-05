@@ -93,7 +93,7 @@
 
 - (id) initWithCoder: (NSCoder*) inCoder {
 	if ((self = [super initWithCoder:inCoder])) {
-        self.desiredSize = [inCoder decodeIntegerForKey:@"desiredSize"];
+        self.desiredSize = (IMBFlickrSizeSpecifier)[inCoder decodeIntegerForKey:@"desiredSize"];
         self.flickrAPIKey = [inCoder decodeObjectForKey:@"flickrAPIKey"];
         self.flickrSharedSecret = [inCoder decodeObjectForKey:@"flickrSharedSecret"];
 	}
@@ -160,6 +160,9 @@
 	return _loadMoreButton;
 }
 
+- (void)loadMoreImages:(id)sender {
+    NSLog(@"Load More Images not implimented");
+}
 
 #pragma mark 
 #pragma mark XPC Methods

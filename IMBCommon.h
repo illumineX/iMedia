@@ -278,15 +278,20 @@ typedef void (^IMBCompletionBlock)(id inResult,NSError* inError);
 
 // Flickr sizes
 
-typedef enum
-{ 
-	kIMBFlickrSizeSpecifierOriginal = 0,
-	kIMBFlickrSizeSpecifierSmall,		// 240 longest
-	kIMBFlickrSizeSpecifierMedium,		// 500 longest
-	kIMBFlickrSizeSpecifierLarge		// 1024 longest	
-} 
-IMBFlickrSizeSpecifier;
-
+//typedef enum
+//{ 
+//	kIMBFlickrSizeSpecifierOriginal = 0,
+//	kIMBFlickrSizeSpecifierSmall,		// 240 longest
+//	kIMBFlickrSizeSpecifierMedium,		// 500 longest
+//	kIMBFlickrSizeSpecifierLarge		// 1024 longest	
+//} 
+//IMBFlickrSizeSpecifier;
+typedef NS_ENUM(NSUInteger, IMBFlickrSizeSpecifier) {
+    kIMBFlickrSizeSpecifierOriginal = 0,
+    kIMBFlickrSizeSpecifierSmall,		// 240 longest
+    kIMBFlickrSizeSpecifierMedium,		// 500 longest
+    kIMBFlickrSizeSpecifierLarge		// 1024 longest
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

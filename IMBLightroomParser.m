@@ -626,7 +626,7 @@ static NSArray* sSupportedUTIs = nil;
 							orientationProperty = 7;
 						}
 						
-						NSDictionary* metadata = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:orientationProperty]
+						NSDictionary* metadata = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:orientationProperty]
 																			 forKey:((NSString*)kCGImagePropertyOrientation)];
 						CGImageDestinationAddImage(destination, jpegImage, (CFDictionaryRef)metadata);
 						

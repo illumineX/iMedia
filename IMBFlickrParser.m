@@ -208,9 +208,9 @@
         NSError* error = [NSError errorWithDomain:kIMBErrorDomain code:paramErr userInfo:info];        
         if (outError) *outError = error;
     }
-    return (id) image;
-
     if (SBIsSandboxed()) xpc_transaction_end ();
+
+    return (id) image;
 }
 
 

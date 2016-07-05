@@ -298,7 +298,7 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
         // slows down drawing performance of the IKImageBrowser - so we remove it for now.
         // Might be reconsidered in the future.
         
-        if (NO /*item.accessibility == kIMBResourceIsAccessible*/)
+        if (/* DISABLES CODE */ (NO) /*item.accessibility == kIMBResourceIsAccessible*/)
         {
             CATextLayer *stampLayer = [CATextLayer layer];
             [placeHolderLayer addSublayer:stampLayer];
@@ -358,27 +358,27 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
 		return nil;
 		
 		//create a selection layer
-		CALayer *selectionLayer = [CALayer layer];
-		selectionLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-		
-		CGFloat fillComponents[4] = {1.0, 0, 0.5, 0.3};
-		CGFloat strokeComponents[4] = {1.0, 0.0, 0.5, 1.0};
-		
-		//set a background color
-		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-		color = CGColorCreate(colorSpace, fillComponents);
-		[selectionLayer setBackgroundColor:color];
-		CFRelease(color);
-		
-		//set a border color
-		color = CGColorCreate(colorSpace, strokeComponents);
-		[selectionLayer setBorderColor:color];
-		CFRelease(color);
-		
-		[selectionLayer setBorderWidth:2.0];
-		[selectionLayer setCornerRadius:5];
-		
-		return selectionLayer;
+//		CALayer *selectionLayer = [CALayer layer];
+//		selectionLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+//		
+//		CGFloat fillComponents[4] = {1.0, 0, 0.5, 0.3};
+//		CGFloat strokeComponents[4] = {1.0, 0.0, 0.5, 1.0};
+//		
+//		//set a background color
+//		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+//		color = CGColorCreate(colorSpace, fillComponents);
+//		[selectionLayer setBackgroundColor:color];
+//		CFRelease(color);
+//		
+//		//set a border color
+//		color = CGColorCreate(colorSpace, strokeComponents);
+//		[selectionLayer setBorderColor:color];
+//		CFRelease(color);
+//		
+//		[selectionLayer setBorderWidth:2.0];
+//		[selectionLayer setCornerRadius:5];
+//		
+//		return selectionLayer;
 	}
 	
 	/* background layer */

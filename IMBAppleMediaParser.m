@@ -1056,7 +1056,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 
 - (BOOL) isNode:(IMBNode*)inNode withId:(NSUInteger)inId inSpace:(NSString *)inIdSpace
 {	
-	NSNumber* nodeId = [NSNumber numberWithUnsignedInt:inId];
+	NSNumber* nodeId = [NSNumber numberWithUnsignedInteger:inId];
 	NSString* nodeIdentifier = [self identifierForId:nodeId inSpace:inIdSpace];
 	
 	return [inNode.identifier isEqualToString:nodeIdentifier];

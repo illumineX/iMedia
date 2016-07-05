@@ -71,3 +71,12 @@
 - (void) setBackgroundColor:(NSColor *)inColor;
 
 @end
+
+@protocol IMBAppearanceView <NSObject>
+
+@optional
+
+- (void)setImb_Appearance:(IMBViewAppearance *)inAppearance;
+
+@end
+

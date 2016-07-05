@@ -128,7 +128,7 @@
 	
 	return metadata;
 
-	if (outError) *outError = nil;
+//	if (outError) *outError = nil;
 }
 
 

@@ -323,7 +323,7 @@
 {
 	NSString* path = [NSString stringWithFormat:@"/Volumes/%@/",inVolumeName];
 	BOOL exists,directory;
-	return [self fileExistsAtPath:path isDirectory:&directory];
+	exists = [self fileExistsAtPath:path isDirectory:&directory];
 	return exists && directory;
 }
 

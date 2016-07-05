@@ -56,44 +56,75 @@ extern NSString* const IMBFlickrNodeProperty_Query;
 extern NSString* const IMBFlickrNodeProperty_SortOrder;
 extern NSString* const IMBFlickrNodeProperty_UUID;
 
-typedef enum {
-	IMBFlickrNodeMethod_TextSearch = 0,
-	IMBFlickrNodeMethod_TagSearch,
-	IMBFlickrNodeMethod_Recent,
-	IMBFlickrNodeMethod_MostInteresting,
-	IMBFlickrNodeMethod_GetInfo
-} IMBFlickrNodeMethod;
+//typedef enum {
+//	IMBFlickrNodeMethod_TextSearch = 0,
+//	IMBFlickrNodeMethod_TagSearch,
+//	IMBFlickrNodeMethod_Recent,
+//	IMBFlickrNodeMethod_MostInteresting,
+//	IMBFlickrNodeMethod_GetInfo
+//} IMBFlickrNodeMethod;
+typedef NS_ENUM(NSUInteger, IMBFlickrNodeMethod) {
+    IMBFlickrNodeMethod_TextSearch = 0,
+    IMBFlickrNodeMethod_TagSearch,
+    IMBFlickrNodeMethod_Recent,
+    IMBFlickrNodeMethod_MostInteresting,
+    IMBFlickrNodeMethod_GetInfo
+};
 
-typedef enum {
-	IMBFlickrNodeLicense_Undefined = 0,
-	IMBFlickrNodeLicense_CreativeCommons,
-	IMBFlickrNodeLicense_DerivativeWorks,
-	IMBFlickrNodeLicense_CommercialUse
-} IMBFlickrNodeLicense;
+//typedef enum {
+//	IMBFlickrNodeLicense_Undefined = 0,
+//	IMBFlickrNodeLicense_CreativeCommons,
+//	IMBFlickrNodeLicense_DerivativeWorks,
+//	IMBFlickrNodeLicense_CommercialUse
+//} IMBFlickrNodeLicense;
+typedef NS_ENUM(NSUInteger, IMBFlickrNodeLicense) {
+    IMBFlickrNodeLicense_Undefined = 0,
+    IMBFlickrNodeLicense_CreativeCommons,
+    IMBFlickrNodeLicense_DerivativeWorks,
+    IMBFlickrNodeLicense_CommercialUse
+};
 
 ///	License kinds and ids as found under http://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html
-typedef enum {
-	IMBFlickrNodeFlickrLicenseID_Undefined = 0,
-	IMBFlickrNodeFlickrLicenseID_AttributionNonCommercialShareAlike = 1,
-	IMBFlickrNodeFlickrLicenseID_AttributionNonCommercial = 2,
-	IMBFlickrNodeFlickrLicenseID_AttributionNonCommercialNoDerivs = 3,
-	IMBFlickrNodeFlickrLicenseID_Attribution = 4,
-	IMBFlickrNodeFlickrLicenseID_AttributionShareAlike = 5,
-	IMBFlickrNodeFlickrLicenseID_AttributionNoDerivs = 6,
-	IMBFlickrNodeFlickrLicenseID_NoKnownCopyrightRestrictions = 7
-} IMBFlickrNodeFlickrLicenseID;
-
-typedef enum {
-	IMBFlickrNodeSortOrder_Undefined = 0,
-	IMBFlickrNodeSortOrder_DatePostedDesc,
-	IMBFlickrNodeSortOrder_DatePostedAsc,
-	IMBFlickrNodeSortOrder_DateTakenDesc,
-	IMBFlickrNodeSortOrder_DateTakenAsc,
-	IMBFlickrNodeSortOrder_InterestingnessDesc,
-	IMBFlickrNodeSortOrder_InterestingnessAsc,
-	IMBFlickrNodeSortOrder_Relevance
-} IMBFlickrNodeSortOrder;
-
+//typedef enum {
+//	IMBFlickrNodeFlickrLicenseID_Undefined = 0,
+//	IMBFlickrNodeFlickrLicenseID_AttributionNonCommercialShareAlike = 1,
+//	IMBFlickrNodeFlickrLicenseID_AttributionNonCommercial = 2,
+//	IMBFlickrNodeFlickrLicenseID_AttributionNonCommercialNoDerivs = 3,
+//	IMBFlickrNodeFlickrLicenseID_Attribution = 4,
+//	IMBFlickrNodeFlickrLicenseID_AttributionShareAlike = 5,
+//	IMBFlickrNodeFlickrLicenseID_AttributionNoDerivs = 6,
+//	IMBFlickrNodeFlickrLicenseID_NoKnownCopyrightRestrictions = 7
+//} IMBFlickrNodeFlickrLicenseID;
+typedef NS_ENUM(NSUInteger, IMBFlickrNodeFlickrLicenseID) {
+    IMBFlickrNodeFlickrLicenseID_Undefined = 0,
+    IMBFlickrNodeFlickrLicenseID_AttributionNonCommercialShareAlike = 1,
+    IMBFlickrNodeFlickrLicenseID_AttributionNonCommercial = 2,
+    IMBFlickrNodeFlickrLicenseID_AttributionNonCommercialNoDerivs = 3,
+    IMBFlickrNodeFlickrLicenseID_Attribution = 4,
+    IMBFlickrNodeFlickrLicenseID_AttributionShareAlike = 5,
+    IMBFlickrNodeFlickrLicenseID_AttributionNoDerivs = 6,
+    IMBFlickrNodeFlickrLicenseID_NoKnownCopyrightRestrictions = 7
+};
+//typedef enum {
+//	IMBFlickrNodeSortOrder_Undefined = 0,
+//	IMBFlickrNodeSortOrder_DatePostedDesc,
+//	IMBFlickrNodeSortOrder_DatePostedAsc,
+//	IMBFlickrNodeSortOrder_DateTakenDesc,
+//	IMBFlickrNodeSortOrder_DateTakenAsc,
+//	IMBFlickrNodeSortOrder_InterestingnessDesc,
+//	IMBFlickrNodeSortOrder_InterestingnessAsc,
+//	IMBFlickrNodeSortOrder_Relevance
+//} IMBFlickrNodeSortOrder;
+typedef NS_ENUM(NSUInteger, IMBFlickrNodeSortOrder) {
+    IMBFlickrNodeSortOrder_Undefined = 0,
+    IMBFlickrNodeSortOrder_DatePostedDesc,
+    IMBFlickrNodeSortOrder_DatePostedAsc,
+    IMBFlickrNodeSortOrder_DateTakenDesc,
+    IMBFlickrNodeSortOrder_DateTakenAsc,
+    IMBFlickrNodeSortOrder_InterestingnessDesc,
+    IMBFlickrNodeSortOrder_InterestingnessAsc,
+    IMBFlickrNodeSortOrder_Relevance
+};
 /**
  *	Flickr parser custom node holding some additions to the iMB node construct queries to Flickr.
  *

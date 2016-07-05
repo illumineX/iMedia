@@ -121,11 +121,11 @@
 	
 	//	translate our user kinds into Flickr license kind ids...
 	if (node.license == IMBFlickrNodeLicense_CreativeCommons) {
-		[arguments setObject:[NSString stringWithFormat:@"%d", IMBFlickrNodeFlickrLicenseID_Attribution] forKey:@"license"];
+		[arguments setObject:[NSString stringWithFormat:@"%lu", (unsigned long)IMBFlickrNodeFlickrLicenseID_Attribution] forKey:@"license"];
 	} else if (node.license == IMBFlickrNodeLicense_DerivativeWorks) {
-		[arguments setObject:[NSString stringWithFormat:@"%d", node.license] forKey:@"license"];
+		[arguments setObject:[NSString stringWithFormat:@"%lu", (unsigned long)node.license] forKey:@"license"];
 	} else if (node.license == IMBFlickrNodeLicense_CommercialUse) {
-		[arguments setObject:[NSString stringWithFormat:@"%d", IMBFlickrNodeFlickrLicenseID_NoKnownCopyrightRestrictions] forKey:@"license"];
+		[arguments setObject:[NSString stringWithFormat:@"%lu", (unsigned long)IMBFlickrNodeFlickrLicenseID_NoKnownCopyrightRestrictions] forKey:@"license"];
 	}
 	
 	//	determine sort order...

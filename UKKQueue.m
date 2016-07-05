@@ -88,7 +88,7 @@
 	[path release];
 	path = nil;
 	if( watchedFD >= 0 )
-		close(watchedFD);
+		close((int)watchedFD);
 	watchedFD = -1;
 	pathRefCount = 0;
 	
@@ -304,7 +304,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 			
 			[pe setSubscriptionFlags: fflags];
             [watchedFiles setObject: pe forKey: path];
-            kevent( queueFD, &ev, 1, NULL, 0, &nullts );
+            kevent( (int)queueFD, &ev, 1, NULL, 0, &nullts );
 		
 			// Start new thread that fetches and processes our events:
 			if( !keepThreadRunning )
@@ -407,7 +407,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 		NSAutoreleasePool*  pool = [[NSAutoreleasePool alloc] init];
 		
 		NS_DURING
-			n = kevent( queueFD, NULL, 0, &ev, 1, &timeout );
+			n = kevent( (int)queueFD, NULL, 0, &ev, 1, &timeout );
 			if( n > 0 )
 			{
 				NSLog( @"KEVENT returned %ld", (long)n );
@@ -446,7 +446,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
     }
     
 	// Close our kqueue's file descriptor:
-	if( close( theFD ) == -1 )
+	if( close( (int)theFD ) == -1 )
 		NSLog(@"watcherThread: Couldn't close main kqueue (%d)", errno);
    
 	#if DEBUG_LOG_THREAD_LIFETIME
