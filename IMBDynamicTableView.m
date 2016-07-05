@@ -107,7 +107,7 @@
         // Give the delegate a chance to do any pre-loading or special work that it wants to do
         if ([[self delegate] respondsToSelector:@selector(dynamicTableView:changedVisibleRowsFromRange:toRange:)])
 		{
-            [[self delegate] dynamicTableView:self changedVisibleRowsFromRange:oldVisibleRows toRange:newVisibleRows];
+            [(id <IMBDynamicTableViewDelegate>)[self delegate] dynamicTableView:self changedVisibleRowsFromRange:oldVisibleRows toRange:newVisibleRows];
         }
         // We always have to update our views if the visible area changed
         _viewsNeedUpdate = YES;
@@ -140,7 +140,7 @@
                 if (view == nil)
 				{
                     // We don't already have a view at that row
-                    view = [[self delegate] dynamicTableView:self viewForRow:row];
+                    view = [(id <IMBDynamicTableViewDelegate>)[self delegate] dynamicTableView:self viewForRow:row];
                     if (view != nil)
 					{
                         [self addSubview:view];
