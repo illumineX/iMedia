@@ -32,7 +32,7 @@
 /**
  @return The receiver's current location.
  */
-- (id<IMBNavigationLocation>)currentLocation;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) id<IMBNavigationLocation> currentLocation;
 
 /**
  @return Whether location is valid in current context of receiver.
@@ -93,7 +93,7 @@
 /**
  Designated Initializer.
  */
-- (instancetype)initWithLocationProvider:(id<IMBNavigable>)locationProvider;
+- (instancetype)initWithLocationProvider:(id<IMBNavigable>)locationProvider NS_DESIGNATED_INITIALIZER;
 
 /**
  Sets appropriate target and action on back button and makes it known to delegate.
@@ -139,8 +139,8 @@
 
 #pragma mark - Query State
 
-- (BOOL)canGoBackward;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL canGoBackward;
 
-- (BOOL)canGoForward;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL canGoForward;
 
 @end

@@ -53,20 +53,20 @@
 {
 	if ((self = [super initWithFrame:aFrame]) != nil) {
 		IMBHoverButtonCell *theCell = [[[IMBHoverButtonCell allocWithZone:[self zone]] init] autorelease];
-		[self setCell:theCell];
+		self.cell = theCell;
 
 		[self setButtonType:NSMomentaryChangeButton];
 		[self setShowsBorderOnlyWhileMouseInside:YES];
 		[self setBordered:NO];
-		[self setTitle:@""];
-		[self setImagePosition:NSImageOnly];
+		self.title = @"";
+		self.imagePosition = NSImageOnly;
 
 		NSString *p  = [[NSBundle bundleForClass:[self class]] pathForResource:@"i" ofType:@"tiff"];
 		NSString *p2 = [[NSBundle bundleForClass:[self class]] pathForResource:@"i2" ofType:@"tiff"];
 		NSImage *im  = [[[NSImage alloc] initWithContentsOfFile:p ] autorelease];
 		NSImage *im2 = [[[NSImage alloc] initWithContentsOfFile:p2] autorelease];
-		[self setImage:im];
-		[self setAlternateImage:im2];
+		self.image = im;
+		self.alternateImage = im2;
 		[theCell accessibilitySetOverrideValue:NSLocalizedStringWithDefaultValue(
 																		@"IMB.window.infoButton", nil,IMBBundle(),
 																		@"iMedia Info", @"description of button to flip to back of window")
@@ -84,20 +84,20 @@
 
 - (void)mouseEntered:(NSEvent *)event
 {
-	NSImage *image = [[self image] retain];
-	NSImage *alternateImage = [[self alternateImage] retain];
-	[self setImage:alternateImage];
-	[self setAlternateImage:image];
+	NSImage *image = [self.image retain];
+	NSImage *alternateImage = [self.alternateImage retain];
+	self.image = alternateImage;
+	self.alternateImage = image;
 	[image release];
 	[alternateImage release];
 }
 
 - (void)mouseExited:(NSEvent *)event
 {
-	NSImage *image = [[self image] retain];
-	NSImage *alternateImage = [[self alternateImage] retain];
-	[self setImage:alternateImage];
-	[self setAlternateImage:image];
+	NSImage *image = [self.image retain];
+	NSImage *alternateImage = [self.alternateImage retain];
+	self.image = alternateImage;
+	self.alternateImage = image;
 	[image release];
 	[alternateImage release];
 }

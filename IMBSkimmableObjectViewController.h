@@ -69,6 +69,6 @@
 	NSDictionary* _userInfo;
 }
 
-- (id) initForNode:(IMBNode*)inNode;
+- (instancetype) initForNode:(IMBNode*)inNode NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -121,7 +121,7 @@ NSString* kIMBPathDidChangeNotification = @"IMBPathDidChange";
 
 // Initialize file system observing. If sandboxed then use the XPC service, otherwise use do it directly...
 		
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{

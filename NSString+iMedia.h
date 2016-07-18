@@ -76,12 +76,12 @@
 
 - (BOOL)hasPathPrefix:(NSString *)inPath;
 
-- (NSString *)imb_pathForURLString;
-- (NSString *)imb_path;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *imb_pathForURLString;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *imb_path;
 
 + (id)uuid;
 
-- (NSString *)imb_localizedDisplayDate;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *imb_localizedDisplayDate;
 
 + (NSString *)imb_stringFromStarRating:(NSUInteger)aRating;
 

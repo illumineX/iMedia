@@ -102,7 +102,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -127,7 +127,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super init]))
 	{
@@ -199,7 +199,7 @@
 
 + (NSString*) xpcServiceIdentifierPostfix
 {
-	return [[self identifier] pathExtension];
+	return [self identifier].pathExtension;
 }
 
 
@@ -288,7 +288,7 @@
 	parser.mediaType = self.mediaType;
 	parser.mediaSource = self.mediaSource;
 	
-	NSArray* parsers = [NSArray arrayWithObject:parser];
+	NSArray* parsers = @[parser];
 	[parser release];
 	
 	return parsers;
@@ -375,7 +375,7 @@
     dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER);
     dispatch_release(dispatchGroup);
 	
-	if (outError && [errors count] > 0) *outError = errors[0];
+	if (outError && errors.count > 0) *outError = errors[0];
 	return (NSArray*)topLevelNodes;
 }
 
@@ -408,10 +408,8 @@
 			NSStringFromClass([parser class]),
 			inNode.name];
 			
-		NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-			title,@"title",
-			description,NSLocalizedDescriptionKey,
-			nil];
+		NSDictionary* info = @{@"title": title,
+			NSLocalizedDescriptionKey: description};
 			
 		error = [NSError errorWithDomain:kIMBErrorDomain code:kIMBErrorInvalidState userInfo:info];
 	}
@@ -701,7 +699,7 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %@>",
-            [self className],
+            self.className,
             [self class].identifier
 //            [self parserIdentifiersDescription]
             ];
@@ -715,7 +713,7 @@
     
     NSArray *parsers = [self parserInstancesWithError:nil];
     
-    if ([parsers count] > 0) {
+    if (parsers.count > 0) {
         for (IMBParser *parser in parsers) {
             description = [NSString stringWithFormat:@"%@    %@\n", description, parser.identifier];
         }

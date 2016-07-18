@@ -93,7 +93,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -127,10 +127,10 @@
 - (IMBNode*) unpopulatedTopLevelNode:(NSError**)outError
 {
 	NSURL* url = (NSURL*)self.mediaSource;
-	NSString* path = [url path];
+	NSString* path = url.path;
 
 	NSImage* icon = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:self.appPath];
-	[icon setSize:NSMakeSize(16.0,16.0)];
+	icon.size = NSMakeSize(16.0,16.0);
 	
 	// Create an empty (unpopulated) root node...
 	
@@ -145,7 +145,7 @@
 	// the root node down, as we have no way of finding WHAT has changed in iPhoto...
 	
 	node.watcherType = kIMBWatcherTypeFSEvent;
-	node.watchedPath = [path stringByDeletingLastPathComponent];
+	node.watchedPath = path.stringByDeletingLastPathComponent;
 	
 	return node;
 }
@@ -158,7 +158,7 @@
 {
 	if (inNode.isTopLevelNode)
 	{
-		NSDictionary* plist = [self plist];
+		NSDictionary* plist = self.plist;
 		[self populateNode:inNode plist:plist];
 	}
 
@@ -233,7 +233,7 @@
 
 - (NSString*) identifierForPlist:(NSDictionary*)inPlist
 {
-	NSString* uuid = [inPlist objectForKey:@"WebBookmarkUUID"];
+	NSString* uuid = inPlist[@"WebBookmarkUUID"];
 	return [self identifierForPath:[NSString stringWithFormat:@"/%@",uuid]];
 }
 
@@ -243,15 +243,15 @@
 - (BOOL) isLeafPlist:(NSDictionary*)inPlist
 {
 	BOOL isLeaf = YES;
-	NSString* type = [inPlist objectForKey:@"WebBookmarkType"];
+	NSString* type = inPlist[@"WebBookmarkType"];
 	
 	if ([type isEqualToString:@"WebBookmarkTypeList"])
 	{
-		NSArray* childrenPlist = [inPlist objectForKey:@"Children"];
+		NSArray* childrenPlist = inPlist[@"Children"];
 		
 		for (NSDictionary* childPlist in childrenPlist)
 		{
-			type = [childPlist objectForKey:@"WebBookmarkType"];
+			type = childPlist[@"WebBookmarkType"];
 			
 			if ([type isEqualToString:@"WebBookmarkTypeList"])
 			{
@@ -272,7 +272,7 @@
 	NSMutableArray* subnodes = [inNode mutableArrayForPopulatingSubnodes];
 	NSMutableArray* objects = [NSMutableArray array];
 	
-	NSArray* childrenPlist = [inPlist objectForKey:@"Children"];
+	NSArray* childrenPlist = inPlist[@"Children"];
 	NSUInteger index = 0;
 	
 	for (NSDictionary* childPlist in childrenPlist)
@@ -281,7 +281,7 @@
 		
 		if (subnode)
 		{
-			if ([inNode isTopLevelNode])
+			if (inNode.isTopLevelNode)
 			{
 				NSImage* newImage = nil;
 				
@@ -339,11 +339,11 @@
 - (IMBNode*) subnodeForPlist:(NSDictionary*)inPlist 
 {
 	IMBNode* subnode = nil;
-	NSString* type = [inPlist objectForKey:@"WebBookmarkType"];
+	NSString* type = inPlist[@"WebBookmarkType"];
 	
 	if ([type isEqualToString:@"WebBookmarkTypeList"])
 	{
-		NSString* title = [inPlist objectForKey:@"Title"];
+		NSString* title = inPlist[@"Title"];
 		NSImage* icon = [NSImage imb_sharedGenericFolderIcon];
 
 		subnode = [[[IMBNode alloc] initWithParser:self topLevel:NO] autorelease];
@@ -363,13 +363,13 @@
 - (IMBObject*) objectForPlist:(NSDictionary*)inPlist 
 {
 	IMBObject* object = nil;
-	NSString* type = [inPlist objectForKey:@"WebBookmarkType"];
+	NSString* type = inPlist[@"WebBookmarkType"];
 	
 	if ([type isEqualToString:@"WebBookmarkTypeLeaf"])
 	{
-		NSDictionary* uri = [inPlist objectForKey:@"URIDictionary"];
-		NSString* title = [uri objectForKey:@"title"];
-		NSString* urlString = [inPlist objectForKey:@"URLString"];
+		NSDictionary* uri = inPlist[@"URIDictionary"];
+		NSString* title = uri[@"title"];
+		NSString* urlString = inPlist[@"URLString"];
 		NSURL* url = [NSURL URLWithString:urlString];
 				
 		object = [[[IMBLinkObject alloc] init] autorelease];
@@ -393,7 +393,7 @@
 		IMBNode* subnode = [self subnodeForPlist:inPlist];
 		subnode.isIncludedInPopup = NO;
 
-		NSString* title = [inPlist objectForKey:@"Title"];		// Capitalized for list, lowercase for leaves?
+		NSString* title = inPlist[@"Title"];		// Capitalized for list, lowercase for leaves?
 
 		object = [[[IMBFolderObject alloc] init] autorelease];
 		object.name = title;

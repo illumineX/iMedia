@@ -14,20 +14,18 @@
 }
 
 
-+ (id) resultSetWithStatement:(FMStatement *)statement usingParentDatabase:(FMDatabase*)aDB;
++ (instancetype) resultSetWithStatement:(FMStatement *)statement usingParentDatabase:(FMDatabase*)aDB;
 
 - (void) close;
 
-- (NSString *)query;
-- (void)setQuery:(NSString *)value;
+@property (NS_NONATOMIC_IOSONLY, copy) NSString *query;
 
-- (FMStatement *)statement;
-- (void)setStatement:(FMStatement *)value;
+@property (NS_NONATOMIC_IOSONLY, strong) FMStatement *statement;
 
 - (void)setParentDB:(FMDatabase *)newDb;
 
-- (BOOL) next;
-- (BOOL) hasAnotherRow;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL next;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasAnotherRow;
 
 - (BOOL) hasColumnWithName:(NSString*)columnName;
 - (int) columnIndexForName:(NSString*)columnName;
@@ -57,8 +55,8 @@
 - (NSData*) dataForColumn:(NSString*)columnName;
 - (NSData*) dataForColumnIndex:(int)columnIdx;
 
-- (const unsigned char *) UTF8StringForColumnIndex:(int)columnIdx;
-- (const unsigned char *) UTF8StringForColumnName:(NSString*)columnName;
+- (const unsigned char *) UTF8StringForColumnIndex:(int)columnIdx NS_RETURNS_INNER_POINTER;
+- (const unsigned char *) UTF8StringForColumnName:(NSString*)columnName NS_RETURNS_INNER_POINTER;
 
 /*
 If you are going to use this data after you iterate over the next row, or after you close the

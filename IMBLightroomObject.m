@@ -73,7 +73,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -95,7 +95,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super initWithCoder:inCoder]) != nil)
 	{

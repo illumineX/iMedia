@@ -51,7 +51,7 @@ NSString* SBApplicationContainerHomeDirectory(NSString* inBundleIdentifier);
 // High level function that should be used instead of CFPreferencesCopyAppValue, because in  
 // sandboxed apps we need to work around problems of CFPreferencesCopyAppValue returning NULL...
  
-CFTypeRef SBPreferencesCopyAppValue(CFStringRef inKey,CFStringRef inBundleIdentifier);
+CFTypeRef SBPreferencesCopyAppValue(CFStringRef inKey,CFStringRef inBundleIdentifier) CF_RETURNS_RETAINED;
 
 
 //----------------------------------------------------------------------------------------------------------------------

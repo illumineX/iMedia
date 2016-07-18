@@ -80,7 +80,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initTextCell:(NSString*)inSString
+- (instancetype) initTextCell:(NSString*)inSString
 {
 	if (self = [super initTextCell:inSString])
 	{
@@ -91,7 +91,7 @@
 }
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if (self = [super initWithCoder:inCoder])
 	{
@@ -144,7 +144,7 @@
 	
 	CGFloat y = inFrame.origin.y;
 	
-	if ([inView isFlipped])
+	if (inView.flipped)
 	{
 		y = inFrame.origin.y + inFrame.size.height - textSize.height;
 	}

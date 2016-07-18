@@ -66,7 +66,7 @@
 
 @dynamic delegate;
 
-- (id)initWithCoder:(NSCoder *)coder
+- (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     return self;
@@ -105,9 +105,9 @@
 	{
         _visibleRows = newVisibleRows;
         // Give the delegate a chance to do any pre-loading or special work that it wants to do
-        if ([[self delegate] respondsToSelector:@selector(dynamicTableView:changedVisibleRowsFromRange:toRange:)])
+        if ([self.delegate respondsToSelector:@selector(dynamicTableView:changedVisibleRowsFromRange:toRange:)])
 		{
-            [(id <IMBDynamicTableViewDelegate>)[self delegate] dynamicTableView:self changedVisibleRowsFromRange:oldVisibleRows toRange:newVisibleRows];
+            [(id <IMBDynamicTableViewDelegate>)self.delegate dynamicTableView:self changedVisibleRowsFromRange:oldVisibleRows toRange:newVisibleRows];
         }
         // We always have to update our views if the visible area changed
         _viewsNeedUpdate = YES;
@@ -117,7 +117,7 @@
 	{
         _viewsNeedUpdate = NO;
         // Update any views that the delegate wants to give us
-        if ([[self delegate] respondsToSelector:@selector(dynamicTableView:viewForRow:)])
+        if ([self.delegate respondsToSelector:@selector(dynamicTableView:viewForRow:)])
 		{
 			
             if (visibleRowsNeedsUpdate)
@@ -135,12 +135,12 @@
             // Finally, update and add in any new views given to us by the delegate. Use [NSNull null] for things that don't have a view at a particular row
             for (NSInteger row = _visibleRows.location; row < NSMaxRange(_visibleRows); row++)
 			{
-                NSNumber *key = [NSNumber numberWithInteger:row];
-                id view = [_viewsInVisibleRows objectForKey:key];
+                NSNumber *key = @(row);
+                id view = _viewsInVisibleRows[key];
                 if (view == nil)
 				{
                     // We don't already have a view at that row
-                    view = [(id <IMBDynamicTableViewDelegate>)[self delegate] dynamicTableView:self viewForRow:row];
+                    view = [(id <IMBDynamicTableViewDelegate>)self.delegate dynamicTableView:self viewForRow:row];
                     if (view != nil)
 					{
                         [self addSubview:view];
@@ -150,7 +150,7 @@
                         // Use null as a place holder so we don't call the delegate again until the row is relaoded
                         view = [NSNull null]; 
                     }
-                    [_viewsInVisibleRows setObject:view forKey:key];
+                    _viewsInVisibleRows[key] = view;
                 }
             }
         }
@@ -162,8 +162,8 @@
     _viewsNeedUpdate = YES;
     if (_viewsInVisibleRows != nil)
 	{
-        NSNumber *key = [NSNumber numberWithInteger:row];
-        id view = [_viewsInVisibleRows objectForKey:key];
+        NSNumber *key = @(row);
+        id view = _viewsInVisibleRows[key];
         if (view != nil)
 		{
             if (view != [NSNull null])
@@ -179,7 +179,7 @@
 {
     if (rowIndexes != nil)
 	{
-        for (NSInteger row = [rowIndexes firstIndex]; row != NSNotFound; row = [rowIndexes indexGreaterThanIndex:row])
+        for (NSInteger row = rowIndexes.firstIndex; row != NSNotFound; row = [rowIndexes indexGreaterThanIndex:row])
 		{
             [self _removeCachedViewForRow:row];
         }
@@ -190,7 +190,7 @@
 {
     if (_viewsInVisibleRows != nil)
 	{
-        for (id view in [_viewsInVisibleRows allValues])
+        for (id view in _viewsInVisibleRows.allValues)
 		{
             [view removeFromSuperview];
         }
@@ -229,7 +229,7 @@
 	{
 		// LEOPARD implementation.  Ignore the columns; mark the whole row dirty.
 		NSRect dirtyRect = NSZeroRect;
-		NSUInteger currentIndex = [rowIndexes firstIndex];
+		NSUInteger currentIndex = rowIndexes.firstIndex;
 		while (currentIndex != NSNotFound)
 		{
 			NSRect rowDirtyRect = [self rectOfRow:currentIndex];
@@ -242,18 +242,18 @@
 
 - (void)setDelegate:(id <IMBDynamicTableViewDelegate>)delegate
 {
-    [super setDelegate:delegate];
+    super.delegate = delegate;
 }
 
 - (id <IMBDynamicTableViewDelegate>)delegate
 {
-    return (id <IMBDynamicTableViewDelegate>)[super delegate];
+    return (id <IMBDynamicTableViewDelegate>)super.delegate;
 }
 
 // Method called after KVO detects a change, to reload the table row.
 - (void)_reloadRow:(NSNumber *)aRowNumber
 {
-	NSInteger row = [aRowNumber intValue];
+	NSInteger row = aRowNumber.intValue;
 	if (row != NSNotFound)
 	{
 		[self reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:row] columnIndexes:[NSIndexSet indexSetWithIndex:0]];

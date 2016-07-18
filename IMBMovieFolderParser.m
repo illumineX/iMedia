@@ -84,12 +84,12 @@
 - (NSDictionary*) metadataForObject:(IMBObject*)inObject error:(NSError**)outError
 {
 	NSMutableDictionary* metadata = [NSMutableDictionary dictionary];
-	NSString* path = [[inObject URL] path];
+	NSString* path = [inObject URL].path;
 	MDItemRef item = MDItemCreate(NULL,(CFStringRef)path);
 	
 	if (item)
 	{
-		[metadata setObject:path forKey:@"path"];
+		metadata[@"path"] = path;
 		CFNumberRef seconds = MDItemCopyAttribute(item,kMDItemDurationSeconds);
 		CFNumberRef width = MDItemCopyAttribute(item,kMDItemPixelWidth);
 		CFNumberRef height = MDItemCopyAttribute(item,kMDItemPixelHeight);
@@ -97,25 +97,25 @@
 
 		if (seconds)
 		{
-			[metadata setObject:(NSNumber*)seconds forKey:@"duration"]; 
+			metadata[@"duration"] = (NSNumber*)seconds; 
 			CFRelease(seconds);
 		}
 
 		if (width)
 		{
-			[metadata setObject:(NSNumber*)width forKey:@"width"]; 
+			metadata[@"width"] = (NSNumber*)width; 
 			CFRelease(width);
 		}
 		
 		if (height)
 		{
-			[metadata setObject:(NSNumber*)height forKey:@"height"]; 
+			metadata[@"height"] = (NSNumber*)height; 
 			CFRelease(height);
 		}
 	
 		if (comment)
 		{
-			[metadata setObject:(NSString*)comment forKey:@"comment"]; 
+			metadata[@"comment"] = (NSString*)comment; 
 			CFRelease(comment);
 		}
 		

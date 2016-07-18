@@ -70,7 +70,7 @@
 	if(( self = [super init] ))
 	{
 		path = [inPath copy];
-		watchedFD = open( [path fileSystemRepresentation], O_EVTONLY, 0 );
+		watchedFD = open( path.fileSystemRepresentation, O_EVTONLY, 0 );
 		if( watchedFD < 0 )
 		{
 			[self autorelease];
@@ -194,7 +194,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 	{
 		if( !gUKKQueueSharedNotificationCenterProxy )
 		{
-			gUKKQueueSharedNotificationCenterProxy = [[[NSWorkspace sharedWorkspace] notificationCenter] copyMainThreadProxy];	// Singleton, 'intentional leak'.
+			gUKKQueueSharedNotificationCenterProxy = [[NSWorkspace sharedWorkspace].notificationCenter copyMainThreadProxy];	// Singleton, 'intentional leak'.
 			[gUKKQueueSharedNotificationCenterProxy setWaitForCompletion: NO];	// Better performance and avoid deadlocks.
 		}
 		
@@ -279,7 +279,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 {
 	@synchronized( self )
 	{
-		UKKQueuePathEntry*	pe = [watchedFiles objectForKey: path];	// Already watching this path?
+		UKKQueuePathEntry*	pe = watchedFiles[path];	// Already watching this path?
 		if( pe )
 		{
 			[pe retainPath];	// Just add another subscription to this entry.
@@ -303,7 +303,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 					fflags, 0, pe );
 			
 			[pe setSubscriptionFlags: fflags];
-            [watchedFiles setObject: pe forKey: path];
+            watchedFiles[path] = pe;
             kevent( (int)queueFD, &ev, 1, NULL, 0, &nullts );
 		
 			// Start new thread that fetches and processes our events:
@@ -332,7 +332,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 {
 	@synchronized( self )
 	{
-		UKKQueuePathEntry*	pe = [watchedFiles objectForKey: path];	// Already watching this path?
+		UKKQueuePathEntry*	pe = watchedFiles[path];	// Already watching this path?
 		if( pe && [pe releasePath] )	// Give up one subscription. Is this the last subscription?
 			[watchedFiles removeObjectForKey: path];	// Unsubscribe from this file.
 	}
@@ -478,7 +478,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 	#endif
 	
 	[gUKKQueueSharedNotificationCenterProxy postNotificationName: nm object: self
-												userInfo: [NSDictionary dictionaryWithObjectsAndKeys: fp, @"path", nil]];	// The proxy sends the notification on the main thread.
+												userInfo: @{@"path": fp}];	// The proxy sends the notification on the main thread.
 }
 
 @end
@@ -515,7 +515,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 	if(( self = [super init] ))
 	{
 		watchedFiles = [[NSMutableDictionary alloc] init];
-		NSNotificationCenter*	nc = [[NSWorkspace sharedWorkspace] notificationCenter];
+		NSNotificationCenter*	nc = [NSWorkspace sharedWorkspace].notificationCenter;
 		UKKQueueCentral*		kqc = [[self class] sharedFileWatcher];
 		[nc addObserver: self selector: @selector(fileChangeNotification:)
 				name: UKFileWatcherRenameNotification object: kqc];
@@ -553,7 +553,7 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 	[watchedFiles release];
 	watchedFiles = nil;
 	
-	NSNotificationCenter*	nc = [[NSWorkspace sharedWorkspace] notificationCenter];
+	NSNotificationCenter*	nc = [NSWorkspace sharedWorkspace].notificationCenter;
 	UKKQueueCentral*		kqc = [[self class] sharedFileWatcher];
 	[nc removeObserver: self
 			name: UKFileWatcherRenameNotification object: kqc];
@@ -601,17 +601,17 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 
 -(void) addPath: (NSString*)path notifyingAbout: (u_int)fflags
 {
-	UKKQueuePathEntry*		entry = [watchedFiles objectForKey: path];
+	UKKQueuePathEntry*		entry = watchedFiles[path];
 	if( entry )
 		return;	// Already have this one.
 	
 	entry = [[UKKQueue sharedFileWatcher] addPathToQueue: path notifyingAbout: fflags];
-	[watchedFiles setObject: entry forKey: path];
+	watchedFiles[path] = entry;
 }
 
 -(void)	removePath: (NSString*)fpath
 {
-	UKKQueuePathEntry*		entry = [watchedFiles objectForKey: fpath];
+	UKKQueuePathEntry*		entry = watchedFiles[fpath];
 	if( entry )	// Don't have this one, do nothing.
 	{
 		[watchedFiles removeObjectForKey: fpath];
@@ -654,15 +654,15 @@ static id					gUKKQueueSharedNotificationCenterProxy = nil;	// Object to which w
 
 -(void)	fileChangeNotification: (NSNotification*)notif
 {
-	NSString*	fp = [[notif userInfo] objectForKey: @"path"];
-	NSString*	nm = [notif name];
-	if( [watchedFiles objectForKey: fp] == nil )	// Don't notify about files we don't care about.
+	NSString*	fp = notif.userInfo[@"path"];
+	NSString*	nm = notif.name;
+	if( watchedFiles[fp] == nil )	// Don't notify about files we don't care about.
 		return;
 	[delegate watcher: self receivedNotification: nm forPath: fp];
 	if( !delegate || alwaysNotify )
 	{
-		[[[NSWorkspace sharedWorkspace] notificationCenter] postNotificationName: nm object: self
-												userInfo: [notif userInfo]];	// Send the notification on to *our* clients only.
+		[[NSWorkspace sharedWorkspace].notificationCenter postNotificationName: nm object: self
+												userInfo: notif.userInfo];	// Send the notification on to *our* clients only.
 	}
 }
 

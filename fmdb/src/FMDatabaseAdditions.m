@@ -52,7 +52,7 @@ return ret;
     
     BOOL returnBool;
     //lower case table name
-    tableName = [tableName lowercaseString];
+    tableName = tableName.lowercaseString;
     //search in sqlite_master table if table exists
     FMResultSet *rs = [self executeQuery:@"select [sql] from sqlite_master where [type] = 'table' and lower(name) = ?", tableName];
     //if at least one next exists, table exists
@@ -88,14 +88,14 @@ return ret;
     
     BOOL returnBool = NO;
     //lower case table name
-    tableName = [tableName lowercaseString];
+    tableName = tableName.lowercaseString;
     //lower case column name
-    columnName = [columnName lowercaseString];
+    columnName = columnName.lowercaseString;
     //get table schema
     FMResultSet *rs = [self getTableSchema: tableName];
     //check if column is present in table schema
     while ([rs next]) {
-        if ([[[rs stringForColumn:@"name"] lowercaseString] isEqualToString: columnName]) {
+        if ([[rs stringForColumn:@"name"].lowercaseString isEqualToString: columnName]) {
             returnBool = YES;
             break;
         }

@@ -23,7 +23,7 @@
 
 
 - (BOOL) tableExists:(NSString*)tableName;
-- (FMResultSet*) getSchema;
+@property (NS_NONATOMIC_IOSONLY, getter=getSchema, readonly, strong) FMResultSet *schema;
 - (FMResultSet*) getTableSchema:(NSString*)tableName;
 - (BOOL) columnExists:(NSString*)tableName columnName:(NSString*)columnName;
 

@@ -39,7 +39,7 @@
  */
 - (NSString *)sourceAppBundleIdentifier
 {
-    return [self mediaSourceIdentifier];
+    return self.mediaSourceIdentifier;
 }
 
 /**
@@ -109,24 +109,24 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         countFormatMap = @{
-                           [NSNumber numberWithInteger:MLMediaTypeImage] :
+                           @(MLMediaTypeImage) :
                                @{
                                    nonLeaf : @"IMBSkimmableObjectViewController.countFormat",
                                    leaf    : @"IMBImageViewController.countFormat"
                                    },
-                           [NSNumber numberWithInteger:MLMediaTypeMovie] :
+                           @(MLMediaTypeMovie) :
                                @{
                                    nonLeaf : @"IMBSkimmableObjectViewController.countFormat",
                                    leaf    : @"IMBMovieViewController.countFormat"
                                    },
-                           [NSNumber numberWithInteger:MLMediaTypeAudio] :
+                           @(MLMediaTypeAudio) :
                                @{
                                    nonLeaf : @"IMBSkimmableObjectViewController.countFormat",
                                    leaf    : @"IMBAudioViewController.countFormat"
                                    }
                            };
     });
-    NSNumber *mediaType = [NSNumber numberWithInteger:self.mediaType];
+    NSNumber *mediaType = @(self.mediaType);
     NSString *objectType = [self shouldUseChildGroupsAsMediaObjectsForMediaGroup:mediaGroup] ? nonLeaf : leaf;
     NSString *cardinality = plural ? @"Plural" : @"Singular";
     
@@ -149,7 +149,7 @@
     NSMutableDictionary* metadata = [NSMutableDictionary dictionary];
     NSInteger objectCount = NSNotFound;
     if ([self shouldUseChildGroupsAsMediaObjectsForMediaGroup:mediaGroup]) {
-        objectCount = [[mediaGroup childGroups] count];
+        objectCount = mediaGroup.childGroups.count;
     } else {
         // Objects displayed in group are leafs (images and the like)
         
@@ -175,7 +175,7 @@
 - (MLMediaObject *)keyMediaObjectForMediaGroup:(MLMediaGroup *)mediaGroup
 {
         NSArray *mediaObjects = [IMBAppleMediaLibraryPropertySynchronizer mediaObjectsForMediaGroup:mediaGroup];
-        MLMediaObject *mediaObject = [mediaObjects lastObject];
+        MLMediaObject *mediaObject = mediaObjects.lastObject;
     return mediaObject;
 }
 

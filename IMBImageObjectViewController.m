@@ -83,8 +83,8 @@
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSMutableDictionary* classDict = [NSMutableDictionary dictionary];
-	[classDict setObject:[NSNumber numberWithUnsignedInteger:kIMBObjectViewTypeIcon] forKey:@"viewType"];
-	[classDict setObject:[NSNumber numberWithDouble:0.5] forKey:@"iconSize"];
+	classDict[@"viewType"] = @(kIMBObjectViewTypeIcon);
+	classDict[@"iconSize"] = @0.5;
 	[IMBConfig registerDefaultPrefs:classDict forClass:self.class];
 	[pool drain];
 }
@@ -94,24 +94,22 @@
 {
 	[super awakeFromNib];
 		 
-	ibObjectArrayController.searchableProperties = [NSArray arrayWithObjects:
-		@"name",
+	ibObjectArrayController.searchableProperties = @[@"name",
 		@"metadata.Comment",
 		@"metadata.ImagePath",
 		@"metadata.iMediaKeywords",
 		@"preliminaryMetadata.Comment",
 		@"preliminaryMetadata.ImagePath",
-		@"preliminaryMetadata.iMediaKeywords",
-		nil];
+		@"preliminaryMetadata.iMediaKeywords"];
 
-	[[[_tableView tableColumnWithIdentifier:@"name"] headerCell] setStringValue:NSLocalizedStringWithDefaultValue(
+	[[_tableView tableColumnWithIdentifier:@"name"].headerCell setStringValue:NSLocalizedStringWithDefaultValue(
         @"IMBImageViewController.tableColumn.name", 
         nil,
         IMBBundle(), 
         @"Name", 
         @"Column title - should be a short word")];
         
-	[[[_tableView tableColumnWithIdentifier:@"size"] headerCell] setStringValue:NSLocalizedStringWithDefaultValue(
+	[[_tableView tableColumnWithIdentifier:@"size"].headerCell setStringValue:NSLocalizedStringWithDefaultValue(
         @"IMBImageViewController.tableColumn.size", 
         nil,
         IMBBundle(), 

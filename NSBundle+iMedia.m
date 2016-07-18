@@ -17,7 +17,7 @@
 //
 - (NSBundle *) XPCServiceBundleWithIdentifier:(NSString *)inIdentifier
 {
-    NSURL *servicesDirURL = [[self bundleURL] URLByAppendingPathComponent:@"Contents/XPCServices" isDirectory:YES];
+    NSURL *servicesDirURL = [self.bundleURL URLByAppendingPathComponent:@"Contents/XPCServices" isDirectory:YES];
     NSString *serviceDirName = [inIdentifier stringByAppendingPathExtension:@"xpc"];
     NSURL *serviceURL = [servicesDirURL URLByAppendingPathComponent:serviceDirName];
     NSBundle *serviceBundle = nil;
@@ -62,7 +62,7 @@
 	
 	@synchronized(sImageCache)
 	{
-		image = [sImageCache objectForKey:inName];
+		image = sImageCache[inName];
 		
 		if (image == nil)
 		{
@@ -82,7 +82,7 @@
                     [self imb_throwProgrammerErrorExceptionWithReason:errorReason];
                 }
             }
-			if (image) [sImageCache setObject:image forKey:inName];
+			if (image) sImageCache[inName] = image;
 		}
 	}
 	

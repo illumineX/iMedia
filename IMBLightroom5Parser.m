@@ -116,7 +116,7 @@
 	NSNumber *databaseVersion = [self databaseVersion];
 
 	if (databaseVersion != nil) {
-		long databaseVersionLong = [databaseVersion longValue];
+		long databaseVersionLong = databaseVersion.longValue;
 
 		if (databaseVersionLong < 500006) {
 			return NO;
@@ -614,7 +614,7 @@
 
 - (FMDatabase *)libraryDatabase
 {
-	NSString	*databasePath	= [self.mediaSource path];
+	NSString	*databasePath	= (self.mediaSource).path;
 	FMDatabase	*database		= [FMDatabase databaseWithPath:databasePath];
 
 	//	[database setTraceExecution:YES];
@@ -625,8 +625,8 @@
 
 - (FMDatabase *)previewsDatabase
 {
-	NSString	*mainDatabasePath		= [self.mediaSource path];
-	NSString	*rootPath				= [mainDatabasePath stringByDeletingPathExtension];
+	NSString	*mainDatabasePath		= (self.mediaSource).path;
+	NSString	*rootPath				= mainDatabasePath.stringByDeletingPathExtension;
 	NSString	*previewPackagePath		= [[NSString stringWithFormat:@"%@ Previews", rootPath] stringByAppendingPathExtension:@"lrdata"];
 	NSString	*previewDatabasePath	= [[previewPackagePath stringByAppendingPathComponent:@"previews"] stringByAppendingPathExtension:@"db"];
 	FMDatabase	*database				= [FMDatabase databaseWithPath:previewDatabasePath];

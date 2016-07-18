@@ -70,13 +70,13 @@
 + (CGImageRef) imb_CGImageNamed:(NSString*)inName;
 
 // Create a NSBitmapImageRep from NSImage
-- (NSBitmapImageRep *) imb_firstBitmap;	
-- (NSBitmapImageRep *) imb_bitmap;	
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSBitmapImageRep *imb_firstBitmap;	
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSBitmapImageRep *imb_bitmap;	
 
-- (NSAttributedString*) attributedString;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSAttributedString *attributedString;
 
 /**
  @return A CGImage representation of the receiver.
  */
-- (CGImageRef)imb_CGImage;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGImageRef imb_CGImage;
 @end

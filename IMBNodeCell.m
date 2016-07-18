@@ -98,7 +98,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -244,8 +244,8 @@
 
 - (NSSize) cellSize
 {
-    NSSize cellSize = [super cellSize];
-    cellSize.width += (_icon ? [_icon size].width : 0) + 3;
+    NSSize cellSize = super.cellSize;
+    cellSize.width += (_icon ? _icon.size.width : 0) + 3;
     return cellSize;
 }
 
@@ -263,7 +263,7 @@
 {
 	if (_badgeIcon)
 	{
-		NSPoint mouse = [inControlView convertPoint:[inEvent locationInWindow] fromView:nil];
+		NSPoint mouse = [inControlView convertPoint:inEvent.locationInWindow fromView:nil];
 		NSRect badgeRect = [self badgeRectForBounds:inCellFrame flipped:inControlView.isFlipped];
 		
 		if (NSPointInRect(mouse,badgeRect))
@@ -287,23 +287,23 @@
 
 - (BOOL) trackMouse:(NSEvent*)inEvent inRect:(NSRect)inCellFrame ofView:(NSView*)inControlView untilMouseUp:(BOOL)flag
 {
-    [self setControlView:inControlView];
+    self.controlView = inControlView;
  
 	BOOL isFlipped = inControlView.isFlipped;
 	NSRect badgeRect = [self badgeRectForBounds:inCellFrame flipped:isFlipped];
 	BOOL inside = NO;
 	
-    while ([inEvent type] != NSLeftMouseUp)
+    while (inEvent.type != NSLeftMouseUp)
 	{
-        NSPoint point = [inControlView convertPoint:[inEvent locationInWindow] fromView:nil];
+        NSPoint point = [inControlView convertPoint:inEvent.locationInWindow fromView:nil];
         inside = NSMouseInRect(point,badgeRect,isFlipped);
 
-        if ([inEvent type] == NSMouseEntered || [inEvent type] == NSMouseExited)
+        if (inEvent.type == NSMouseEntered || inEvent.type == NSMouseExited)
 		{
             [NSApp sendEvent:inEvent];
         }
 
-        inEvent = [[inControlView window] nextEventMatchingMask:(NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSMouseEnteredMask | NSMouseExitedMask)];
+        inEvent = [inControlView.window nextEventMatchingMask:(NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSMouseEnteredMask | NSMouseExitedMask)];
     }
  
     if (inside)

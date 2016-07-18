@@ -148,7 +148,7 @@ extern NSString* kIMBObjectPasteboardType;
 
 @property (assign) BOOL shouldDrawAdornments;				// YES if border/shadow should be drawn
 @property (assign) BOOL shouldDisableTitle;					// YES if title should be shown as disabled (e.g. not draggable)
-- (NSString*) tooltipString;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *tooltipString;
 
 // Index of the file in the array. Setting this property is optional, but highly recommended as it speeds things up...
 
@@ -156,9 +156,9 @@ extern NSString* kIMBObjectPasteboardType;
 
 // Convenience accessors for the file...
 
-- (NSURL*) URL;												// Converts self.location to a url
-- (NSString*) type;											// Returns UTI of file if possible
-- (NSString*) mediaType;					
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSURL *URL;												// Converts self.location to a url
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *type;											// Returns UTI of file if possible
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *mediaType;					
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ extern NSString* kIMBObjectPasteboardType;
 @property (readonly) BOOL isDraggable;						// Can this object be dragged from iMediaBrowser?
 
 @property (retain) id imageLocation;						// Optional url if different from location (e.g. lores thumbnail)
-- (NSURL*) imageLocationURL;                                // Convert imageLocation to url
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSURL *imageLocationURL;                                // Convert imageLocation to url
 
 
 @end
@@ -200,7 +200,7 @@ extern NSString* kIMBObjectPasteboardType;
 
 - (void) loadThumbnail;	
 - (void) unloadThumbnail;
-- (BOOL) isLoadingThumbnail;
+@property (NS_NONATOMIC_IOSONLY, getter=isLoadingThumbnail, readonly) BOOL loadingThumbnail;
 
 - (void) loadMetadata; 
 - (void) unloadMetadata;
@@ -264,7 +264,7 @@ extern NSString* kIMBObjectPasteboardType;
  */
 - (BOOL) requestBookmarkWithError:(NSError **)error;
 
-- (NSURL*) URLByResolvingBookmark;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSURL *URLByResolvingBookmark;
 
 @end
 

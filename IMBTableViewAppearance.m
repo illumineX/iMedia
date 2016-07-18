@@ -90,7 +90,7 @@
         
         {
             theCell.textColor = [NSColor controlTextColor];
-            if ([theCell isHighlighted])
+            if (theCell.highlighted)
             {
                 if (self.rowTextHighlightAttributes) {
                     [theCell imb_addStringValueAttributes:self.rowTextHighlightAttributes];
@@ -109,13 +109,13 @@
         theCell.icon = theCell.node.icon;
         theCell.badgeIcon = [theCell.node badgeIcon];
         
-        if ([theCell isGroupCell])
+        if (theCell.isGroupCell)
         {
             if (self.sectionHeaderTextAttributes) {
                 [theCell imb_addStringValueAttributes:self.sectionHeaderTextAttributes];
             }
         }
-        if ([theCell isHighlighted])
+        if (theCell.highlighted)
         {
             theCell.badgeIcon = [theCell.node badgeHighlightIcon];
             if (theCell.node.highlightIcon) {
@@ -147,23 +147,23 @@
     }
     NSTableView *myTableView = (NSTableView *)self.view;
     
-    NSUInteger n = [self.backgroundColors count];
+    NSUInteger n = (self.backgroundColors).count;
     NSUInteger i = 0;
     
     CGFloat height = myTableView.rowHeight + myTableView.intercellSpacing.height;
-    NSRect clipRect = [myTableView bounds];
+    NSRect clipRect = myTableView.bounds;
     NSRect drawRect = clipRect;
     drawRect.origin = NSZeroPoint;
     drawRect.size.height = height;
     
-    [[myTableView backgroundColor] set];
+    [myTableView.backgroundColor set];
     NSRectFillUsingOperation(inClipRect,NSCompositingOperationSourceOver);
     
     while ((NSMinY(drawRect) <= NSHeight(clipRect)))
     {
         if (NSIntersectsRect(drawRect,clipRect))
         {
-            [(NSColor*)[self.backgroundColors objectAtIndex:i%n] set];
+            [(NSColor*)(self.backgroundColors)[i%n] set];
             NSRectFillUsingOperation(drawRect,NSCompositingOperationSourceOver);
         }
         
@@ -191,7 +191,7 @@
     NSTableView *myTableView = (NSTableView *)self.view;
     
     NSRange         aVisibleRowIndexes = [myTableView rowsInRect:theClipRect];
-    NSIndexSet *    aSelectedRowIndexes = [myTableView selectedRowIndexes];
+    NSIndexSet *    aSelectedRowIndexes = myTableView.selectedRowIndexes;
     NSUInteger      aRow = aVisibleRowIndexes.location;
     NSUInteger      anEndRow = aRow + aVisibleRowIndexes.length;
     NSGradient *    gradient;
@@ -199,9 +199,9 @@
     
     // if view is focused, use highlight color, otherwise use the out-of-focus highlight color
     
-    if (myTableView == [[myTableView window] firstResponder] &&
-        [[myTableView window] isMainWindow] &&
-        [[myTableView window] isKeyWindow])
+    if (myTableView == myTableView.window.firstResponder &&
+        myTableView.window.mainWindow &&
+        myTableView.window.keyWindow)
     {
         gradient = self.keyWindowHighlightGradient;
     }
@@ -217,7 +217,7 @@
         {
             NSRect aRowRect = NSInsetRect([myTableView rectOfRow:aRow], 0, 1); //first is horizontal, second is vertical
             NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:aRowRect xRadius:0.0 yRadius:0.0]; //6.0
-            [path setLineWidth: 2];
+            path.lineWidth = 2;
             [pathColor set];
             [path stroke];
             

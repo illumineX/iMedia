@@ -103,7 +103,7 @@
 
 -(void)	forwardInvocation: (NSInvocation*)invocation
 {
-    SEL itemAction = [invocation selector];
+    SEL itemAction = invocation.selector;
 
     if( [target respondsToSelector: itemAction] )
 	{

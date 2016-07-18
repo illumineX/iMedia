@@ -130,7 +130,7 @@
 	if (!self.localPath)	// only do the actual download if we don't already have a local path.
 	{
 		NSString* downloadFolderPath = self.downloadFolderPath;
-		NSString* filename = [[self.remoteURL path] lastPathComponent];
+		NSString* filename = (self.remoteURL).path.lastPathComponent;
 		NSString* localFilePath = [downloadFolderPath stringByAppendingPathComponent:filename];
 		
 		NSURLRequestCachePolicy policy = NSURLRequestUseProtocolCachePolicy;
@@ -182,7 +182,7 @@
 
 - (void)download:(NSURLDownload *)download didReceiveResponse:(NSURLResponse *)inResponse
 {
-	[_delegate didGetLength:[inResponse expectedContentLength]];
+	[_delegate didGetLength:inResponse.expectedContentLength];
 }
 
 - (void) download:(NSURLDownload*)inDownload didCreateDestination:(NSString*)inPath

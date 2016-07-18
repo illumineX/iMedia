@@ -127,7 +127,7 @@
 
 // Factory method for instantiating a single parser. Should NOT be over ridden in subclasses..
 
-- (IMBParser*) newParser;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) IMBParser *newParser;
 
 // The following four methods correspond to the ones in the IMBParserProtocol. Here the work is simply 
 // delegated to the appropriate IMBParser instance. Should NOT be overridden in subclasses...
@@ -206,7 +206,7 @@
 
 /**
  */
-- (NSString *)parserIdentifiersDescription;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *parserIdentifiersDescription;
 @end
 
 

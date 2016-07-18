@@ -9,7 +9,7 @@
 
 @implementation FMResultSet
 
-+ (id) resultSetWithStatement:(FMStatement *)statement usingParentDatabase:(FMDatabase*)aDB {
++ (instancetype) resultSetWithStatement:(FMStatement *)statement usingParentDatabase:(FMDatabase*)aDB {
     
     FMResultSet *rs = [[FMResultSet alloc] init];
     
@@ -52,8 +52,7 @@
     
     int columnIdx = 0;
     for (columnIdx = 0; columnIdx < columnCount; columnIdx++) {
-        [columnNameToIndexMap setObject:[NSNumber numberWithInt:columnIdx]
-                                 forKey:[[NSString stringWithUTF8String:sqlite3_column_name(statement.statement, columnIdx)] lowercaseString]];
+        columnNameToIndexMap[@(sqlite3_column_name(statement.statement, columnIdx)).lowercaseString] = @(columnIdx);
     }
     columnNamesSetup = YES;
 }
@@ -69,9 +68,9 @@
         
         // check for a null row
         if (c) {
-            NSString *s = [NSString stringWithUTF8String:c];
+            NSString *s = @(c);
             
-            [object setValue:s forKey:[NSString stringWithUTF8String:sqlite3_column_name(statement.statement, columnIdx)]];
+            [object setValue:s forKey:@(sqlite3_column_name(statement.statement, columnIdx))];
         }
     }
 }
@@ -136,7 +135,7 @@
         [self setupColumnNames];
     }
     
-    return ([columnNameToIndexMap objectForKey:[columnName lowercaseString]]) != nil;
+    return (columnNameToIndexMap[columnName.lowercaseString]) != nil;
 }
 
 - (int) columnIndexForName:(NSString*)columnName {
@@ -145,12 +144,12 @@
         [self setupColumnNames];
     }
     
-    columnName = [columnName lowercaseString];
+    columnName = columnName.lowercaseString;
     
-    NSNumber *n = [columnNameToIndexMap objectForKey:columnName];
+    NSNumber *n = columnNameToIndexMap[columnName];
     
     if (n) {
-        return [n intValue];
+        return n.intValue;
     }
     
     NSLog(@"Warning: I could not find the column named '%@'.", columnName);
@@ -213,7 +212,7 @@
         return nil;
     }
     
-    return [NSString stringWithUTF8String:c];
+    return @(c);
 }
 
 - (NSString*) stringForColumn:(NSString*)columnName {
@@ -296,7 +295,7 @@
 
 // returns autoreleased NSString containing the name of the column in the result set
 - (NSString*) columnNameForIndex:(int)columnIdx {
-	return [NSString stringWithUTF8String: sqlite3_column_name(statement.statement, columnIdx)];
+	return @(sqlite3_column_name(statement.statement, columnIdx));
 }
 
 - (void)setParentDB:(FMDatabase *)newDb {

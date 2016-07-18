@@ -82,7 +82,7 @@ const NSString* kSearchStringContext = @"searchString";
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -116,15 +116,15 @@ const NSString* kSearchStringContext = @"searchString";
 
 - (IBAction) search:(id)inSender
 {
-	[self setSearchString:[inSender stringValue]];
+	self.searchString = [inSender stringValue];
 }
 
 
 - (IBAction) resetSearch:(id)inSender
 {
-	if ([_searchString length])
+	if (_searchString.length)
 	{
-		[ibSearchField setStringValue:@""];
+		ibSearchField.stringValue = @"";
 		[self search:ibSearchField];
 	}	
 }
@@ -135,7 +135,7 @@ const NSString* kSearchStringContext = @"searchString";
     if (inContext == (void*)kSearchStringContext)
 	{
 		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(rearrangeObjects) object:nil];
-		[self performSelector:@selector(rearrangeObjects) withObject:nil afterDelay:0.0 inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+		[self performSelector:@selector(rearrangeObjects) withObject:nil afterDelay:0.0 inModes:@[NSRunLoopCommonModes]];
 	}
 	else
 	{
@@ -168,7 +168,7 @@ const NSString* kSearchStringContext = @"searchString";
 	// If we have a filterPredicate, then the array is already filtered at this point. All we need 
 	// to do is replace the objects with proxies...
 	
-	if ([self filterPredicate])
+	if (self.filterPredicate)
 	{
 		NSArray* arrangedObjects = [super arrangeObjects:inObjects];
 		if (!hasProxyForObject) return arrangedObjects;
@@ -190,7 +190,7 @@ const NSString* kSearchStringContext = @"searchString";
 		BOOL searching = _searchString != nil && 
 						 _searchableProperties != nil &&  
 						 ![_searchString isEqualToString:@""] &&
-						 [_searchableProperties count] > 0;
+						 _searchableProperties.count > 0;
 		
 		// Create array of objects that match search string.
 		// Also add any newly-created object unconditionally:
@@ -198,7 +198,7 @@ const NSString* kSearchStringContext = @"searchString";
 		// (b) The user will see newly-added objects even if they don't match the search term.
 		// (c) The search is not case-sensitive.
 		
-		NSMutableArray* matchedObjects = [NSMutableArray arrayWithCapacity:[inObjects count]];
+		NSMutableArray* matchedObjects = [NSMutableArray arrayWithCapacity:inObjects.count];
 /*
 		// Let's try to use Spotlight to help us if at all possible.  It will be a lot faster on large data sets.
 		// The trick is to figure out how to combine what the person searches for and the other constraints that we

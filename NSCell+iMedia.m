@@ -60,9 +60,9 @@
 
 - (void) imb_setStringValueAttributes:(NSDictionary *)inAttributes
 {
-    NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithString:[self stringValue]
+    NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithString:self.stringValue
                                                                    attributes:inAttributes] autorelease];
-    [self setAttributedStringValue:attrStr];
+    self.attributedStringValue = attrStr;
 }
 
 
@@ -70,7 +70,7 @@
 
 - (void) imb_addStringValueAttributes:(NSDictionary *)inAttributes
 {
-    NSDictionary *currentAttributes = [[self attributedStringValue] attributesAtIndex:0 effectiveRange:NULL];
+    NSDictionary *currentAttributes = [self.attributedStringValue attributesAtIndex:0 effectiveRange:NULL];
     NSMutableDictionary *effectiveAttributes = [NSMutableDictionary dictionaryWithDictionary:currentAttributes];
     [effectiveAttributes addEntriesFromDictionary:inAttributes];
     

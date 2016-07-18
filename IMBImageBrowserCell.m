@@ -103,7 +103,7 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -212,13 +212,13 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
 	
 	if (_imbShouldDisableTitle)
 	{
-		[attributes1 setObject:[NSColor colorWithCalibratedWhite:0.0 alpha:0.4] forKey:NSForegroundColorAttributeName];
-		[attributes2 setObject:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5] forKey:NSForegroundColorAttributeName];
+		attributes1[NSForegroundColorAttributeName] = [NSColor colorWithCalibratedWhite:0.0 alpha:0.4];
+		attributes2[NSForegroundColorAttributeName] = [NSColor colorWithCalibratedWhite:1.0 alpha:0.5];
 	}
 	else
 	{
-		[attributes1 setObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
-		[attributes2 setObject:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
+		attributes1[NSForegroundColorAttributeName] = [NSColor blackColor];
+		attributes2[NSForegroundColorAttributeName] = [NSColor whiteColor];
 	}
 
 	if (IMBRunningOnSnowLeopardOrNewer())
@@ -270,16 +270,16 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
 		
 		//set a background color
 		color = CGColorCreate(colorSpace, fillComponents);
-		[placeHolderLayer setBackgroundColor:color];
+		placeHolderLayer.backgroundColor = color;
 		CFRelease(color);
 		
 		//set a stroke color
 		color = CGColorCreate(colorSpace, strokeComponents);
-		[placeHolderLayer setBorderColor:color];
+		placeHolderLayer.borderColor = color;
 		CFRelease(color);
 		
-		[placeHolderLayer setBorderWidth:2.0];
-		[placeHolderLayer setCornerRadius:10];
+		placeHolderLayer.borderWidth = 2.0;
+		placeHolderLayer.cornerRadius = 10;
 		CFRelease(colorSpace);
         
         [layer addSublayer:placeHolderLayer];
@@ -304,7 +304,7 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
             [placeHolderLayer addSublayer:stampLayer];
             if ([stampLayer respondsToSelector:@selector(setContentsScale:)])
             {
-                stampLayer.contentsScale = [[[self imageBrowserView] window] backingScaleFactor];
+                stampLayer.contentsScale = [self imageBrowserView].window.backingScaleFactor;
             }
             NSString *stampText = NSLocalizedStringWithDefaultValue(@"IMBObjectViewController.thumbnail.loading", nil, IMBBundle(), @"Loading...", @"Loading text shown on placeholder image");
             stampLayer.string = stampText;
@@ -443,12 +443,12 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
     
     // Wrap and center the text
     NSMutableParagraphStyle *paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
-    [paragraphStyle setLineBreakMode:NSLineBreakByWordWrapping];
-    [paragraphStyle setAlignment:NSCenterTextAlignment];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraphStyle.alignment = NSCenterTextAlignment;
     
     NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
-    [attrs setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-    [attrs setObject:[NSFont systemFontOfSize:12.0f] forKey:NSFontAttributeName];
+    attrs[NSParagraphStyleAttributeName] = paragraphStyle;
+    attrs[NSFontAttributeName] = [NSFont systemFontOfSize:12.0f];
     
     NSRect drawRect = NSMakeRect(20,
                                  20, //-(self.imageFrame.size.height + padding),
@@ -476,7 +476,7 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
     if (inBadge)
     {
         badgeLayer = [CALayer layer];
-        [badgeLayer setContents:(id)inBadge];
+        badgeLayer.contents = (id)inBadge;
         
         CGFloat size = 18.0;
         CGFloat offset = 4.0;
@@ -510,7 +510,7 @@ extern NSString *const IKImageBrowserCellPlaceHolderLayer __attribute__((weak_im
         case kIMBResourceIsAccessibleSecurityScoped:
         {
             IMBObjectViewController* objectViewController = (IMBObjectViewController*) [[self imageBrowserView] delegate];
-            id <IMBObjectViewControllerDelegate> delegate = [objectViewController delegate];
+            id <IMBObjectViewControllerDelegate> delegate = objectViewController.delegate;
             
             if ([delegate respondsToSelector:@selector(objectViewController:badgeForObject:)])
             {

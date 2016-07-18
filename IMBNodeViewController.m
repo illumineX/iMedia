@@ -125,7 +125,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
         if ([controller.objectViewController isKindOfClass:[IMBObjectViewController class]]) {
             IMBObjectViewController *objectViewController = (IMBObjectViewController *)controller.objectViewController;
-            NSClipView *objectClipView = [[[objectViewController selectedObjectView] enclosingScrollView] contentView];
+            NSClipView *objectClipView = [objectViewController selectedObjectView].enclosingScrollView.contentView;
             self.objectViewRelativeScrollPosition = objectClipView.bounds.origin.y / objectClipView.documentRect.size.height;
         }
     }
@@ -161,8 +161,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
         {
             IMBObjectViewController *objectViewController = (IMBObjectViewController *)controller.objectViewController;
             NSView *objectView = [objectViewController selectedObjectView];
-            NSScrollView *scrollView = [objectView enclosingScrollView];
-            NSClipView *objectClipView = [scrollView contentView];
+            NSScrollView *scrollView = objectView.enclosingScrollView;
+            NSClipView *objectClipView = scrollView.contentView;
             
             CGFloat maxScrollPosition = objectClipView.documentRect.size.height - objectClipView.frame.size.height;
             CGFloat desiredScrollPosition = self.objectViewRelativeScrollPosition * objectClipView.documentRect.size.height;
@@ -228,23 +228,21 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
-	NSArray* expandedNodeIdentifiers = [NSArray arrayWithObjects:
-		@"group://LIBRARIES",
+	NSArray* expandedNodeIdentifiers = @[@"group://LIBRARIES",
 		@"group://FOLDERS",
 		@"group://SEARCHES",
 		@"group://INTERNET",
-		@"group://DEVICES",
-		nil];
+		@"group://DEVICES"];
 
 	NSMutableDictionary* stateDict = [NSMutableDictionary dictionary];
-	[stateDict setObject:expandedNodeIdentifiers forKey:@"expandedNodeIdentifiers"];
+	stateDict[@"expandedNodeIdentifiers"] = expandedNodeIdentifiers;
 
 	NSMutableDictionary* classDict = [NSMutableDictionary dictionaryWithDictionary:[IMBConfig prefsForClass:self.class]];
-	[classDict setObject:stateDict forKey:kIMBMediaTypeImage];
-	[classDict setObject:stateDict forKey:kIMBMediaTypeAudio];
-	[classDict setObject:stateDict forKey:kIMBMediaTypeMovie];
-	[classDict setObject:stateDict forKey:kIMBMediaTypeLink];
-	[classDict setObject:stateDict forKey:kIMBMediaTypeContact];
+	classDict[kIMBMediaTypeImage] = stateDict;
+	classDict[kIMBMediaTypeAudio] = stateDict;
+	classDict[kIMBMediaTypeMovie] = stateDict;
+	classDict[kIMBMediaTypeLink] = stateDict;
+	classDict[kIMBMediaTypeContact] = stateDict;
 
 	[IMBConfig registerDefaultPrefs:classDict forClass:self.class];
 	
@@ -263,7 +261,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 			sRegisteredNodeViewControllerClasses = [[NSMutableDictionary alloc] init];
 		}
 		
-		[sRegisteredNodeViewControllerClasses setObject:inNodeViewControllerClass forKey:inMediaType];
+		sRegisteredNodeViewControllerClasses[inMediaType] = inNodeViewControllerClass;
 		
 		[pool drain];
 	}
@@ -275,13 +273,13 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	// Create a viewController of appropriate class type...
 	
 	NSString* mediaType = inLibraryController.mediaType;
-	Class nodeViewControllerClass = [sRegisteredNodeViewControllerClasses objectForKey:mediaType];
+	Class nodeViewControllerClass = sRegisteredNodeViewControllerClasses[mediaType];
 	IMBNodeViewController* controller = [[[nodeViewControllerClass alloc] initWithNibName:[self nibName] bundle:[self bundle]] autorelease];
 	controller.delegate = inDelegate;
 	
 	// Load the view *before* setting the libraryController, so that outlets are set before we load the preferences...
 
-	[controller view];										
+	controller.view;										
 	controller.libraryController = inLibraryController;		
 	return controller;
 }
@@ -305,7 +303,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithNibName:(NSString*)inNibName bundle:(NSBundle*)inBundle
+- (instancetype) initWithNibName:(NSString*)inNibName bundle:(NSBundle*)inBundle
 {
 	if (self = [super initWithNibName:inNibName bundle:inBundle])
 	{
@@ -371,17 +369,17 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 	// Set the cell class on the outline view...
 	
-	NSArray* columns = [ibNodeOutlineView tableColumns];
+	NSArray* columns = ibNodeOutlineView.tableColumns;
 	
-	if ([columns count] > 0)
+	if (columns.count > 0)
 	{
-		NSTableColumn* column = [[ibNodeOutlineView tableColumns] objectAtIndex:0];
+		NSTableColumn* column = ibNodeOutlineView.tableColumns[0];
 		IMBNodeCell* cell = [[[IMBNodeCell alloc] init] autorelease];	
-		[column setDataCell:cell];	
+		column.dataCell = cell;	
 	}
 
-	[ibNodeOutlineView setTarget:self];
-	[ibNodeOutlineView setAction:@selector(outlineViewWasClicked:)];
+	ibNodeOutlineView.target = self;
+	ibNodeOutlineView.action = @selector(outlineViewWasClicked:);
 		
 	// Build the initial contents of the node popup...
 	
@@ -410,28 +408,28 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	// Register the the outline view as a dragging destination if we want to accept new folders
 	
-	if ([[_libraryController delegate] respondsToSelector:@selector(allowsFolderDropForMediaType:)])
+	if ([_libraryController.delegate respondsToSelector:@selector(allowsFolderDropForMediaType:)])
 	{
 		// This method returns a BOOL, and seeing as the delegate doesn't have a protocol and we don't
 		// have one to cast to, we can't use performSelector.., so will use an invocation.
 		
 		BOOL allowsDrop;
 		NSString* mediaType = self.mediaType;
-		NSMethodSignature* methodSignature = [[_libraryController delegate] methodSignatureForSelector:@selector(allowsFolderDropForMediaType:)]; 
+		NSMethodSignature* methodSignature = [_libraryController.delegate methodSignatureForSelector:@selector(allowsFolderDropForMediaType:)]; 
 		NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-		[invocation setSelector:@selector(allowsFolderDropForMediaType:)];
+		invocation.selector = @selector(allowsFolderDropForMediaType:);
 		[invocation setArgument:&mediaType atIndex:2]; // First actual arg
-		[invocation invokeWithTarget:[_libraryController delegate]];
+		[invocation invokeWithTarget:_libraryController.delegate];
 		[invocation getReturnValue:&allowsDrop];
 		
 		if (allowsDrop)
 		{
-			[ibNodeOutlineView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+			[ibNodeOutlineView registerForDraggedTypes:@[NSFilenamesPboardType]];
 		}
 	} 
 	else
 	{
-		[ibNodeOutlineView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+		[ibNodeOutlineView registerForDraggedTypes:@[NSFilenamesPboardType]];
 	}
 	
 }
@@ -491,7 +489,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
                                                                          create:NO
                                                                           error:NULL];
         
-        picturesFolder = [picturesFolder URLByResolvingSymlinksInPath]; // tends to be a symlink when sandboxed
+        picturesFolder = picturesFolder.URLByResolvingSymlinksInPath; // tends to be a symlink when sandboxed
         
         if (![picturesFolder getResourceValue:&result forKey:NSURLEffectiveIconKey error:NULL] || result == nil)
         {
@@ -525,14 +523,14 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 - (NSMutableDictionary*) _preferences
 {
 	NSDictionary* classDict = [IMBConfig prefsForClass:self.class];
-	return [NSMutableDictionary dictionaryWithDictionary:[classDict objectForKey:self.mediaType]];
+	return [NSMutableDictionary dictionaryWithDictionary:classDict[self.mediaType]];
 }
 
 
 - (void) _setPreferences:(NSMutableDictionary*)inDict
 {
 	NSMutableDictionary* classDict = [NSMutableDictionary dictionaryWithDictionary:[IMBConfig prefsForClass:self.class]];
-	if (inDict) [classDict setObject:inDict forKey:self.mediaType];
+	if (inDict) classDict[self.mediaType] = inDict;
 	[IMBConfig setPrefs:classDict forClass:self.class];
 }
 
@@ -543,12 +541,12 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	if (self.expandedNodeIdentifiers) 
 	{
-		[stateDict setObject:self.expandedNodeIdentifiers forKey:@"expandedNodeIdentifiers"];
+		stateDict[@"expandedNodeIdentifiers"] = self.expandedNodeIdentifiers;
 	}
 	
 	if (self.selectedNodeIdentifier)
 	{
-		[stateDict setObject:self.selectedNodeIdentifier forKey:@"selectedNodeIdentifier"];
+		stateDict[@"selectedNodeIdentifier"] = self.selectedNodeIdentifier;
 	}
 	
 	// Please note: Due to lack of position getter in NSSplitView we cannot set splitviewPosition here, 
@@ -562,10 +560,10 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 {
 	NSMutableDictionary* stateDict = [self _preferences];
 	
-	self.expandedNodeIdentifiers = [NSMutableArray arrayWithArray:[stateDict objectForKey:@"expandedNodeIdentifiers"]];
-	self.selectedNodeIdentifier = [stateDict objectForKey:@"selectedNodeIdentifier"];
+	self.expandedNodeIdentifiers = [NSMutableArray arrayWithArray:stateDict[@"expandedNodeIdentifiers"]];
+	self.selectedNodeIdentifier = stateDict[@"selectedNodeIdentifier"];
 	
-	float splitviewPosition = [[stateDict objectForKey:@"splitviewPosition"] floatValue];
+	float splitviewPosition = [stateDict[@"splitviewPosition"] floatValue];
 	if (splitviewPosition > 0.0) [ibSplitView setPosition:splitviewPosition ofDividerAtIndex:0];
 }
 
@@ -624,7 +622,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
         // any object accross the item's row (NSOutlineView implements NSDraggingDestination and tries to
         // expand any expandable node that is met while dragging).
         
-		return ![node isLeafNode] && (node.accessibility == kIMBResourceIsAccessible);
+		return !node.isLeafNode && (node.accessibility == kIMBResourceIsAccessible);
 	}
 }
 
@@ -687,7 +685,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 		NSURL *url = [NSURL fileURLWithPath:path isDirectory:YES];
         
         NSNumber *isDirectory;
-        if ([url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:NULL] && [isDirectory boolValue])
+        if ([url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:NULL] && isDirectory.boolValue)
 		{
             if (![IMBConfig isLibraryAtURL:url])
 			{
@@ -782,8 +780,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) outlineViewItemWillExpand:(NSNotification*)inNotification
 {
-	id item = [[inNotification userInfo] objectForKey:@"NSObject"];
-    NSOutlineView *outlineView = [inNotification object];
+	id item = inNotification.userInfo[@"NSObject"];
+    NSOutlineView *outlineView = inNotification.object;
 	IMBNode* node = (IMBNode*)item;
 	
 	if (node.accessibility == kIMBResourceIsAccessible)
@@ -864,7 +862,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 {
 	if (!_isRestoringState && !self.libraryController.isReplacingNode)
 	{
-		NSInteger row = [ibNodeOutlineView selectedRow];
+		NSInteger row = ibNodeOutlineView.selectedRow;
 		IMBNode* newNode = row>=0 ? [ibNodeOutlineView nodeAtRow:row] : nil;
 
         if (row >=0 && !self.navigationController.goingBackOrForward) {
@@ -901,7 +899,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 		// Install the object view controller...
 		
 		[self installObjectViewForNode:newNode];
-        [(IMBObjectViewController*)self.objectViewController setCurrentNode:newNode];
+        ((IMBObjectViewController*)self.objectViewController).currentNode = newNode;
         
         if (row >=0 && !self.navigationController.goingBackOrForward) {
             IMBNodeViewControllerState *state = [IMBNodeViewControllerState stateOfController:self];
@@ -932,7 +930,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (IBAction) outlineViewWasClicked:(id)inSender
 {
-	NSInteger row = [ibNodeOutlineView clickedRow];
+	NSInteger row = ibNodeOutlineView.clickedRow;
 	NSRect rect = [ibNodeOutlineView badgeRectForRow:row];
 	IMBNode* newNode = row>=0 ? [ibNodeOutlineView nodeAtRow:row] : nil;
 		
@@ -992,17 +990,17 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	}
 	else if ([node respondsToSelector:@selector(license)])
 	{
-		IMBFlickrNodeLicense license = [((IMBFlickrNode *)node) license];
+		IMBFlickrNodeLicense license = ((IMBFlickrNode *)node).license;
 		if (license < IMBFlickrNodeLicense_Undefined) license = IMBFlickrNodeLicense_Undefined;
 		if (license > IMBFlickrNodeLicense_CommercialUse) license = IMBFlickrNodeLicense_CommercialUse;
 		// These are file names.  Ideally we should put localized AX Descriptions on them.
-		NSArray *names = [NSArray arrayWithObjects:@"any", @"CC", @"remix", @"commercial", nil];
-		NSString *fileName = [names objectAtIndex:license];
+		NSArray *names = @[@"any", @"CC", @"remix", @"commercial"];
+		NSString *fileName = names[license];
 		
 		if (license)
 		{
 			NSImage *image = [[[NSImage alloc] initByReferencingFile:[IMBBundle() pathForResource:fileName ofType:@"pdf"]] autorelease];
-			[image setSize:NSMakeSize(16.0,16.0)];
+			image.size = NSMakeSize(16.0,16.0);
 			cell.badgeIcon = image;
 		}
 		else
@@ -1053,17 +1051,17 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
         {
             NSMutableDictionary* effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:textAttributes];
             NSMutableParagraphStyle* paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
-            [paragraphStyle setAlignment:NSRightTextAlignment];
-            [effectiveTextAttributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+            paragraphStyle.alignment = NSRightTextAlignment;
+            effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
             
             // If we use default appearance don't mess with background style
             // (would otherwise void implicit highlight color of disclosure triangle)
             // But if we use some other appearance we want to apply another color to triangle.
             // For some reason we have to set the cell's background style for the color to have any effect.
             
-            NSNumber* isDefaultAppearanceNumber = [textAttributes objectForKey:IMBIsDefaultAppearanceAttributeName];
-            if ((!isDefaultAppearanceNumber || ![isDefaultAppearanceNumber boolValue]) &&
-                [textAttributes objectForKey:NSForegroundColorAttributeName])
+            NSNumber* isDefaultAppearanceNumber = textAttributes[IMBIsDefaultAppearanceAttributeName];
+            if ((!isDefaultAppearanceNumber || !isDefaultAppearanceNumber.boolValue) &&
+                textAttributes[NSForegroundColorAttributeName])
             {
                 // This causes the foreground color of the attributed string to be used for triangle
                 // (for whatever reason)
@@ -1280,7 +1278,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	inPosition = floorf(inPosition);
 
 	NSMutableDictionary* stateDict = [self _preferences];
-	[stateDict setObject:[NSNumber numberWithFloat:inPosition] forKey:@"splitviewPosition"];
+	stateDict[@"splitviewPosition"] = [NSNumber numberWithFloat:inPosition];
 	[self _setPreferences:stateDict];
 
 	return inPosition;
@@ -1293,18 +1291,18 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) splitView:(NSSplitView*)inSplitView resizeSubviewsWithOldSize:(NSSize)inOldSize
 {
-	if ([inSplitView.subviews count] >= 2)
+	if ((inSplitView.subviews).count >= 2)
 	{
-		NSView* topView = [[inSplitView subviews] objectAtIndex:0];  
-		NSView* bottomView = [[inSplitView subviews] objectAtIndex:1];
-		float dividerThickness = [inSplitView dividerThickness]; 
+		NSView* topView = inSplitView.subviews[0];  
+		NSView* bottomView = inSplitView.subviews[1];
+		float dividerThickness = inSplitView.dividerThickness; 
 		
-		NSRect newFrame = [inSplitView frame];   
+		NSRect newFrame = inSplitView.frame;   
 						
-		NSRect topFrame = [topView frame];                    
+		NSRect topFrame = topView.frame;                    
 		topFrame.size.width = newFrame.size.width;
 	   
-		NSRect bottomFrame = [bottomView frame];    
+		NSRect bottomFrame = bottomView.frame;    
 		bottomFrame.origin = NSMakePoint(0,0);  
 		bottomFrame.size.height = newFrame.size.height - topFrame.size.height - dividerThickness;
 		bottomFrame.size.width = newFrame.size.width;          
@@ -1321,8 +1319,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 			topFrame.size.height -= bottomOverflow;
 		}
 	 
-		[topView setFrame:topFrame];
-		[bottomView setFrame:bottomFrame];
+		topView.frame = topFrame;
+		bottomView.frame = bottomFrame;
 	}
 }
 
@@ -1332,11 +1330,11 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) splitViewDidResizeSubviews:(NSNotification*)inNotification
 {
-	NSRect frame = [[ibNodeOutlineView enclosingScrollView] frame];
+	NSRect frame = ibNodeOutlineView.enclosingScrollView.frame;
 	BOOL collapsed = frame.size.height < 52.0;
 	
-	[[ibNodeOutlineView enclosingScrollView] setHidden:collapsed];
-	[ibNodePopupButton setHidden:!collapsed];
+	ibNodeOutlineView.enclosingScrollView.hidden = collapsed;
+	ibNodePopupButton.hidden = !collapsed;
 }
 
 
@@ -1354,7 +1352,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 {
 	NSMutableArray* expandedNodeIdentifiers = [NSMutableArray array];
 	
-	NSInteger n = [ibNodeOutlineView numberOfRows];
+	NSInteger n = ibNodeOutlineView.numberOfRows;
 	
 	for (NSInteger i=0; i<n; i++)
 	{
@@ -1388,7 +1386,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) _nodesWillChange
 {
-    _nodeOutlineViewSavedVisibleRectOrigin = [ibNodeOutlineView visibleRect].origin;
+    _nodeOutlineViewSavedVisibleRectOrigin = ibNodeOutlineView.visibleRect.origin;
 	
 	// Cancel any scheduled request to call this method. We just did, so this isn't necessary anymore...
 	
@@ -1421,9 +1419,9 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	NSMutableArray* expandedNodeIdentifiers = [NSMutableArray arrayWithArray:self.expandedNodeIdentifiers];
 	
-	while ((count = [expandedNodeIdentifiers count]))
+	while ((count = expandedNodeIdentifiers.count))
 	{
-		rows = [ibNodeOutlineView numberOfRows];
+		rows = ibNodeOutlineView.numberOfRows;
 		
 		for (i=0; i<rows; i++)
 		{
@@ -1438,7 +1436,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 			}
 		}
 		
-		if ([expandedNodeIdentifiers count] == count)
+		if (expandedNodeIdentifiers.count == count)
 		{
 			break;
 		}
@@ -1450,7 +1448,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	NSString* selectedNodeIdentifier = self.selectedNodeIdentifier;
 	
-	rows = [ibNodeOutlineView numberOfRows];
+	rows = ibNodeOutlineView.numberOfRows;
 	BOOL found = NO;
 	
 	for (i=0; i<rows; i++)
@@ -1525,7 +1523,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
             }
 			
 			[self installObjectViewForNode:inNode];
-			[(IMBObjectViewController*)self.objectViewController setCurrentNode:inNode];
+			((IMBObjectViewController*)self.objectViewController).currentNode = inNode;
             self.selectedNodeIdentifier = inNode.identifier;
 		}
 	}	
@@ -1543,7 +1541,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (IMBNode*) selectedNode
 {
-	NSInteger row = [ibNodeOutlineView selectedRow];
+	NSInteger row = ibNodeOutlineView.selectedRow;
 	
 	if (row != NSNotFound)
 	{
@@ -1561,7 +1559,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 - (void) expandSelectedNode
 {
-	NSInteger row = [ibNodeOutlineView selectedRow];
+	NSInteger row = ibNodeOutlineView.selectedRow;
 
 	if (row != NSNotFound)
 	{
@@ -1604,7 +1602,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 		target:self 
 		addSeparators:YES];
 		
-	[ibNodePopupButton setMenu:menu];
+	ibNodePopupButton.menu = menu;
 }
 
 
@@ -1635,8 +1633,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) _syncPopupMenuSelection
 {
-	NSMenu* menu = [ibNodePopupButton menu];
-	NSInteger n = [menu numberOfItems];
+	NSMenu* menu = ibNodePopupButton.menu;
+	NSInteger n = menu.numberOfItems;
 	
 	for (NSInteger i=0; i<n; i++)
 	{
@@ -1689,7 +1687,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 	if (result == NSFileHandlingPanelOKButton)
 	{
-		NSArray* urls = [panel URLs];
+		NSArray* urls = panel.URLs;
 		for (NSURL* url in urls)
 		{
 			[[NSNotificationCenter defaultCenter]
@@ -1761,8 +1759,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 {
     if (IMBRunningOnLionOrNewer())
     {
-        NSString* title = [[inNode.error userInfo] objectForKey:@"title"];
-        NSString* description = [[inNode.error userInfo] objectForKey:NSLocalizedDescriptionKey];
+        NSString* title = (inNode.error).userInfo[@"title"];
+        NSString* description = (inNode.error).userInfo[NSLocalizedDescriptionKey];
         NSString* ok = @"   OK   ";
 
         IMBAlertPopover* alert = [IMBAlertPopover warningPopoverWithHeader:title body:description footer:nil];
@@ -1807,7 +1805,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 			@"Menu item in context menu of outline view");
 
 		item = [[NSMenuItem alloc] initWithTitle:title action:@selector(addNode:) keyEquivalent:@""];
-		[item setTarget:self];
+		item.target = self;
 		[menu addItem:item];
 		[item release];
 	}
@@ -1821,7 +1819,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 			@"Menu item in context menu of outline view");
 
 		item = [[NSMenuItem alloc] initWithTitle:title action:@selector(removeNode:) keyEquivalent:@""];
-		[item setTarget:self];
+		item.target = self;
 		[menu addItem:item];
 		[item release];
 	}
@@ -1835,7 +1833,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 			@"Menu item in context menu of outline view");
 
 		item = [[NSMenuItem alloc] initWithTitle:title action:@selector(reloadNode:) keyEquivalent:@""];
-		[item setTarget:self];
+		item.target = self;
 		[menu addItem:item];
 		[item release];
 	}
@@ -1901,8 +1899,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	// Remember current view type and icon size...
 	
 	BOOL shouldRestoreAppearance = self.objectViewController != nil;
-	NSUInteger viewType = [(IMBObjectViewController*)self.objectViewController viewType];
-	double iconSize = [(IMBObjectViewController*)self.objectViewController iconSize];
+	NSUInteger viewType = ((IMBObjectViewController*)self.objectViewController).viewType;
+	double iconSize = ((IMBObjectViewController*)self.objectViewController).iconSize;
 	
 	// If necessary swap standard and custom view controllers. If nothing has changed we can bail out early 
 	// and avoid the expensive work below...
@@ -1927,8 +1925,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	self.footerViewController = newFooterViewController;
 	if (oldFooterViewController != newFooterViewController) didSwapViewControllers = YES;
 
-	id delegate = [(IMBObjectViewController*)self.standardObjectViewController delegate];
-	[(IMBObjectViewController*)newObjectViewController setDelegate:delegate];
+	id delegate = ((IMBObjectViewController*)self.standardObjectViewController).delegate;
+	((IMBObjectViewController*)newObjectViewController).delegate = delegate;
 	
 	if (!didSwapViewControllers)
 	{
@@ -1940,8 +1938,8 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	if (shouldRestoreAppearance)
 	{
-		[(IMBObjectViewController*)self.objectViewController setViewType:viewType];
-		[(IMBObjectViewController*)self.objectViewController setIconSize:iconSize];
+		((IMBObjectViewController*)self.objectViewController).viewType = viewType;
+		((IMBObjectViewController*)self.objectViewController).iconSize = iconSize;
 	}
 	
 	// Remove all currently installed object views...
@@ -1962,7 +1960,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	if (self.headerViewController != nil)
 	{
-		headerView = [self.headerViewController view];
+		headerView = (self.headerViewController).view;
 		headerHeight = headerView.frame.size.height;
 	}
 
@@ -1981,7 +1979,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	if (self.footerViewController != nil)
 	{
-		footerView = [self.footerViewController view];
+		footerView = (self.footerViewController).view;
 		footerHeight = footerView.frame.size.height;
 	}
 	
@@ -2003,7 +2001,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 	if (self.objectViewController != nil && shouldDisplayObjectView)
 	{
-		objectView = [self.objectViewController view];
+		objectView = (self.objectViewController).view;
 
 		NSRect objectFrame = ibObjectContainerView.frame;
 		objectFrame.size.height = totalHeight - headerHeight - footerHeight;
@@ -2012,7 +2010,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 		if (objectView)
 		{
-			[objectView setFrame:[ibObjectContainerView bounds]];
+			objectView.frame = ibObjectContainerView.bounds;
 			[ibObjectContainerView addSubview:objectView];
 		}
 		
@@ -2096,7 +2094,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) _setView:(NSView*)inView needsDisplay:(BOOL)inFlag
 {
-	[inView setNeedsDisplay:inFlag];
+	inView.needsDisplay = inFlag;
 
 	for (NSView* subview in inView.subviews)
 	{
@@ -2132,7 +2130,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (NSSize) minimumViewSize
 {
-	CGFloat minimumHeight = [self minimumLibraryViewHeight] + [self minimumObjectViewHeight] + [ibSplitView dividerThickness];
+	CGFloat minimumHeight = [self minimumLibraryViewHeight] + [self minimumObjectViewHeight] + ibSplitView.dividerThickness;
 	return NSMakeSize([self minimumNodeViewWidth], minimumHeight);
 }
 
@@ -2184,7 +2182,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 	
 - (void) __revealNode:(IMBNode*)inNode
 {
-	IMBNode* parentNode = [inNode parentNode];
+	IMBNode* parentNode = inNode.parentNode;
 	
 	if (parentNode)
 	{
@@ -2197,7 +2195,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (NSInteger) _revealNode:(IMBNode*)inNode
 {
-	IMBNode* parentNode = [inNode parentNode];
+	IMBNode* parentNode = inNode.parentNode;
 	
 	if (parentNode)
 	{
@@ -2213,7 +2211,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) _revealNodeWithIdentifier:(NSNotification*)inNotification
 {
-	NSString* identifier = (NSString*) [inNotification object];
+	NSString* identifier = (NSString*) inNotification.object;
 	
 	if (identifier)
 	{
@@ -2244,7 +2242,7 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) _selectNodeWithIdentifier:(NSNotification*)inNotification
 {
-	NSString* identifier = (NSString*) [inNotification object];
+	NSString* identifier = (NSString*) inNotification.object;
 	
 	if (identifier)
 	{
@@ -2263,9 +2261,9 @@ static NSMutableDictionary* sRegisteredNodeViewControllerClasses = nil;
 
 - (void) _expandAndSelectNodeWithIdentifier:(NSNotification*)inNotification
 {
-	NSDictionary* userInfo = [inNotification userInfo];
-	IMBNode* node = (IMBNode*)[userInfo objectForKey:@"node"];
-	IMBObjectViewController* objectViewController = (IMBObjectViewController*)[userInfo objectForKey:@"objectViewController"];
+	NSDictionary* userInfo = inNotification.userInfo;
+	IMBNode* node = (IMBNode*)userInfo[@"node"];
+	IMBObjectViewController* objectViewController = (IMBObjectViewController*)userInfo[@"objectViewController"];
 
 	if (objectViewController == self.objectViewController && node != nil)
 	{

@@ -108,7 +108,7 @@ static NSUInteger sCacheSize = 512;
 }
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -137,9 +137,9 @@ static NSUInteger sCacheSize = 512;
 {
 	if (_objects != nil)
 	{
-		while ([_objects count] > sCacheSize)
+		while (_objects.count > sCacheSize)
 		{
-			IMBObject* object = [_objects objectAtIndex:0];
+			IMBObject* object = _objects[0];
 			[object unloadThumbnail];
 			[object unloadMetadata];
 			[_objects removeObjectAtIndex:0];
@@ -242,7 +242,7 @@ static NSUInteger sCacheSize = 512;
 
 - (NSUInteger) _count
 {
-	return [_objects count];
+	return _objects.count;
 }
 
 

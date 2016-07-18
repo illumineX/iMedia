@@ -121,13 +121,13 @@ enum IMBMouseOperation
 
 	// Set up initial value
 	NSString* filenames = [IMBConfig prefsValueForKey:@"prefersFilenamesInPhotoBasedBrowsers"];
-	BOOL showTitle = (nil == filenames) ? YES : [filenames boolValue];
+	BOOL showTitle = (nil == filenames) ? YES : filenames.boolValue;
 	NSUInteger mask = showTitle ? IKCellsStyleTitled : IKCellsStyleNone;
 	[self setCellsStyleMask: mask];
 }
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super initWithCoder:inCoder]))
 	{
@@ -138,7 +138,7 @@ enum IMBMouseOperation
 }
 
 
-- (id) initWithFrame:(NSRect)inFrame
+- (instancetype) initWithFrame:(NSRect)inFrame
 {
 	if ((self = [super initWithFrame:inFrame]))
 	{
@@ -194,7 +194,7 @@ enum IMBMouseOperation
 
 - (void) showTitlesStateChanged:(NSNotification*)inNotification
 {
-	id object = [inNotification object];
+	id object = inNotification.object;
 	BOOL showTitle = [object boolValue];
 	NSUInteger mask = showTitle ? IKCellsStyleTitled : IKCellsStyleNone;
 	[self setCellsStyleMask: mask];
@@ -324,7 +324,7 @@ enum IMBMouseOperation
 {
 	// Find the clicked object...
 	
-	NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+	NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
 	_clickedObjectIndex = [self indexOfItemAtPoint:mouse];	
 	
 	if (_clickedObjectIndex != NSNotFound && [self.dataSource respondsToSelector:@selector(imageBrowser:itemAtIndex:)])
@@ -355,7 +355,7 @@ enum IMBMouseOperation
 	// For parity with TableView - not really needed since selection is changed anyhow...
 	
 	IMBObjectViewController* controller = (IMBObjectViewController*) self.delegate;
-	[controller setClickedObject:self.clickedObject];
+	controller.clickedObject = self.clickedObject;
 
 	[super mouseDown:inEvent];
 }
@@ -370,7 +370,7 @@ enum IMBMouseOperation
 	
 	if (_mouseOperation == kMouseOperationButtonClick)
 	{
-		NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+		NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
 		BOOL highlighted = [self indexOfItemAtPoint: mouse] == _clickedObjectIndex;
 		[(IMBButtonObject*)_clickedObject setImageRepresentationForState:highlighted];
 		[self setNeedsDisplayInRect:[self itemFrameAtIndex:_clickedObjectIndex]];
@@ -381,7 +381,7 @@ enum IMBMouseOperation
 	
 	else if (_clickedObject)
 	{
-		if ([_clickedObject isDraggable])
+		if (_clickedObject.isDraggable)
 		{
             _mouseOperation = kMouseOperationDragSelection;
 			[super mouseDragged:inEvent];
@@ -403,7 +403,7 @@ enum IMBMouseOperation
 
 - (void) mouseUp:(NSEvent*)inEvent
 {
-    NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+    NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
     NSInteger objectIndex = [self indexOfItemAtPoint: mouse];
 
 	// If a button was clicked the perform the click action and remove the highlight...
@@ -457,7 +457,7 @@ enum IMBMouseOperation
  */
 - (NSInteger)firstVisibleItemIndex
 {
-    return [[self visibleItemIndexes] firstIndex];
+    return [self visibleItemIndexes].firstIndex;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -473,7 +473,7 @@ enum IMBMouseOperation
 	if (IMBRunningOnSnowLeopardOrNewer())
 	{
 		//retrieve the visible area
-		NSRect visibleRect = [self visibleRect];
+		NSRect visibleRect = self.visibleRect;
 		
 		//compare with the visible rect at the previous frame
 		if(!NSEqualRects(visibleRect, _lastVisibleRect)){
@@ -506,7 +506,7 @@ enum IMBMouseOperation
         rect.origin.x = 0.0;
         rect.origin.y = 0.0;
         
-        [self setFrame:rect];
+        self.frame = rect;
     }
 
     [super reloadData];
@@ -527,7 +527,7 @@ enum IMBMouseOperation
 	NSTrackingMouseMoved |
 	NSTrackingActiveInActiveApp;
 	
-	NSTrackingArea* trackingArea = [[[NSTrackingArea alloc] initWithRect:[self bounds]
+	NSTrackingArea* trackingArea = [[[NSTrackingArea alloc] initWithRect:self.bounds
 																 options: trackingOptions
 																   owner:[self delegate]
 																userInfo:nil] autorelease];
@@ -558,7 +558,7 @@ enum IMBMouseOperation
 
 - (void) updateTrackingAreas
 {
-	if (_trackingArea && !NSEqualRects([_trackingArea rect], [self bounds]))
+	if (_trackingArea && !NSEqualRects(_trackingArea.rect, self.bounds))
 	{
 		[self updateTrackingArea];
 	}	
@@ -571,7 +571,7 @@ enum IMBMouseOperation
 	NSIndexSet* visibleItemIndexes = [self visibleItemIndexes];	// >= 10.6
 	IKImageBrowserCell* cell = nil;
 	
-	NSUInteger index = [visibleItemIndexes firstIndex];
+	NSUInteger index = visibleItemIndexes.firstIndex;
 
 	while (index != NSNotFound)
 	{
@@ -617,8 +617,8 @@ enum IMBMouseOperation
 - (void) keyDown:(NSEvent*)inEvent
 {
 	IMBObjectViewController* controller = (IMBObjectViewController*) self.delegate;
-    NSString* key = [inEvent charactersIgnoringModifiers];
-	NSUInteger modifiers = [inEvent modifierFlags];
+    NSString* key = inEvent.charactersIgnoringModifiers;
+	NSUInteger modifiers = inEvent.modifierFlags;
 	
     if([key isEqual:@"y"] && (modifiers&NSCommandKeyMask)!=0)
 	{

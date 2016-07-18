@@ -134,7 +134,7 @@
 	
 	// Add the Folders node...
 	
-	NSNumber* id_local = [NSNumber numberWithInt:-1];
+	NSNumber* id_local = @-1;
 	
 	NSString* foldersName = NSLocalizedStringWithDefaultValue(
 															  @"IMBLightroomParser.foldersName",

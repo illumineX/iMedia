@@ -98,7 +98,7 @@ static dispatch_once_t sMovieOnceToken = 0;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -120,7 +120,7 @@ static dispatch_once_t sMovieOnceToken = 0;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super initWithCoder:inCoder]))
 	{
@@ -172,7 +172,7 @@ static dispatch_once_t sMovieOnceToken = 0;
 {
     if (inMediaSource)
     {
-        return [inMediaSource URLByDeletingLastPathComponent];
+        return inMediaSource.URLByDeletingLastPathComponent;
     }
     return [super libraryRootURLForMediaSource:inMediaSource];
 }
@@ -244,7 +244,7 @@ static dispatch_once_t sMovieOnceToken = 0;
 			for (NSString* library in libraries)
 			{
 				NSURL* url = [NSURL URLWithString:library];
-				NSString* path = [url path];
+				NSString* path = url.path;
 				
 				// Create a parser instance preconfigure with that path...
 				
@@ -260,7 +260,7 @@ static dispatch_once_t sMovieOnceToken = 0;
 
 				// Exclude enclosing folder from being displayed by IMBFolderParser...
 				
-				NSString* libraryPath = [path stringByDeletingLastPathComponent];
+				NSString* libraryPath = path.stringByDeletingLastPathComponent;
 				[IMBConfig registerLibraryPath:libraryPath];
 			}
 			
@@ -337,7 +337,7 @@ static dispatch_once_t sMovieOnceToken = 0;
 			for (NSString* library in libraries)
 			{
 				NSURL* url = [NSURL URLWithString:library];
-				NSString* path = [url path];
+				NSString* path = url.path;
                 NSFileManager *fileManager = [[NSFileManager alloc] init];
 				
 				// Create a parser instance preconfigure with that path...
@@ -354,7 +354,7 @@ static dispatch_once_t sMovieOnceToken = 0;
 
 				// Exclude enclosing folder from being displayed by IMBFolderParser...
 				
-				NSString* libraryPath = [path stringByDeletingLastPathComponent];
+				NSString* libraryPath = path.stringByDeletingLastPathComponent;
 				[IMBConfig registerLibraryPath:libraryPath];
                 
                 [fileManager release];

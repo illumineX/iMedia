@@ -111,7 +111,7 @@ static NSArray* sDraggingIMBObjects = nil;
 
 - (BOOL) imb_containsIMBObjects
 {
-	NSArray* types = [self types];
+	NSArray* types = self.types;
 	return [types containsObject:kIMBObjectPasteboardType];
 }
 
@@ -155,7 +155,7 @@ static NSArray* sDraggingIMBObjects = nil;
 
 - (BOOL) imb_containsFileURLs
 {
-	NSArray* types = [self types];
+	NSArray* types = self.types;
 	return [types containsObject:(NSString*)kUTTypeFileURL];
 }
 

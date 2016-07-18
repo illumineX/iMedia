@@ -90,7 +90,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithFrame:(NSRect)inFrame
+- (instancetype) initWithFrame:(NSRect)inFrame
 {
 	if (self = [super initWithFrame:inFrame])
 	{
@@ -102,7 +102,7 @@
 }
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if (self = [super initWithCoder:inCoder])
 	{
@@ -147,10 +147,10 @@
 	NSFont* font = [NSFont boldSystemFontOfSize:size];
 	
 	self.textCell = [[[IMBTextFieldCell alloc] initTextCell:@""] autorelease];
-	[self.textCell setAlignment:NSCenterTextAlignment];
-	[self.textCell setVerticalAlignment:kIMBBottomTextAlignment];
-	[self.textCell setFont:font];
-	[self.textCell setTextColor:[NSColor grayColor]];
+	(self.textCell).alignment = NSCenterTextAlignment;
+	(self.textCell).verticalAlignment = kIMBBottomTextAlignment;
+	(self.textCell).font = font;
+	(self.textCell).textColor = [NSColor grayColor];
 
 	// We need to save preferences before tha app quits...
 	
@@ -257,12 +257,12 @@
 		
 		for (NSString* row in _subviewsInVisibleRows)
 		{
-			NSInteger i = [row intValue];
+			NSInteger i = row.intValue;
 			IMBNode* node = [self nodeAtRow:i];
 			
 			if (!NSLocationInRange(i,visibleRows) || node.badgeTypeNormal != kIMBBadgeTypeLoading)
 			{
-				NSProgressIndicator* wheel = [_subviewsInVisibleRows objectForKey:row];
+				NSProgressIndicator* wheel = _subviewsInVisibleRows[row];
 				[wheel stopAnimation:nil];
 				[wheel removeFromSuperview];
 				[keysToRemove addObject:row];
@@ -277,7 +277,7 @@
 		{
 			IMBNode* node = [self nodeAtRow:i];
 			NSString* row = [NSString stringWithFormat:@"%ld",(long)i];
-			NSProgressIndicator* wheel = [_subviewsInVisibleRows objectForKey:row];
+			NSProgressIndicator* wheel = _subviewsInVisibleRows[row];
 			
 			if (node != nil && (node.badgeTypeNormal == kIMBBadgeTypeLoading))
 			{
@@ -287,13 +287,13 @@
 				{
 					NSProgressIndicator* wheel = [[NSProgressIndicator alloc] initWithFrame:badgeRect];
 					
-					[wheel setAutoresizingMask:NSViewNotSizable];
-					[wheel setStyle:NSProgressIndicatorSpinningStyle];
-					[wheel setControlSize:NSSmallControlSize];
+					wheel.autoresizingMask = NSViewNotSizable;
+					wheel.style = NSProgressIndicatorSpinningStyle;
+					wheel.controlSize = NSSmallControlSize;
 					[wheel setUsesThreadedAnimation:YES];
 					[wheel setIndeterminate:YES];
 					
-					[_subviewsInVisibleRows setObject:wheel forKey:row];
+					_subviewsInVisibleRows[row] = wheel;
 					[self addSubview:wheel];
 					[wheel startAnimation:nil];
 					[wheel release];
@@ -301,7 +301,7 @@
 				else
 				{
 					// Update the frame in case we for instance just showed the scroll bar and require an offset
-					[wheel setFrame:badgeRect];
+					wheel.frame = badgeRect;
 				}
 			}
 		}
@@ -320,7 +320,7 @@
 	
 	// Then draw the prompt string at the bottom if required...
 	
-	if ([[self registeredDraggedTypes] containsObject:NSFilenamesPboardType])
+	if ([self.registeredDraggedTypes containsObject:NSFilenamesPboardType])
 	{
 		const CGFloat MARGIN_BELOW = 20.0;
 		const CGFloat FADE_AREA = 20.0;
@@ -333,21 +333,21 @@
 			CGFloat alpha = (float)fadeHeight / FADE_AREA;
 			
 			NSTextFieldCell* textCell = self.textCell;
-            [textCell setStringValue:self.draggingPrompt];
+            textCell.stringValue = self.draggingPrompt;
             NSColor* draggingPromptColor = nil;
             
             // If header has a customized color then use it but with 0.6 of its alpha value
             
-            NSColor* appearanceTextColor = [self.imb_Appearance.sectionHeaderTextAttributes objectForKey:NSForegroundColorAttributeName];
+            NSColor* appearanceTextColor = (self.imb_Appearance.sectionHeaderTextAttributes)[NSForegroundColorAttributeName];
             if (appearanceTextColor) {
-                CGFloat appearanceAlpha = [appearanceTextColor alphaComponent];
+                CGFloat appearanceAlpha = appearanceTextColor.alphaComponent;
                 draggingPromptColor = [appearanceTextColor colorWithAlphaComponent:appearanceAlpha * 0.6 * alpha];
             } else {
                 draggingPromptColor = [NSColor colorWithCalibratedWhite:0.66667 alpha:alpha];
             }
-            [textCell setTextColor:draggingPromptColor];
+            textCell.textColor = draggingPromptColor;
 			
-			NSRect textRect = NSInsetRect([self visibleRect],12.0,8.0);
+			NSRect textRect = NSInsetRect(self.visibleRect,12.0,8.0);
 			[textCell drawWithFrame:textRect inView:self];
 		}
 	}
@@ -362,9 +362,9 @@
 
 - (NSMenu*) menuForEvent:(NSEvent*)inEvent
 {
-	NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+	NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
 	NSInteger i = [self rowAtPoint:mouse];
-	NSInteger n = [self numberOfRows];
+	NSInteger n = self.numberOfRows;
 	IMBNode* node = nil;
 	
 	if (i>=0 && i<n)
@@ -392,7 +392,7 @@
  */
 - (NSInteger)rowForNode:(IMBNode **)pNode withIdentifier:(NSString *)identifier
 {
-    NSInteger rows = [self numberOfRows];
+    NSInteger rows = self.numberOfRows;
     IMBNode *node;
     for (NSInteger row=0; row<rows; row++)
     {
@@ -418,23 +418,17 @@ NSString* IMBIsDefaultAppearanceAttributeName = @"IMBIsDefaultAppearanceAttribut
     IMBTableViewAppearance* appearance = [[[IMBTableViewAppearance alloc] initWithView:self] autorelease];
     
     NSShadow* shadow = [[[NSShadow alloc] init] autorelease];
-    [shadow setShadowColor:[NSColor whiteColor]];
-    [shadow setShadowOffset:NSMakeSize(0.0, -1.0)];
+    shadow.shadowColor = [NSColor whiteColor];
+    shadow.shadowOffset = NSMakeSize(0.0, -1.0);
     
-    appearance.sectionHeaderTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                              [NSColor disabledControlTextColor], NSForegroundColorAttributeName,
-                                              [NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]], NSFontAttributeName,
-                                              shadow, NSShadowAttributeName,
-                                              [NSNumber numberWithBool:YES], IMBIsDefaultAppearanceAttributeName,
-                                              nil];
+    appearance.sectionHeaderTextAttributes = @{NSForegroundColorAttributeName: [NSColor disabledControlTextColor],
+                                              NSFontAttributeName: [NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]],
+                                              NSShadowAttributeName: shadow,
+                                              IMBIsDefaultAppearanceAttributeName: @YES};
     
-    appearance.rowTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [NSFont systemFontOfSize:[NSFont systemFontSize]], NSFontAttributeName,
-                                    nil];
+    appearance.rowTextAttributes = @{NSFontAttributeName: [NSFont systemFontOfSize:[NSFont systemFontSize]]};
     
-    appearance.rowTextHighlightAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [NSFont systemFontOfSize:[NSFont systemFontSize]], NSFontAttributeName,
-                                             nil];
+    appearance.rowTextHighlightAttributes = @{NSFontAttributeName: [NSFont systemFontOfSize:[NSFont systemFontSize]]};
     
     return appearance;
 }

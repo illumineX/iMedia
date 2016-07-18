@@ -113,7 +113,7 @@
 
 - (FMDatabase*) libraryDatabase
 {
-	NSString* databasePath = [self.mediaSource path];
+	NSString* databasePath = (self.mediaSource).path;
 	NSString* readOnlyDatabasePath = [[self class] cloneDatabase:databasePath];
 	FMDatabase* database = [FMDatabase databaseWithPath:readOnlyDatabasePath];
 	
@@ -125,8 +125,8 @@
 
 - (FMDatabase*) previewsDatabase
 {
-	NSString* mainDatabasePath = [self.mediaSource path];
-	NSString* rootPath = [mainDatabasePath stringByDeletingPathExtension];
+	NSString* mainDatabasePath = (self.mediaSource).path;
+	NSString* rootPath = mainDatabasePath.stringByDeletingPathExtension;
 	NSString* previewPackagePath = [[NSString stringWithFormat:@"%@ Previews", rootPath] stringByAppendingPathExtension:@"lrdata"];
 	NSString* previewDatabasePath = [[previewPackagePath stringByAppendingPathComponent:@"previews"] stringByAppendingPathExtension:@"db"];
 	FMDatabase* database = [FMDatabase databaseWithPath:previewDatabasePath];
@@ -140,8 +140,8 @@
 {
 	// BEGIN ugly hack to work around Lightroom locking its database
 	
-	NSString *basePath = [databasePath stringByDeletingPathExtension];	
-	NSString *pathExtension = [databasePath pathExtension];	
+	NSString *basePath = databasePath.stringByDeletingPathExtension;	
+	NSString *pathExtension = databasePath.pathExtension;	
 	NSString *readOnlyDatabasePath = [[NSString stringWithFormat:@"%@-readOnly", basePath] stringByAppendingPathExtension:pathExtension];
 	NSURL *readOnlyDatabaseURL = [NSURL fileURLWithPath:readOnlyDatabasePath isDirectory:NO];
 	BOOL needToCopyFile = YES;		// probably we will need to copy but let's check
@@ -162,7 +162,7 @@
             NSLog (@"Unable to fetch attributes for %@: %@", databasePath, error.localizedDescription);
         }
 	}
-    else if (![[error domain] isEqualToString:NSCocoaErrorDomain] && [error code] != NSFileNoSuchFileError)
+    else if (![error.domain isEqualToString:NSCocoaErrorDomain] && error.code != NSFileNoSuchFileError)
     {
         NSLog (@"Unable to fetch attributes for %@: %@", readOnlyDatabasePath, error.localizedDescription);
     }
@@ -194,7 +194,7 @@
 	NSNumber *databaseVersion = [self databaseVersion];
 	
 	if (databaseVersion != nil) {
-		long databaseVersionLong = [databaseVersion longValue];
+		long databaseVersionLong = databaseVersion.longValue;
 		
 		if (databaseVersionLong < 300025) {
 			return NO;

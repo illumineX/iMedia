@@ -148,16 +148,16 @@ static NSArray* sSupportedUTIs = nil;
 {
     if (!self.atomicDataPath)
     {
-        NSString* libraryPath = [self.mediaSource path];
+        NSString* libraryPath = (self.mediaSource).path;
         
-        NSString* dataPath = [[[libraryPath stringByDeletingPathExtension]
+        NSString* dataPath = [[libraryPath.stringByDeletingPathExtension
                                stringByAppendingString:@" Previews"]
                               stringByAppendingPathExtension:@"lrdata"];
         
         NSURL *dataURL = [NSURL fileURLWithPath:dataPath isDirectory:YES];
         
         NSNumber *isDirectory;
-        if (![dataURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:NULL] || ![isDirectory boolValue])
+        if (![dataURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:NULL] || !isDirectory.boolValue)
         {
             dataPath = nil;
         }
@@ -174,7 +174,7 @@ static NSArray* sSupportedUTIs = nil;
 #pragma mark 
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -245,14 +245,14 @@ static NSArray* sSupportedUTIs = nil;
     
     NSString* path = @"";
 	
-    while (![scanner isAtEnd])
+    while (!scanner.atEnd)
     {
         NSString* token;
         if ([scanner scanUpToCharactersFromSet:newlineCharacterSet intoString:&token])
         {
             NSString* string = [token stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             
-            if (([string length] == 0) || 
+            if ((string.length == 0) || 
                 [string isEqualTo:@"recentLibraries = {"] || 
                 [string isEqualTo:@"}"])
             {
@@ -263,7 +263,7 @@ static NSArray* sSupportedUTIs = nil;
             
             if ([path hasSuffix:@"\","])
             {
-				path = [path substringWithRange:NSMakeRange(1, [path length] - 3)];
+				path = [path substringWithRange:NSMakeRange(1, path.length - 3)];
                 NSFileManager *fileManager = [[NSFileManager alloc] init];
  
 				BOOL exists,changed;
@@ -292,7 +292,7 @@ static NSArray* sSupportedUTIs = nil;
 	NSMutableArray* libraryPaths = [NSMutableArray array];
     Class parserClass = [self class];
     
-    if ([libraryPaths count] == 0) {
+    if (libraryPaths.count == 0) {
 		CFPropertyListRef activeLibraryPath = SBPreferencesCopyAppValue((CFStringRef)[parserClass preferencesLibraryToLoadKey],
 																		(CFStringRef)[parserClass lightroomAppBundleIdentifier]);
 		
@@ -305,7 +305,7 @@ static NSArray* sSupportedUTIs = nil;
 		}
     }
     
-	if ([libraryPaths count] == 0) {
+	if (libraryPaths.count == 0) {
 		CFStringRef recentLibrariesList = SBPreferencesCopyAppValue((CFStringRef)[parserClass preferencesRecentLibrariesKey],
                                                                     (CFStringRef)[parserClass lightroomAppBundleIdentifier]);
         
@@ -329,10 +329,10 @@ static NSArray* sSupportedUTIs = nil;
 {
 	NSError* error = nil;
 
-	NSString* libraryPath = [self.mediaSource path];
+	NSString* libraryPath = (self.mediaSource).path;
 	
 	NSImage* icon = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:self.appPath];
-	[icon setSize:NSMakeSize(16.0,16.0)];
+	icon.size = NSMakeSize(16.0,16.0);
 
 	// Create the top-level node...
 
@@ -369,7 +369,7 @@ static NSArray* sSupportedUTIs = nil;
 {
 	// Create subnodes for the root node as needed...
 	
-	if ([inNode isTopLevelNode])
+	if (inNode.isTopLevelNode)
 	{
 		[self populateSubnodesForRootNode:inNode];
 	}
@@ -382,7 +382,7 @@ static NSArray* sSupportedUTIs = nil;
 			// Create subnodes for the Folders node as needed...
 			case IMBLightroomNodeTypeFolder:
 			{
-				NSString* rootFoldersIdentifier = [self identifierWithFolderId:[NSNumber numberWithInt:-1]];
+				NSString* rootFoldersIdentifier = [self identifierWithFolderId:@-1];
 
 				if ([inNode.identifier isEqualToString:rootFoldersIdentifier])
 				{
@@ -461,7 +461,7 @@ static NSArray* sSupportedUTIs = nil;
 {
 	NSError* error = nil;
 	CGImageRef imageRepresentation = nil;
-	NSData *jpegData = [self previewDataForObject:inObject maximumSize:[NSNumber numberWithFloat:256.0]];
+	NSData *jpegData = [self previewDataForObject:inObject maximumSize:@256.0f];
 
 	if (jpegData != nil) {
 		CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)jpegData, nil);
@@ -483,7 +483,7 @@ static NSArray* sSupportedUTIs = nil;
 #endif
 			
 			IMBLightroomObject *lightroomObject = (IMBLightroomObject*)inObject;
-			NSString *orientation = [[lightroomObject preliminaryMetadata] objectForKey:@"orientation"];
+			NSString *orientation = lightroomObject.preliminaryMetadata[@"orientation"];
 			
 			if (!((orientation == nil) || [orientation isEqual:@"AB"])) {
 				NSInteger orientationProperty = 2;
@@ -526,10 +526,8 @@ static NSArray* sSupportedUTIs = nil;
 																   @"Please launch Lightroom and select the menu command Library > Previews > Build 1:1 Previews.",
 																   @"Message to export when Pyramid file is missing");
 		
-		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-								  title, @"title",
-								  description, NSLocalizedDescriptionKey,
-								  nil];
+		NSDictionary* userInfo = @{@"title": title,
+								  NSLocalizedDescriptionKey: description};
 		
 		
 		inObject.error = [NSError errorWithDomain:kIMBErrorDomain code:kIMBErrorThumbnailNotAvailable userInfo:userInfo];
@@ -584,8 +582,8 @@ static NSArray* sSupportedUTIs = nil;
 
 	if (jpegData != nil) {
 		IMBLightroomObject* lightroomObject = (IMBLightroomObject*)inObject;
-		NSString* orientation = [[lightroomObject preliminaryMetadata] objectForKey:@"orientation"];;
-		NSString* fileName = [[inObject.location lastPathComponent] stringByDeletingPathExtension];
+		NSString* orientation = lightroomObject.preliminaryMetadata[@"orientation"];;
+		NSString* fileName = (inObject.location).lastPathComponent.stringByDeletingPathExtension;
         NSFileManager *fileManager = [[NSFileManager alloc] init];
 		NSString* jpegPath = [[fileManager imb_uniqueTemporaryFile:fileName] stringByAppendingPathExtension:@"jpg"];
         [fileManager release];
@@ -626,8 +624,7 @@ static NSArray* sSupportedUTIs = nil;
 							orientationProperty = 7;
 						}
 						
-						NSDictionary* metadata = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:orientationProperty]
-																			 forKey:((NSString*)kCGImagePropertyOrientation)];
+						NSDictionary* metadata = @{((NSString*)kCGImagePropertyOrientation): @(orientationProperty)};
 						CGImageDestinationAddImage(destination, jpegImage, (CFDictionaryRef)metadata);
 						
 						success = CGImageDestinationFinalize(destination);
@@ -709,7 +706,7 @@ static NSArray* sSupportedUTIs = nil;
 		
 		while ([results next]) {
 			NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-			NSNumber* id_local = [NSNumber numberWithLong:[results longForColumn:@"id_local"]];
+			NSNumber* id_local = @([results longForColumn:@"id_local"]);
 			NSString* path = [results stringForColumn:@"absolutePath"];
 			NSString* name = [results stringForColumn:@"name"];
 			
@@ -783,7 +780,7 @@ static NSArray* sSupportedUTIs = nil;
 		NSString* pathFromRootAccept = nil;
 		NSString* pathFromRootReject = nil;
 		
-		if ([parentPathFromRoot length] > 0) {
+		if (parentPathFromRoot.length > 0) {
 			pathFromRootAccept = [NSString stringWithFormat:@"%@/%%/", parentPathFromRoot];
 			pathFromRootReject = [NSString stringWithFormat:@"%@/%%/%%/", parentPathFromRoot];
 		}
@@ -796,7 +793,7 @@ static NSArray* sSupportedUTIs = nil;
 		NSInteger index = 0;
 		
 		while ([results next]) {
-			NSNumber* id_local = [NSNumber numberWithLong:[results longForColumn:@"id_local"]];
+			NSNumber* id_local = @([results longForColumn:@"id_local"]);
 			NSString* pathFromRoot = [results stringForColumn:@"pathFromRoot"];
 			
 			if ([pathFromRoot hasSuffix:@"/"]) {
@@ -805,11 +802,11 @@ static NSArray* sSupportedUTIs = nil;
 			
 			IMBNode *node = nil;
 			
-			if ([pathFromRoot length] > 0) {
+			if (pathFromRoot.length > 0) {
 				node = [[[IMBNode alloc] initWithParser:self topLevel:NO] autorelease];
 				
 				node.icon = [[self class] folderIcon];
-				node.name = [pathFromRoot lastPathComponent];
+				node.name = pathFromRoot.lastPathComponent;
 				node.isLeafNode = NO;
 
 				node.identifier = [self identifierWithFolderId:id_local];
@@ -872,7 +869,7 @@ static NSArray* sSupportedUTIs = nil;
 		NSString* query = nil;
 		FMResultSet* results = nil;
 		
-		if ([collectionId longValue] == 0) {
+		if (collectionId.longValue == 0) {
 			query = [(id<IMBLightroomParser>)self rootCollectionNodesQuery];
 			results = [database executeQuery:query];
 		}
@@ -886,15 +883,15 @@ static NSArray* sSupportedUTIs = nil;
 		while ([results next]) {
 			// Get properties for next collection. Also substitute missing names...
 			
-			NSNumber* idLocal = [NSNumber numberWithLong:[results longForColumn:@"id_local"]];
-			NSNumber* idParentLocal = [NSNumber numberWithLong:[results longForColumn:@"parent"]];
+			NSNumber* idLocal = @([results longForColumn:@"id_local"]);
+			NSNumber* idParentLocal = @([results longForColumn:@"parent"]);
 			NSString* name = [results stringForColumn:@"name"];
 			NSString* creationId = [results hasColumnWithName:@"creationid"] ? [results stringForColumn:@"creationid"] : nil;
 			BOOL isGroup = NO;
 			
 			if (name == nil)
 			{
-				if ([idParentLocal intValue] == 0)
+				if (idParentLocal.intValue == 0)
 				{
 					name = NSLocalizedStringWithDefaultValue(
 															 @"IMBLightroomParser.collectionsName",
@@ -964,7 +961,7 @@ static NSArray* sSupportedUTIs = nil;
 + (NSImage*) largeFolderIcon
 {
 	NSImage* icon = [NSImage imb_genericFolderIcon];
-	[icon setSize:NSMakeSize(64.0,64.0)];
+	icon.size = NSMakeSize(64.0,64.0);
 	
 	return icon;
 }
@@ -1005,10 +1002,10 @@ static NSArray* sSupportedUTIs = nil;
 		
 		while ([results next]) {
 			NSString* filename = [results stringForColumn:@"idx_filename"];
-			NSNumber* idLocal = [NSNumber numberWithLong:[results longForColumn:@"id_local"]];
+			NSNumber* idLocal = @([results longForColumn:@"id_local"]);
 			NSString* captureTime = [results stringForColumn:@"captureTime"];
-			NSNumber* fileHeight = [NSNumber numberWithDouble:[results doubleForColumn:@"fileHeight"]];
-			NSNumber* fileWidth = [NSNumber numberWithDouble:[results doubleForColumn:@"fileWidth"]];
+			NSNumber* fileHeight = @([results doubleForColumn:@"fileHeight"]);
+			NSNumber* fileWidth = @([results doubleForColumn:@"fileWidth"]);
 			NSString* orientation = [results stringForColumn:@"orientation"];
 			NSString* caption = [results stringForColumn:@"caption"];
 			NSString* pyramidPath = ([results hasColumnWithName:@"pyramidPath"] ? [results stringForColumn:@"pyramidPath"] : nil);
@@ -1022,23 +1019,23 @@ static NSArray* sSupportedUTIs = nil;
 			if ([self canOpenImageFileAtPath:path]) {
 				NSMutableDictionary* metadata = [NSMutableDictionary dictionary];
 				
-				[metadata setObject:path forKey:@"MasterPath"];
-				[metadata setObject:idLocal forKey:@"idLocal"];
-				[metadata setObject:path forKey:@"path"];
-				[metadata setObject:fileHeight forKey:@"height"];
-				[metadata setObject:fileWidth forKey:@"width"];
-				[metadata setObject:orientation forKey:@"orientation"];
+				metadata[@"MasterPath"] = path;
+				metadata[@"idLocal"] = idLocal;
+				metadata[@"path"] = path;
+				metadata[@"height"] = fileHeight;
+				metadata[@"width"] = fileWidth;
+				metadata[@"orientation"] = orientation;
 				
 				if (name) {
-					[metadata setObject:name forKey:@"name"];
+					metadata[@"name"] = name;
 				}
 				
 				if (captureTime) {
-					[metadata setObject:captureTime forKey:@"dateTime"];
+					metadata[@"dateTime"] = captureTime;
 				}
                 
                 if (caption) {
-					[metadata setObject:caption forKey:@"comment"];
+					metadata[@"comment"] = caption;
                 }
 				
 				IMBObject* object = [self objectWithPath:path
@@ -1089,9 +1086,9 @@ static NSArray* sSupportedUTIs = nil;
 		while ([results next]) {
 			NSString* absolutePath = [results stringForColumn:@"absolutePath"];
 			NSString* filename = [results stringForColumn:@"idx_filename"];
-			NSNumber* idLocal = [NSNumber numberWithLong:[results longForColumn:@"id_local"]];
-			NSNumber* fileHeight = [NSNumber numberWithDouble:[results doubleForColumn:@"fileHeight"]];
-			NSNumber* fileWidth = [NSNumber numberWithDouble:[results doubleForColumn:@"fileWidth"]];
+			NSNumber* idLocal = @([results longForColumn:@"id_local"]);
+			NSNumber* fileHeight = @([results doubleForColumn:@"fileHeight"]);
+			NSNumber* fileWidth = @([results doubleForColumn:@"fileWidth"]);
 			NSString* orientation = [results stringForColumn:@"orientation"];
 			NSString* caption = [results stringForColumn:@"caption"];
 			NSString* pyramidPath = ([results hasColumnWithName:@"pyramidPath"] ? [results stringForColumn:@"pyramidPath"] : nil);
@@ -1105,15 +1102,15 @@ static NSArray* sSupportedUTIs = nil;
 			if ([self canOpenImageFileAtPath:path]) {
 				NSMutableDictionary* metadata = [NSMutableDictionary dictionary];
 				
-				[metadata setObject:path forKey:@"MasterPath"];
-				[metadata setObject:idLocal forKey:@"idLocal"];
-				[metadata setObject:path forKey:@"path"];
-				[metadata setObject:fileHeight forKey:@"height"];
-				[metadata setObject:fileWidth forKey:@"width"];
-				[metadata setObject:orientation forKey:@"orientation"];
+				metadata[@"MasterPath"] = path;
+				metadata[@"idLocal"] = idLocal;
+				metadata[@"path"] = path;
+				metadata[@"height"] = fileHeight;
+				metadata[@"width"] = fileWidth;
+				metadata[@"orientation"] = orientation;
 				
 				if (name) {
-					[metadata setObject:name forKey:@"name"];
+					metadata[@"name"] = name;
 				}
 				
 				IMBObject* object = [self objectWithPath:path
@@ -1301,7 +1298,7 @@ static NSArray* sSupportedUTIs = nil;
 
 - (NSString*)pyramidPathForImage:(NSNumber*)idLocal
 {
-	FMDatabase *database = [self thumbnailDatabase];
+	FMDatabase *database = self.thumbnailDatabase;
 	NSString *pyramidPath = nil;
 	
 	if (database != nil) {		
@@ -1327,15 +1324,15 @@ static NSArray* sSupportedUTIs = nil;
 - (NSData*)previewDataForObject:(IMBObject*)inObject maximumSize:(NSNumber*)maximumSize
 {
 	IMBLightroomObject* lightroomObject = (IMBLightroomObject*)inObject;
-	NSString* absolutePyramidPath = [lightroomObject absolutePyramidPath];
+	NSString* absolutePyramidPath = lightroomObject.absolutePyramidPath;
 	NSData* jpegData = nil;
 	
 	if (absolutePyramidPath != nil) {
-		FMDatabase *database = [self thumbnailDatabase];
+		FMDatabase *database = self.thumbnailDatabase;
 		
 		if (database != nil) {
-			NSDictionary* metadata = [lightroomObject preliminaryMetadata];
-			NSNumber* idLocal = [metadata objectForKey:@"idLocal"];
+			NSDictionary* metadata = lightroomObject.preliminaryMetadata;
+			NSNumber* idLocal = metadata[@"idLocal"];
 			
 			@synchronized (database) {
 				FMResultSet* results = nil;
@@ -1392,8 +1389,8 @@ static NSArray* sSupportedUTIs = nil;
 
 - (NSString*) libraryName
 {
-	NSString* path = [self.mediaSource path];
-	NSString* name = [[path lastPathComponent] stringByDeletingPathExtension];
+	NSString* path = (self.mediaSource).path;
+	NSString* name = path.lastPathComponent.stringByDeletingPathExtension;
 	return name;
 }
 
@@ -1402,7 +1399,7 @@ static NSArray* sSupportedUTIs = nil;
 
 - (FMDatabase*) libraryDatabase
 {
-	NSString* databasePath = [self.mediaSource path];
+	NSString* databasePath = (self.mediaSource).path;
 	FMDatabase* database = [FMDatabase databaseWithPath:databasePath];
 	
 	[database setLogsErrors:YES];
@@ -1412,7 +1409,7 @@ static NSArray* sSupportedUTIs = nil;
 
 - (FMDatabase*) previewsDatabase
 {
-	NSString* databasePath = [self.mediaSource path];
+	NSString* databasePath = (self.mediaSource).path;
 	FMDatabase* database = [FMDatabase databaseWithPath:databasePath];
 	
 	[database setLogsErrors:YES];
@@ -1428,12 +1425,12 @@ static NSArray* sSupportedUTIs = nil;
 {
 	FMDatabase* foundDatabase = nil;
 	@synchronized (self) {
-		foundDatabase = [_databases objectForKey:[NSValue valueWithPointer:[NSThread currentThread]]];
+		foundDatabase = _databases[[NSValue valueWithPointer:[NSThread currentThread]]];
 		if (foundDatabase == nil) {
 			foundDatabase = [self libraryDatabase];
 			
 			if ([foundDatabase open]) {
-				[_databases setObject:foundDatabase forKey:[NSValue valueWithPointer:[NSThread currentThread]]];
+				_databases[[NSValue valueWithPointer:[NSThread currentThread]]] = foundDatabase;
 			}
 		}
 	}
@@ -1445,12 +1442,12 @@ static NSArray* sSupportedUTIs = nil;
 {
 	FMDatabase* foundDatabase = nil;
 	@synchronized (self) {
-		foundDatabase = [_thumbnailDatabases objectForKey:[NSValue valueWithPointer:[NSThread currentThread]]];
+		foundDatabase = _thumbnailDatabases[[NSValue valueWithPointer:[NSThread currentThread]]];
 		if (foundDatabase == nil) {
 			foundDatabase = [self previewsDatabase];
 			
 			if ([foundDatabase open]) {
-				[_thumbnailDatabases setObject:foundDatabase forKey:[NSValue valueWithPointer:[NSThread currentThread]]];
+				_thumbnailDatabases[[NSValue valueWithPointer:[NSThread currentThread]]] = foundDatabase;
 			}
 		}
 	}
@@ -1485,9 +1482,9 @@ static NSArray* sSupportedUTIs = nil;
 
 - (NSString*) rootNodeIdentifier
 {
-	NSString* libraryPath = [self.mediaSource path];
+	NSString* libraryPath = (self.mediaSource).path;
 	NSString* libraryName = [self libraryName];
-	NSString* path = [NSString stringWithFormat:@"/%@(%lu)",libraryName,(unsigned long)[libraryPath hash]];
+	NSString* path = [NSString stringWithFormat:@"/%@(%lu)",libraryName,(unsigned long)libraryPath.hash];
 	return [self identifierForPath:path];
 }
 
@@ -1496,16 +1493,16 @@ static NSArray* sSupportedUTIs = nil;
 
 - (NSString*) pathPrefixWithType:(NSString*)type
 {
-	NSString* libraryPath = [self.mediaSource path];
+	NSString* libraryPath = (self.mediaSource).path;
 	NSString* libraryName = [self libraryName];
-	NSString* pathPrefix = [NSString stringWithFormat:@"/%@(%lu)/%@/",libraryName,(unsigned long)[libraryPath hash],type];
+	NSString* pathPrefix = [NSString stringWithFormat:@"/%@(%lu)/%@/",libraryName,(unsigned long)libraryPath.hash,type];
 	return pathPrefix;
 }
 
 - (NSString*) identifierWithFolderId:(NSNumber*)inIdLocal
 {
 	NSString* identifierPrefix = [self pathPrefixWithType:@"folder"];
-	NSString* path = [identifierPrefix stringByAppendingString:[inIdLocal description]];
+	NSString* path = [identifierPrefix stringByAppendingString:inIdLocal.description];
 	return [self identifierForPath:path];
 }
 
@@ -1513,7 +1510,7 @@ static NSArray* sSupportedUTIs = nil;
 - (NSString*) identifierWithCollectionId:(NSNumber*)inIdLocal
 {
 	NSString* identifierPrefix = [self pathPrefixWithType:@"collection"];
-	NSString* path = [identifierPrefix stringByAppendingString:[inIdLocal description]];
+	NSString* path = [identifierPrefix stringByAppendingString:inIdLocal.description];
 	return [self identifierForPath:path];
 }
 
@@ -1544,27 +1541,27 @@ static NSArray* sSupportedUTIs = nil;
 
 - (NSNumber*) rootFolderFromAttributes:(NSDictionary*)inAttributes
 {
-	return [inAttributes objectForKey:@"rootFolder"];
+	return inAttributes[@"rootFolder"];
 }
 
 - (NSNumber*) idLocalFromAttributes:(NSDictionary*)inAttributes
 {
-	return [inAttributes objectForKey:@"id_local"];
+	return inAttributes[@"id_local"];
 }
 
 - (NSString*) rootPathFromAttributes:(NSDictionary*)inAttributes
 {
-	return [inAttributes objectForKey:@"rootPath"];
+	return inAttributes[@"rootPath"];
 }
 
 - (NSString*) pathFromRootFromAttributes:(NSDictionary*)inAttributes
 {
-	return [inAttributes objectForKey:@"pathFromRoot"];
+	return inAttributes[@"pathFromRoot"];
 }
 
 - (IMBLightroomNodeType) nodeTypeFromAttributes:(NSDictionary*)inAttributes
 {
-	return [[inAttributes objectForKey:@"nodeType"] intValue];
+	return [inAttributes[@"nodeType"] intValue];
 }
 
 - (NSString*) absolutePathFromAttributes:(NSDictionary*)inAttributes
@@ -1572,7 +1569,7 @@ static NSArray* sSupportedUTIs = nil;
 	NSString *rootPath = [self rootPathFromAttributes:inAttributes];
 	NSString *pathFromRoot = [self pathFromRootFromAttributes:inAttributes];
 	
-	if ([pathFromRoot length] > 0) {
+	if (pathFromRoot.length > 0) {
 		return [rootPath stringByAppendingPathComponent:pathFromRoot];
 	}
 	
@@ -1594,7 +1591,7 @@ static NSArray* sSupportedUTIs = nil;
 	
 	if ([inObject isKindOfClass:[IMBLightroomObject class]])
 	{
-		NSNumber* idLocal = [(IMBLightroomObject*)inObject idLocal];
+		NSNumber* idLocal = ((IMBLightroomObject*)inObject).idLocal;
 		identifier = [NSString stringWithFormat:@"%@/%@",identifier,idLocal];
 	}
 	
@@ -1610,7 +1607,7 @@ static NSArray* sSupportedUTIs = nil;
 	
 	if ([inObject isKindOfClass:[IMBLightroomObject class]])
 	{
-		NSNumber* idLocal = [(IMBLightroomObject*)inObject idLocal];
+		NSNumber* idLocal = ((IMBLightroomObject*)inObject).idLocal;
 		identifier = [NSString stringWithFormat:@"%@/%@",identifier,idLocal];
 	}
 	

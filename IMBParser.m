@@ -97,7 +97,7 @@
 #pragma mark 
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -272,7 +272,7 @@
 
 - (IMBResourceAccessibility) mediaSourceAccessibility
 {
-    return [[self mediaSource] imb_accessibility];
+    return [self.mediaSource imb_accessibility];
 }
 
 
@@ -318,8 +318,8 @@
 - (NSString*) identifierForObject:(IMBObject*)inObject
 {
 	NSString* parserClassName = NSStringFromClass([self class]);
-    NSUInteger libraryHash = [[[self mediaSource] path] hash];
-	NSString* path = [inObject.location path];
+    NSUInteger libraryHash = self.mediaSource.path.hash;
+	NSString* path = (inObject.location).path;
 	NSString* identifier = [NSString stringWithFormat:@"%@:%lu/%@",parserClassName,(unsigned long)libraryHash,path];
 	return identifier;
 }
@@ -333,7 +333,7 @@
 
 - (NSString*) persistentResourceIdentifierForObject:(IMBObject*)inObject
 {
-	return [[inObject URL] absoluteString];
+	return [inObject URL].absoluteString;
 }
 
 
@@ -346,7 +346,7 @@
 - (NSString*) iMedia2PersistentResourceIdentifierForObject:(IMBObject*)inObject
 {
 	NSString* prefix = [self iMedia2PersistentResourceIdentifierPrefix];
-	NSString* path = [inObject.location path];
+	NSString* path = (inObject.location).path;
 	NSString* identifier = [NSString stringWithFormat:@"%@/%@",prefix,path];
 	return identifier;
 }
@@ -381,7 +381,7 @@
     NSAssert(url != nil, @"Getting NSURLEffectiveIconKey suceeded, but with a nil image, which isn't documented");
     
     result = [result copy]; // since we're about to mutate
-	[result setSize:NSMakeSize(16,16)];
+	result.size = NSMakeSize(16,16);
 	return [result autorelease];
 }
 
@@ -426,7 +426,7 @@
 		if (source == nil)
 		{
 			NSString* description = [NSString stringWithFormat:@"Could not find image file at %@",url];
-			NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:description,NSLocalizedDescriptionKey,nil];
+			NSDictionary* info = @{NSLocalizedDescriptionKey: description};
 			error = [NSError errorWithDomain:kIMBErrorDomain code:fnfErr userInfo:info];
 		}
 	}
@@ -437,11 +437,9 @@
 	{
 		if (shouldScaleDown)
 		{
-            NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
-				(id)kCFBooleanTrue,kCGImageSourceCreateThumbnailFromImageIfAbsent,
-				(id)[NSNumber numberWithInteger:256],kCGImageSourceThumbnailMaxPixelSize,
-				(id)kCFBooleanTrue,kCGImageSourceCreateThumbnailWithTransform,
-				nil];
+            NSDictionary* options = @{(id)kCGImageSourceCreateThumbnailFromImageIfAbsent: (id)kCFBooleanTrue,
+				(id)kCGImageSourceThumbnailMaxPixelSize: (id)@256,
+				(id)kCGImageSourceCreateThumbnailWithTransform: (id)kCFBooleanTrue};
             
             thumbnail = CGImageSourceCreateThumbnailAtIndex(source,0,(CFDictionaryRef)options);
 		}
@@ -453,7 +451,7 @@
 		if (thumbnail == nil)
 		{
 			NSString* description = [NSString stringWithFormat:@"Could not create image from URL: %@",url];
-			NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:description,NSLocalizedDescriptionKey,nil];
+			NSDictionary* info = @{NSLocalizedDescriptionKey: description};
 			error = [NSError errorWithDomain:kIMBErrorDomain code:0 userInfo:info];
 		}
 	}
@@ -496,7 +494,7 @@
 	NSURL* fileURL = inObject.URL;
 	NSData* bookmark = nil;
 	
-	if ([fileURL isFileURL])
+	if (fileURL.fileURL)
 	{
 	/*
 		NSURLBookmarkCreationOptions options = 
@@ -514,7 +512,7 @@
 	else
 	{
         NSString* description = [NSString stringWithFormat:@"Could not create bookmark for non file URL: %@",fileURL];
-        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:description,NSLocalizedDescriptionKey,nil];
+        NSDictionary* info = @{NSLocalizedDescriptionKey: description};
         error = [NSError errorWithDomain:kIMBErrorDomain code:paramErr userInfo:info];
 	}
 	
@@ -528,7 +526,7 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %@>",
-            [self className],
+            self.className,
             self.identifier];
 }
 

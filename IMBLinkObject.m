@@ -93,15 +93,15 @@
 	}
 	else
 	{
-		if ([[[self location] description] hasPrefix:@"javascript:"])	// special icon for JavaScript bookmarklets
+		if ([self.location.description hasPrefix:@"javascript:"])	// special icon for JavaScript bookmarklets
 		{
 			result = sJavaScriptIcon;
 		}
-		else if ([[[self location] description] hasPrefix:@"place:"])	// special icon for Firefox bookmarklets, so they match look
+		else if ([self.location.description hasPrefix:@"place:"])	// special icon for Firefox bookmarklets, so they match look
 		{
 			result = [IMBSmartFolderObject icon];
 		}
-		else if ([[self URL] isFileURL])
+		else if ([self URL].fileURL)
 		{
 			NSString *type = [self type];
 			result = [[NSWorkspace imb_threadSafeWorkspace] iconForFileType:type];

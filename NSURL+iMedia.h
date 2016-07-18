@@ -51,8 +51,8 @@
 
 @interface NSURL (iMedia)
 
-- (CGImageRef) imb_quicklookCGImage;
-- (NSImage*) imb_quicklookNSImage;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGImageRef imb_quicklookCGImage;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSImage *imb_quicklookNSImage;
 
 + (NSDictionary *)imb_metadataFromVideoAtURL:(NSURL*)inURL;
 + (NSDictionary *)imb_metadataFromAudioAtURL:(NSURL*)inURL;
@@ -60,14 +60,14 @@
 // Returns accesibility of this URL.
 // Always returns kIMBResourceIsAccessible for non-file URLs (as determined with -isFileURL).
 
-- (IMBResourceAccessibility) imb_accessibility;
+@property (NS_NONATOMIC_IOSONLY, readonly) IMBResourceAccessibility imb_accessibility;
 
 // Return name of volume for this URL (or nil if on boot volume).
-- (NSString*) imb_externalVolumeName;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *imb_externalVolumeName;
 
 #pragma mark Aliases
 // Like -URLByResolvingSymlinksInPath, but handles any aliases in the path too. Returns nil upon resolution error
-- (NSURL *)imb_URLByResolvingSymlinksAndBookmarkFilesInPath;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSURL *imb_URLByResolvingSymlinksAndBookmarkFilesInPath;
 
 #pragma mark - File Extended Attributes
 

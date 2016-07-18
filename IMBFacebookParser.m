@@ -89,12 +89,11 @@ static NSUInteger sFacebookElementLimit = 5000;
             if (outError) *outError = error;
             return nil;
         }
-        myID = [[responseDict objectForKey:@"resultDict"] objectForKey:@"id"];
-        myName = [[responseDict objectForKey:@"resultDict"] objectForKey:@"name"];
+        myID = responseDict[@"resultDict"][@"id"];
+        myName = responseDict[@"resultDict"][@"name"];
         if (myID) {
-            node.attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                               myID, @"facebookID",
-                               [NSNumber numberWithUnsignedInteger:0], @"nestingLevel", nil];
+            node.attributes = @{@"facebookID": myID,
+                               @"nestingLevel": @0U};
             node.name = [NSString stringWithFormat:@"Facebook (%@)", myName];
         }
     } else {
@@ -126,21 +125,21 @@ static NSUInteger sFacebookElementLimit = 5000;
     
     // For nodes below top-level node do not ask for friends and for leaf nodes do not ask for any subnodes
     
-    NSUInteger parentNestingLevel = [[inParentNode.attributes objectForKey:@"nestingLevel"] unsignedIntegerValue];
+    NSUInteger parentNestingLevel = [(inParentNode.attributes)[@"nestingLevel"] unsignedIntegerValue];
     NSArray *connectionTypes = nil;
     if (parentNestingLevel == 0) {
-        connectionTypes = [NSArray arrayWithObjects:@"albums", /*@"friends",*/ nil];
-    } else if(![inParentNode isLeafNode]){
-        connectionTypes = [NSArray arrayWithObjects:@"albums", nil];
+        connectionTypes = @[@"albums"];
+    } else if(!inParentNode.isLeafNode){
+        connectionTypes = @[@"albums"];
     }
     
     // Get subnodes for each node type
     
     NSArray *subnodeDicts = nil;
-    NSDictionary *params = @{ @"limit" : [NSNumber numberWithUnsignedInteger:sFacebookElementLimit]};
+    NSDictionary *params = @{ @"limit" : @(sFacebookElementLimit)};
     for (NSString *connectionType in connectionTypes)
     {
-        subnodeDicts = [self nodeID:[inParentNode.attributes objectForKey:@"facebookID"]
+        subnodeDicts = [self nodeID:(inParentNode.attributes)[@"facebookID"]
                connectedNodesByType:connectionType params:params error:&error];
         
         if (error) {
@@ -162,14 +161,14 @@ static NSUInteger sFacebookElementLimit = 5000;
         dispatch_group_t subnodeCreationGroup = dispatch_group_create();
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(8);
         
-        NSMutableArray *unsortedSubnodes = [NSMutableArray arrayWithCapacity:[subnodeDicts count]];
+        NSMutableArray *unsortedSubnodes = [NSMutableArray arrayWithCapacity:subnodeDicts.count];
         
         for (NSDictionary *nodeDict in subnodeDicts)
         {
             NSString *ID, *name;
             IMBNode *subnode;
-            ID = [nodeDict objectForKey:@"id"];
-            name = [nodeDict objectForKey:@"name"];
+            ID = nodeDict[@"id"];
+            name = nodeDict[@"name"];
             
             // Create node for this album...
             
@@ -184,10 +183,9 @@ static NSUInteger sFacebookElementLimit = 5000;
             // Keep a ref to the type of the subnode – so when later populating it we know how to deal with it
             
             //NSUInteger nestingLevel = [[inParentNode.attributes objectForKey:@"nestingLevel"] unsignedIntegerValue] + 1;
-            subnode.attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  connectionType, @"nodeType",
-                                  ID, @"facebookID",
-                                  [NSNumber numberWithUnsignedInteger:parentNestingLevel+1], @"nestingLevel", nil];
+            subnode.attributes = @{@"nodeType": connectionType,
+                                  @"facebookID": ID,
+                                  @"nestingLevel": @(parentNestingLevel+1)};
             
             // Test whether 'friend' subnode has itself albums. If not leave it out because would be empty node.
             // NOTE: Can't afford these time intensive requests unless we parallelize them (think about a
@@ -205,7 +203,7 @@ static NSUInteger sFacebookElementLimit = 5000;
                                      ^{
                                          NSArray *friendalbums = [self nodeID:ID connectedNodesByType:@"albums" params:params error:outError];
                                          
-                                         if ([friendalbums count] > 0) {
+                                         if (friendalbums.count > 0) {
                                              @synchronized(unsortedSubnodes) {
                                                  [unsortedSubnodes addObject:subnode];
                                                  //                                                 NSLog(@"Adding friend: %@:", subnode);
@@ -239,7 +237,7 @@ static NSUInteger sFacebookElementLimit = 5000;
         NSSortDescriptor* nameDescriptor = [[[NSSortDescriptor alloc]
                                              initWithKey:@"name"
                                              ascending:YES] autorelease];
-        NSArray* sortDescriptors = [NSArray arrayWithObject:nameDescriptor];
+        NSArray* sortDescriptors = @[nameDescriptor];
         
         [subnodes addObjectsFromArray:[unsortedSubnodes sortedArrayUsingDescriptors:sortDescriptors]];
     }
@@ -249,7 +247,7 @@ static NSUInteger sFacebookElementLimit = 5000;
     // - friend nodes show photos of all of his albums
     // - album nodes show photos of album
     
-    NSString *parentNodeType = [inParentNode.attributes objectForKey:@"nodeType"];
+    NSString *parentNodeType = (inParentNode.attributes)[@"nodeType"];
     if (parentNodeType == nil) parentNodeType = @"me";
     
     // *** me node's objects ***
@@ -259,7 +257,7 @@ static NSUInteger sFacebookElementLimit = 5000;
     {
         IMBNodeObject *object = nil;
         for (IMBNode *node in subnodes) {
-            NSString *nodeType = [node.attributes objectForKey:@"nodeType"];
+            NSString *nodeType = (node.attributes)[@"nodeType"];
             object = [[IMBNodeObject alloc] init];
 			[objects addObject:object];
 			[object release];
@@ -283,7 +281,7 @@ static NSUInteger sFacebookElementLimit = 5000;
     {
         // Get all photos from this album
         NSDictionary *params = @{ @"fields" : @"id,picture,images,source",
-                                  @"limit"  : [NSNumber numberWithUnsignedInteger:sFacebookElementLimit]};
+                                  @"limit"  : @(sFacebookElementLimit)};
         NSArray *photoDicts = [self nodeID:inParentNode.identifier
                       connectedNodesByType:@"photos"
                                     params:params
@@ -296,34 +294,33 @@ static NSUInteger sFacebookElementLimit = 5000;
 			[objects addObject:object];
 			[object release];
             
-            object.parserIdentifier = [self identifier];
+            object.parserIdentifier = self.identifier;
             
-            NSArray *images = [photoDict objectForKey:@"images"];
+            NSArray *images = photoDict[@"images"];
             
             object.alternateImageLocations = images;
             // Pick image with highest resolution. This should be the first in images.
             NSString *URLString = nil;
             NSNumber *width, *height = nil;
-            if ([images count] > 0) {
-                NSDictionary *imageDict = [images objectAtIndex:0];
-                width = [imageDict objectForKey:@"width"];
-                height = [imageDict objectForKey:@"height"];
-                URLString = [imageDict objectForKey:@"source"];
+            if (images.count > 0) {
+                NSDictionary *imageDict = images[0];
+                width = imageDict[@"width"];
+                height = imageDict[@"height"];
+                URLString = imageDict[@"source"];
             } else {
-                URLString = [photoDict objectForKey:@"source"];
-                width = [photoDict objectForKey:@"width"];
-                height = [photoDict objectForKey:@"height"];
+                URLString = photoDict[@"source"];
+                width = photoDict[@"width"];
+                height = photoDict[@"height"];
             }
-            NSString *createdTime = [photoDict objectForKey:@"created_time"];
-            object.preliminaryMetadata = [NSDictionary dictionaryWithObjectsAndKeys:
-                                          width, @"width",
-                                          height, @"height",
-                                          createdTime, @"dateTime", nil];
-            object.name = [photoDict objectForKey:@"id"];
+            NSString *createdTime = photoDict[@"created_time"];
+            object.preliminaryMetadata = @{@"width": width,
+                                          @"height": height,
+                                          @"dateTime": createdTime};
+            object.name = photoDict[@"id"];
             object.location = [NSURL URLWithString:URLString];
                                
             object.accessibility = [self accessibilityForObject:object];
-            object.imageLocation = [NSURL URLWithString:[photoDict objectForKey:@"picture"]];
+            object.imageLocation = [NSURL URLWithString:photoDict[@"picture"]];
             object.imageRepresentationType = IKImageBrowserNSDataRepresentationType;
         }
     }
@@ -340,7 +337,7 @@ static NSUInteger sFacebookElementLimit = 5000;
 {
     if ([inObject isKindOfClass:[IMBNodeObject class]])
     {
-        return [inObject atomic_imageRepresentation];
+        return inObject.atomic_imageRepresentation;
     }
     
 #if DEBUG_SIMULATE_MISSING_THUMBNAILS
@@ -356,15 +353,14 @@ static NSUInteger sFacebookElementLimit = 5000;
                                          nil, IMBBundle(),
                                          @"Could not load thumbnail. You may retry manually using contextual menu",
                                          nil);
-    NSDictionary *presentableUserInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              presentableErrorString, NSLocalizedDescriptionKey, nil];
+    NSDictionary *presentableUserInfo = @{NSLocalizedDescriptionKey: presentableErrorString};
     NSError *presentableError = [NSError errorWithDomain:kIMBErrorDomain code:1 userInfo:presentableUserInfo];
     NSError *realError = nil;
     
     NSData *responseData = nil;
     for (NSDictionary *imageDict in [object.alternateImageLocations reverseObjectEnumerator])
     {
-        NSString *urlString = [imageDict objectForKey:@"source"];
+        NSString *urlString = imageDict[@"source"];
         if (urlString) {
             NSURL* url = [NSURL URLWithString:urlString];
             
@@ -374,15 +370,14 @@ static NSUInteger sFacebookElementLimit = 5000;
             
             if (responseData)
             {
-                NSInteger statusCode = [response statusCode];
-                NSString *mimeType = [response MIMEType];
-                if ( statusCode != 200 || ![[mimeType lowercaseString] hasPrefix:@"image/"])
+                NSInteger statusCode = response.statusCode;
+                NSString *mimeType = response.MIMEType;
+                if ( statusCode != 200 || ![mimeType.lowercaseString hasPrefix:@"image/"])
                 {
                     // We got a response but did not receive the expected thumbnail
                     
                     NSString *errorString = [NSString stringWithFormat:@"Error loading thumbnail %@: Server responded with code: %ld, mime type: %@ and response data: %@", url, (long)statusCode, mimeType, responseData];
-                    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                              errorString, NSLocalizedDescriptionKey, nil];
+                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: errorString};
                     realError = [NSError errorWithDomain:kIMBErrorDomain code:statusCode userInfo:userInfo];
                     NSLog(@"%@", realError);
                     
@@ -394,12 +389,12 @@ static NSUInteger sFacebookElementLimit = 5000;
                     static const char *nonImageIndicator = "<html>";
                     static NSUInteger bytesToInspect;
                     bytesToInspect = (NSUInteger)strlen(nonImageIndicator);
-                    if ([responseData length] >= bytesToInspect){
+                    if (responseData.length >= bytesToInspect){
                         responseDataIsImage =
 #if DEBUG_SIMULATE_MISSING_THUMBNAILS
                         !doNotLoad;
 #else
-                        strncmp([responseData bytes], nonImageIndicator, bytesToInspect) != 0;
+                        strncmp(responseData.bytes, nonImageIndicator, bytesToInspect) != 0;
 #endif
                     }
                     if (!responseDataIsImage) {
@@ -411,8 +406,7 @@ static NSUInteger sFacebookElementLimit = 5000;
 #else
                             responseData];
 #endif
-                        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                  errorString, NSLocalizedDescriptionKey, nil];
+                        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: errorString};
                         realError = [NSError errorWithDomain:kIMBErrorDomain code:kIMBResourceDoesNotExist userInfo:userInfo];
                         NSLog(@"%@", realError);
 #if DEBUG_SIMULATE_MISSING_THUMBNAILS
@@ -529,7 +523,7 @@ static NSUInteger sFacebookElementLimit = 5000;
 //
 - (id) revokeAccessToNode:(IMBNode *)node error:(NSError **)pError
 {
-    NSString *facebookID = [node.attributes objectForKey:@"facebookID"];
+    NSString *facebookID = (node.attributes)[@"facebookID"];
     if (self.facebook && facebookID)
     {        
         NSDictionary *responseDict = [self.facebook sendSynchronousRequest:[NSString stringWithFormat:@"%@/permissions", facebookID] HTTPMethod:@"DELETE" params:nil];
@@ -572,26 +566,26 @@ static NSUInteger sFacebookElementLimit = 5000;
             return nil;
         }
         
-        NSArray *friends = [responseDict objectForKey:@"resultDict"];
+        NSArray *friends = responseDict[@"resultDict"];
         
-        NSLog(@"Our %lu friends have albums: %@", (unsigned long)[friends count], friends);
+        NSLog(@"Our %lu friends have albums: %@", (unsigned long)friends.count, friends);
         
         friendsIDs = [NSMutableDictionary dictionary];
         id friendID = nil;
         
         for (NSDictionary *friend in friends)
         {
-            friendID = [[friend objectForKey:@"uid"] stringValue];
+            friendID = [friend[@"uid"] stringValue];
             NSLog(@"String value: %@", friend);
-            if (![friendsIDs objectForKey:friend]) {
-                [friendsIDs setObject:friendID forKey:friend];
+            if (!friendsIDs[friend]) {
+                friendsIDs[friend] = friendID;
             }
         }
     } else {
         if (pError) *pError = error;
     }
     
-    NSLog(@"We got %lu friends that have albums: %@", (unsigned long)[friendsIDs count], friendsIDs);
+    NSLog(@"We got %lu friends that have albums: %@", (unsigned long)friendsIDs.count, friendsIDs);
     
     return [NSDictionary dictionaryWithDictionary:friendsIDs];
 }
@@ -613,7 +607,7 @@ connectedNodesByType:(NSString *)nodeType
     NSError *error = nil;
     PhFacebook *facebook = [self facebookWithError:&error];
     if (facebook) {
-        NSDictionary *responseDict = [facebook sendSynchronousRequest:[URL absoluteString] params:params];
+        NSDictionary *responseDict = [facebook sendSynchronousRequest:URL.absoluteString params:params];
         error = [self iMediaErrorFromFacebookResponse:responseDict];
         
         if (error) {
@@ -624,7 +618,7 @@ connectedNodesByType:(NSString *)nodeType
 
 //        NSLog(@"Facebook returned %@: %@", nodeType, responseDict);
 
-        nodes = [[responseDict objectForKey:@"resultDict"] objectForKey:@"data"];
+        nodes = responseDict[@"resultDict"][@"data"];
     } else {
         if (outError) *outError = error;
     }
@@ -651,9 +645,9 @@ connectedNodesByType:(NSString *)nodeType
 
 - (BOOL) isSessionExpired:(NSDictionary *)responseDict
 {
-    NSDictionary *error = [responseDict objectForKey:@"error"];
+    NSDictionary *error = responseDict[@"error"];
     if (error) {
-        return [((NSNumber *)[error objectForKey:@"code"]) integerValue] == 190;
+        return ((NSNumber *)error[@"code"]).integerValue == 190;
     }
     return NO;
 }
@@ -664,7 +658,7 @@ connectedNodesByType:(NSString *)nodeType
                                       @"albums" : @"album",
                                       @"friends": @"person"};
     
-	return [[IMBIconCache sharedIconCache] iconForType:[iconTypeMapping objectForKey:inConnectionType]
+	return [[IMBIconCache sharedIconCache] iconForType:iconTypeMapping[inConnectionType]
                                              highlight:inHighlight];
 }
 
@@ -675,7 +669,7 @@ connectedNodesByType:(NSString *)nodeType
                                   @"albums" : @"album_512x512",
                                   @"friends": @"person_512x512"};
     
-	return [[IMBIconCache sharedIconCache] iconForType:[typeMapping objectForKey:inConnectionType]
+	return [[IMBIconCache sharedIconCache] iconForType:typeMapping[inConnectionType]
                                              highlight:NO];
 }
 

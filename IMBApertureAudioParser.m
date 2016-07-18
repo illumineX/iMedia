@@ -132,7 +132,7 @@
 	
 	NSMutableDictionary* metadata = [NSMutableDictionary dictionaryWithDictionary:inObject.preliminaryMetadata];
 	
-	[metadata setObject:[audioURL path] forKey:@"path"];
+	metadata[@"path"] = audioURL.path;
 	[metadata addEntriesFromDictionary:[NSURL imb_metadataFromAudioAtURL:audioURL]];
 	
 	NSString* description = [self metadataDescriptionForMetadata:metadata];
@@ -144,7 +144,7 @@
 	}
 	else
 	{
-		NSArray* modes = [NSArray arrayWithObject:NSRunLoopCommonModes];
+		NSArray* modes = @[NSRunLoopCommonModes];
 		[inObject performSelectorOnMainThread:@selector(setMetadata:) withObject:metadata waitUntilDone:NO modes:modes];
 		[inObject performSelectorOnMainThread:@selector(setMetadataDescription:) withObject:description waitUntilDone:NO modes:modes];
 	}

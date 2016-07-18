@@ -70,15 +70,14 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-typedef enum
+typedef NS_ENUM(unsigned int, IMBLightroomNodeType)
 { 
 	kIMBLightroomNodeTypeUnspecified = 0,
 	IMBLightroomNodeTypeFolder,
 	IMBLightroomNodeTypeCollection,
 	IMBLightroomNodeTypeRootCollection,
 	IMBLightroomNodeTypeSmartCollection
-}
-IMBLightroomNodeType;
+};
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -114,7 +113,7 @@ IMBLightroomNodeType;
 + (NSArray*) libraryPaths;
 + (void) parseRecentLibrariesList:(NSString*)inRecentLibrariesList into:(NSMutableArray*)inLibraryPaths;
 
-- (NSString*) rootNodeIdentifier;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *rootNodeIdentifier;
 - (NSString*) identifierWithFolderId:(NSNumber*)inIdLocal;
 - (NSString*) identifierWithCollectionId:(NSNumber*)inIdLocal;
 
@@ -131,8 +130,8 @@ IMBLightroomNodeType;
 
 // Unconditionally creates an autoreleased FMDatabase instance. Used 
 // by the above caching accessors to instantiate as needed per-thread.
-- (FMDatabase*) libraryDatabase;
-- (FMDatabase*) previewsDatabase;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) FMDatabase *libraryDatabase;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) FMDatabase *previewsDatabase;
 
 - (NSString*)pyramidPathForImage:(NSNumber*)idLocal;
 - (NSData*)previewDataForObject:(IMBObject*)inObject maximumSize:(NSNumber*)maximumSize;
@@ -149,14 +148,14 @@ IMBLightroomNodeType;
 
 + (NSArray*) concreteParserInstancesForMediaType:(NSString*)inMediaType;
 
-- (NSString*) rootFolderQuery;
-- (NSString*) folderNodesQuery;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *rootFolderQuery;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *folderNodesQuery;
 
-- (NSString*) rootCollectionNodesQuery;
-- (NSString*) collectionNodesQuery;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *rootCollectionNodesQuery;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *collectionNodesQuery;
 
-- (NSString*) folderObjectsQuery;
-- (NSString*) collectionObjectsQuery;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *folderObjectsQuery;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *collectionObjectsQuery;
 
 + (NSImage*) folderIcon;
 + (NSImage*) groupIcon;

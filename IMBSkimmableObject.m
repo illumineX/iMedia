@@ -65,7 +65,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 // Makes sure that currentSkimmingIndex is reset
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -88,7 +88,7 @@
 
 - (NSString *)imageUID
 {
-    return [self representedNodeIdentifier];
+    return self.representedNodeIdentifier;
 }
 
 
@@ -113,7 +113,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if (self = [super initWithCoder:inCoder])
 	{

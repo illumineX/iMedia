@@ -136,7 +136,7 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
 }
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super initWithNibName:[[self class] nibName] bundle:[[self class] bundle]])
 	{
@@ -171,7 +171,7 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
 	panel.canCreateDirectories = NO;
 
 	panel.accessoryView = self.view;
-	[panel setDirectoryURL:inSuggestedURL];
+	panel.directoryURL = inSuggestedURL;
 
 	NSString* title = NSLocalizedStringWithDefaultValue(
 		@"IMBAccessRightsViewController.openPanel.title",
@@ -210,7 +210,7 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
 
 	_warningTitle.stringValue = title;
 
-	NSString* appName = [[NSProcessInfo processInfo] processName];
+	NSString* appName = [NSProcessInfo processInfo].processName;
 	
 	NSString* format = NSLocalizedStringWithDefaultValue(
 		@"IMBAccessRightsViewController.openPanel.description",
@@ -224,13 +224,13 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
 	// Run the NSOpenPanel. Please note the special saving and restoring of keyWindow. This is essential here, or
 	// the Powerbox will become unresponsive the second time we try to call it. Then call the completion block...
 	
-	NSWindow* keyWindow = [NSApp keyWindow];
+	NSWindow* keyWindow = NSApp.keyWindow;
 	
 	NSInteger button = [panel runModal];
 
 	if (button == NSFileHandlingPanelOKButton)
 	{
-		NSURL* url = [panel URL];
+		NSURL* url = panel.URL;
 		inCompletionBlock(url);
 	}
 	else
@@ -507,10 +507,10 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
         
         if (error)
         {
-            message = [error localizedDescription];
+            message = error.localizedDescription;
             
-            if ([[error userInfo] valueForKey:@"title"]) {
-                title = [[error userInfo] valueForKey:@"title"];
+            if ([error.userInfo valueForKey:@"title"]) {
+                title = [error.userInfo valueForKey:@"title"];
             }
         } else {
             NSString* format = NSLocalizedStringWithDefaultValue(
@@ -642,7 +642,7 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
         
         IMBLibraryController* libraryController = [IMBLibraryController sharedLibraryControllerWithMediaType:inNode.mediaType];
         NSArray* nodes = [libraryController topLevelNodesWithoutAccessRights];
-        IMBNode* node = nodes.count==1 ? [nodes objectAtIndex:0] : nil;
+        IMBNode* node = nodes.count==1 ? nodes[0] : nil;
         NSArray* urls = [libraryController libraryRootURLsForNodes:nodes];
         NSURL* proposedURL = [IMBAccessRightsController commonAncestorForURLs:urls];
         
@@ -659,7 +659,7 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
                  // Send it to XPC services of all nodes that do not have access rights (thus blessing the XPC services)...
                  
                  NSArray* mediaTypes = [IMBLibraryController knownMediaTypes];
-                 NSString* path = [inGrantedURL path];
+                 NSString* path = inGrantedURL.path;
                  
                  // Collect all affected nodes for which bookmarks were provided. Since these bookmarks are sent
                  // to messengers asynchronously we must use a counter that tells us when the last bookmark
@@ -672,7 +672,7 @@ typedef void (^IMBOpenPanelCompletionHandler)(NSURL* inURL);
                  {
                      IMBLibraryController* libraryController = [IMBLibraryController sharedLibraryControllerWithMediaType:mediaType];
                      NSArray* nodes = [libraryController topLevelNodesWithoutAccessRights];
-                     affectedNodesCount += [nodes count];
+                     affectedNodesCount += nodes.count;
                      for (IMBNode* node in nodes)
                      {
                          if ([node.libraryRootURL.path hasPathPrefix:path])

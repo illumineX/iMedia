@@ -112,8 +112,8 @@ static NSString* kCurrentNodeKey = @"currentNode";
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSMutableDictionary* classDict = [NSMutableDictionary dictionary];
-	[classDict setObject:[NSNumber numberWithUnsignedInteger:kIMBObjectViewTypeList] forKey:@"viewType"];
-	[classDict setObject:[NSNumber numberWithDouble:0.5] forKey:@"iconSize"];
+	classDict[@"viewType"] = @(kIMBObjectViewTypeList);
+	classDict[@"iconSize"] = @0.5;
 	[IMBConfig registerDefaultPrefs:classDict forClass:self.class];
 	[pool drain];
 }
@@ -126,27 +126,25 @@ static NSString* kCurrentNodeKey = @"currentNode";
 {
 	[super awakeFromNib];
 	
-	ibObjectArrayController.searchableProperties = [NSArray arrayWithObjects:
-		@"name",
+	ibObjectArrayController.searchableProperties = @[@"name",
 		@"metadata.artist",
 		@"metadata.album",
 		@"preliminaryMetadata.artist",
-		@"preliminaryMetadata.album",
-		nil];
+		@"preliminaryMetadata.album"];
 										  
-	[[[ibListView tableColumnWithIdentifier:@"name"] headerCell] setStringValue:NSLocalizedStringWithDefaultValue(
+	[[ibListView tableColumnWithIdentifier:@"name"].headerCell setStringValue:NSLocalizedStringWithDefaultValue(
 		@"IMBAudioViewController.tableColumn.name", 
 		nil,IMBBundle(), 
 		@"Name", 
 		@"Column title - should be a short word")];
 			
-	[[[ibListView tableColumnWithIdentifier:@"artist"] headerCell] setStringValue: NSLocalizedStringWithDefaultValue(
+	[[ibListView tableColumnWithIdentifier:@"artist"].headerCell setStringValue: NSLocalizedStringWithDefaultValue(
 		@"IMBAudioViewController.tableColumn.artist", 
 		nil,IMBBundle(), 
 		@"Artist", 
 		@"Column title - should be a short word")];
 			
-	[[[ibListView tableColumnWithIdentifier:@"duration"] headerCell] setStringValue: NSLocalizedStringWithDefaultValue(
+	[[ibListView tableColumnWithIdentifier:@"duration"].headerCell setStringValue: NSLocalizedStringWithDefaultValue(
 		@"IMBAudioViewController.tableColumn.time", 
 		nil,IMBBundle(), 
 		@"Time", 
@@ -211,13 +209,13 @@ static NSString* kCurrentNodeKey = @"currentNode";
 {
 	if (inViewType < 1) inViewType = 1;
 	if (inViewType > 2) inViewType = 2;
-	[super setViewType:inViewType];
+	super.viewType = inViewType;
 }
 
 
 - (NSUInteger) viewType
 {
-	NSUInteger viewType = [super viewType];
+	NSUInteger viewType = super.viewType;
 	if (viewType < 1) viewType = 1;
 	if (viewType > 2) viewType = 2;
 	return viewType;
@@ -236,14 +234,14 @@ static NSString* kCurrentNodeKey = @"currentNode";
 - (IBAction) tableViewWasDoubleClicked:(id)inSender
 {
 	NSTableView* view = (NSTableView*)inSender;
-	NSInteger row = [view clickedRow];
+	NSInteger row = view.clickedRow;
 	NSRect rect = [self iconRectForTableView:view row:row inset:16.0];
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
-	NSInteger count = [objects count];
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
+	NSInteger count = objects.count;
 	
 	if (row>=0 && row<count)
 	{
-		IMBObject* object = [objects objectAtIndex:row];
+		IMBObject* object = objects[row];
 		
 		if ([object isKindOfClass:[IMBNodeObject class]])
 		{
@@ -283,10 +281,10 @@ static NSString* kCurrentNodeKey = @"currentNode";
 - (void) tableViewSelectionDidChange:(NSNotification*)inNotification
 {
 	NSTableView* tableview = (NSTableView*)inNotification.object;
-	NSInteger row = [tableview selectedRow];
+	NSInteger row = tableview.selectedRow;
 //	NSRect rect = [self iconRectForTableView:tableview row:row inset:16.0];
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
-	IMBObject* object = row>=0 ? [objects objectAtIndex:row] : nil;
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
+	IMBObject* object = row>=0 ? objects[row] : nil;
 	
     if (object != nil)
     {
@@ -350,17 +348,17 @@ static NSString* kCurrentNodeKey = @"currentNode";
 			
 - (void) setIsPlaying:(BOOL)inPlaying
 {
-	if ([self isPlaying] != inPlaying)
+	if (self.isPlaying != inPlaying)
 	{
 		if (inPlaying)
 		{
-			NSArray* objects = [ibObjectArrayController arrangedObjects];
-			NSIndexSet* rows = [[self listView] selectedRowIndexes];
-			NSUInteger row = [rows firstIndex];
+			NSArray* objects = ibObjectArrayController.arrangedObjects;
+			NSIndexSet* rows = self.listView.selectedRowIndexes;
+			NSUInteger row = rows.firstIndex;
 				
-			if (row != NSNotFound && row < [objects count])
+			if (row != NSNotFound && row < objects.count)
 			{
-				IMBObject* object = (IMBObject*) [objects objectAtIndex:row];
+				IMBObject* object = (IMBObject*) objects[row];
 
 				if (object.accessibility == kIMBResourceDoesNotExist)
 				{
@@ -417,7 +415,7 @@ static NSString* kCurrentNodeKey = @"currentNode";
 		{
 			url = [inObject URLByResolvingBookmark];
 			
-			if ([[[url pathExtension] lowercaseString] isEqualToString:@"band"])
+			if ([url.pathExtension.lowercaseString isEqualToString:@"band"])
 			{
 				NSURL* output = [url URLByAppendingPathComponent:@"Output/Output.aif"];
 				BOOL exists = [url checkResourceIsReachableAndReturnError:NULL];

@@ -120,13 +120,13 @@
 
 + (BOOL) isEventsNode:(IMBNode *)inNode
 {
-    return [[inNode.attributes objectForKey:@"nodeType"] isEqual:kIMBiPhotoNodeObjectTypeEvent];
+    return [(inNode.attributes)[@"nodeType"] isEqual:kIMBiPhotoNodeObjectTypeEvent];
 }
 
 
 + (BOOL) isFacesNode:(IMBNode *)inNode
 {
-    return [[inNode.attributes objectForKey:@"nodeType"] isEqual:kIMBiPhotoNodeObjectTypeFace];
+    return [(inNode.attributes)[@"nodeType"] isEqual:kIMBiPhotoNodeObjectTypeFace];
 }
 
 
@@ -137,7 +137,7 @@
 {
     if (inMediaSource)
     {
-        return [inMediaSource URLByDeletingLastPathComponent];
+        return inMediaSource.URLByDeletingLastPathComponent;
     }
     return [super libraryRootURLForMediaSource:inMediaSource];
 }
@@ -157,7 +157,7 @@
     
     if (inMediaSource)
     {
-        NSString* path = [inMediaSource path];
+        NSString* path = inMediaSource.path;
         parser.identifier = [NSString stringWithFormat:@"%@:/%@", [[self class] identifier], path];
         parser.mediaType = self.mediaType;
         parser.mediaSource = inMediaSource;
@@ -195,9 +195,9 @@
 			// (But still leave the code in place to be able to easily switch back to providing all known libraries)
 
 			NSArray* libraries;
-			if ([(NSArray*)recentLibraries count] > 0)
+			if (((NSArray*)recentLibraries).count > 0)
 			{
-				libraries = [NSArray arrayWithObject:[(NSArray*)recentLibraries objectAtIndex:0]];
+				libraries = @[((NSArray*)recentLibraries)[0]];
 			} else {
 				libraries = [NSArray array];
 			}
@@ -205,7 +205,7 @@
 			for (NSString* library in libraries)
 			{
 				NSURL* url = [NSURL URLWithString:library];
-				NSString* path = [url path];
+				NSString* path = url.path;
 
 				IMBAppleMediaParser* parser = [self newParserWithMediaSource:url];
                 
@@ -214,13 +214,13 @@
                 [[messengerClass parsers] addObject:parser];
                 [parser release];
                 
-				parser.shouldDisplayLibraryName = [libraries count] > 1;
+				parser.shouldDisplayLibraryName = libraries.count > 1;
 				  
 				//NSLog(@"%@ uses library: %@", [parser class], path);
 				  
 				// Exclude enclosing folder from being displayed by IMBFolderParser...
 				  
-				NSString* libraryPath = [path stringByDeletingLastPathComponent];
+				NSString* libraryPath = path.stringByDeletingLastPathComponent;
 				[IMBConfig registerLibraryPath:libraryPath];
 			}
 			if (recentLibraries) CFRelease(recentLibraries);
@@ -254,25 +254,25 @@
 {
 	NSMutableString* metaDesc = [NSMutableString string];
 	
-	NSNumber* count = [inMetadata objectForKey:@"PhotoCount"];
+	NSNumber* count = inMetadata[@"PhotoCount"];
 	if (count)
 	{
-		NSString* formatString = [count intValue] > 1 ?
+		NSString* formatString = count.intValue > 1 ?
 		[[self class] objectCountFormatPlural] :
 		[[self class] objectCountFormatSingular];
 		
-		[metaDesc appendFormat:formatString, [count intValue]];
+		[metaDesc appendFormat:formatString, count.intValue];
 	}
 	
-	NSNumber* dateAsTimerInterval = [inMetadata objectForKey:@"RollDateAsTimerInterval"];
+	NSNumber* dateAsTimerInterval = inMetadata[@"RollDateAsTimerInterval"];
 	if (dateAsTimerInterval)
 	{
 		[metaDesc imb_appendNewline];
-		NSDate* eventDate = [NSDate dateWithTimeIntervalSinceReferenceDate:[dateAsTimerInterval doubleValue]];
+		NSDate* eventDate = [NSDate dateWithTimeIntervalSinceReferenceDate:dateAsTimerInterval.doubleValue];
 		
 		NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-		[formatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-		[formatter setDateStyle:NSDateFormatterMediumStyle];	// medium date
+		formatter.formatterBehavior = NSDateFormatterBehavior10_4;
+		formatter.dateStyle = NSDateFormatterMediumStyle;	// medium date
 		
 		[metaDesc appendFormat:@"%@", [formatter stringFromDate:eventDate]];
 		
@@ -289,7 +289,7 @@
 {
 	// Events and Faces have other metadata than images
 	
-	if ([inMetadata objectForKey:@"PhotoCount"])		// Event, face, ...
+	if (inMetadata[@"PhotoCount"])		// Event, face, ...
 	{
 		return [self _countableMetadataDescriptionForMetadata:inMetadata];
 	}

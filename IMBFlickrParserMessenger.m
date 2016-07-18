@@ -175,7 +175,7 @@
 	parser.mediaType = self.mediaType;
 	parser.mediaSource = self.mediaSource;
 	
-	NSArray* parsers = [NSArray arrayWithObject:parser];
+	NSArray* parsers = @[parser];
 	[parser release];
 	return parsers;
 }
@@ -193,8 +193,8 @@
 		@"Menu item in context menu of IMBObjectViewController");
 	
 	NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title action:@selector(revealInFinder:) keyEquivalent:@""];
-	[item setRepresentedObject:inNode.mediaSource];
-	[item setTarget:self];
+	item.representedObject = inNode.mediaSource;
+	item.target = self;
 	[inMenu addItem:item];
 	[item release];
 }
@@ -223,8 +223,8 @@
 
 - (IBAction) revealInFinder: (id) inSender {
 	NSURL* url = (NSURL*)[inSender representedObject];
-	NSString* path = [url path];
-	NSString* folder = [path stringByDeletingLastPathComponent];
+	NSString* path = url.path;
+	NSString* folder = path.stringByDeletingLastPathComponent;
 	[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:folder];
 }
 

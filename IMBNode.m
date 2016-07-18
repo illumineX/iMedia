@@ -146,7 +146,7 @@
 
 // Designated initializer
 
-- (id) initWithParser:(IMBParser*)inParser topLevel:(BOOL)inTopLevel
+- (instancetype) initWithParser:(IMBParser*)inParser topLevel:(BOOL)inTopLevel
 {
 	if (self = [super init])
 	{
@@ -198,7 +198,7 @@
 }
 
 
-- (id) init
+- (instancetype) init
 {
     return [self initWithParser:nil topLevel:NO];
 }
@@ -311,7 +311,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super init]))
 	{
@@ -468,7 +468,7 @@
 - (BOOL) isLoading
 {
 	if (_isLoading) return YES;
-	if (_parentNode) return [_parentNode isLoading];
+	if (_parentNode) return _parentNode.isLoading;
 	return NO;
 }
 
@@ -538,13 +538,13 @@
 
 - (NSUInteger) countOfSubnodes
 {
-	return [_subnodes count];
+	return _subnodes.count;
 }
 
 
 - (IMBNode*) objectInSubnodesAtIndex:(NSUInteger)inIndex
 {
-	return [_subnodes objectAtIndex:inIndex];
+	return _subnodes[inIndex];
 }
 
 
@@ -571,7 +571,7 @@
 {
 	if (inIndex < _subnodes.count)
 	{
-		IMBNode* node = [_subnodes objectAtIndex:inIndex];
+		IMBNode* node = _subnodes[inIndex];
 		node.parentNode = nil;
 		[_subnodes removeObjectAtIndex:inIndex];
 	}
@@ -586,9 +586,9 @@
 {
 	if (inIndex < _subnodes.count)
 	{
-		IMBNode* node = [_subnodes objectAtIndex:inIndex];
+		IMBNode* node = _subnodes[inIndex];
 		node.parentNode = nil;
-		[_subnodes replaceObjectAtIndex:inIndex withObject:inNode];
+		_subnodes[inIndex] = inNode;
 		inNode.parentNode = self;
 	}
 	else 
@@ -629,7 +629,7 @@
 {
 	if (_objects)
 	{
-		return [_objects count];
+		return _objects.count;
 	}
 	
 	return 0;	
@@ -640,7 +640,7 @@
 {
 	if (_objects)
 	{
-		return [_objects objectAtIndex:inIndex];
+		return _objects[inIndex];
 	}
 	
 	return nil;	
@@ -750,7 +750,7 @@
     }
     else if ([inNode isKindOfClass:[IMBNode class]]) // ImageKit sometimes compares us to strings
     {
-        return [[self identifier] isEqualToString:[inNode identifier]];
+        return [self.identifier isEqualToString:[inNode identifier]];
     }
     
     return NO;
@@ -759,7 +759,7 @@
 
 - (NSUInteger) hash;
 {
-    return [[self identifier] hash];
+    return self.identifier.hash;
 }
 
 
@@ -824,7 +824,7 @@
 	
 	NSMutableArray* indexArray = [NSMutableArray array];
 	[self _recursivelyWalkParentsAddingPathIndexTo:indexArray];
-	NSUInteger n = [indexArray count];
+	NSUInteger n = indexArray.count;
 	
 	// Then convert the NSArray into a NSIndexPath...
 	
@@ -834,7 +834,7 @@
 		
 		for (NSUInteger i=0; i<n; i++)
 		{
-			indexes[i] = [[indexArray objectAtIndex:i] unsignedIntegerValue];
+			indexes[i] = [indexArray[i] unsignedIntegerValue];
 		}
 		
 		NSIndexPath* path = [NSIndexPath indexPathWithIndexes:indexes length:n];
@@ -862,7 +862,7 @@
 		{
 			if ([siblingNode.identifier isEqualToString:self.identifier])
 			{
-				[inIndexArray addObject:[NSNumber numberWithUnsignedInteger:index]];
+				[inIndexArray addObject:@(index)];
 				return;
 			}
 			
@@ -881,7 +881,7 @@
 		{
 			if ([node.identifier isEqualToString:self.identifier])
 			{
-				[inIndexArray addObject:[NSNumber numberWithUnsignedInteger:index]];
+				[inIndexArray addObject:@(index)];
 				return;
 			}
 			

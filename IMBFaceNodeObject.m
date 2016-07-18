@@ -117,34 +117,34 @@
 
 - (void) setCurrentSkimmingIndex:(NSUInteger)skimmingIndex
 {
-    [super setCurrentSkimmingIndex:skimmingIndex];
+    super.currentSkimmingIndex = skimmingIndex;
     
     if (skimmingIndex != NSNotFound)
     {
         // We are currently skimming on the image
         
-        NSArray *keyList = [self.preliminaryMetadata objectForKey:@"KeyList"];
-        NSArray *metadataList = [[self preliminaryMetadata] objectForKey:@"ImageFaceMetadataList"];
+        NSArray *keyList = (self.preliminaryMetadata)[@"KeyList"];
+        NSArray *metadataList = self.preliminaryMetadata[@"ImageFaceMetadataList"];
 
         if (keyList.count > skimmingIndex && metadataList.count > skimmingIndex)
         {
-            self.currentImageKey = [keyList objectAtIndex:skimmingIndex];
+            self.currentImageKey = keyList[skimmingIndex];
             
             // Get the metadata of the nth image in which this face occurs 
-            NSDictionary* imageFaceMetadata = [metadataList objectAtIndex:skimmingIndex];
+            NSDictionary* imageFaceMetadata = metadataList[skimmingIndex];
             
             // What is the number of this face inside of this image?
-            self.currentFaceIndex = [imageFaceMetadata objectForKey:@"face index"];
+            self.currentFaceIndex = imageFaceMetadata[@"face index"];
         } else {
             NSLog(@"Cannot provide any data for skimming index %lu", (unsigned long)skimmingIndex);
         }
     } else {
         // We just initialized the object or left the image while skimming and thus restore the key image
         
-        self.currentImageKey = [self.preliminaryMetadata objectForKey:@"KeyPhotoKey"];
+        self.currentImageKey = (self.preliminaryMetadata)[@"KeyPhotoKey"];
         
         // What is the number of this face inside of this image?
-        self.currentFaceIndex = [[self preliminaryMetadata] objectForKey:@"key image face index"];
+        self.currentFaceIndex = self.preliminaryMetadata[@"key image face index"];
     }
 }
 
@@ -182,7 +182,7 @@
 
 - (NSUInteger) imageCount
 {
-	return [[self.preliminaryMetadata objectForKey:@"KeyList"] count];
+	return [(self.preliminaryMetadata)[@"KeyList"] count];
 }
 
 @end

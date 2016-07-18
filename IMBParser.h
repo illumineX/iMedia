@@ -108,12 +108,12 @@
 // Get parser's media source current accessibility status. Defaults to imb_accessibility of media source URL.
 // Override in subclass to suit other parsers' needs.
 
-- (IMBResourceAccessibility) mediaSourceAccessibility;
+@property (NS_NONATOMIC_IOSONLY, readonly) IMBResourceAccessibility mediaSourceAccessibility;
 
 // Subclasses have the opportunity to return a more specific error intended to be presented to the user
 // if media source is not accessible.
 
-- (NSError *)mediaSourceAccessibilityError;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSError *mediaSourceAccessibilityError;
 
 // Get object's resource current accessibility status
 
@@ -157,7 +157,7 @@
 // Subclasses may want to override this method to provide a backward compatible string. 
 // See further comments in implementation file...
 
-- (NSString*) iMedia2PersistentResourceIdentifierPrefix;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *iMedia2PersistentResourceIdentifierPrefix;
 
 // Returns a minimal image for a given file system item that can be used as an icon for IMBNode...
 

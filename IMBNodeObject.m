@@ -74,7 +74,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -99,7 +99,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super initWithCoder:inCoder]))
 	{
@@ -158,14 +158,14 @@
 
 - (NSString*) imageUID
 {
-	NSString* imageUID = [super imageUID];
+	NSString* imageUID = super.imageUID;
 	
 	if (imageUID)
 	{
 		return imageUID;
 	}
 	
-	return [self representedNodeIdentifier];
+	return self.representedNodeIdentifier;
 }
 
 
@@ -192,7 +192,7 @@
         return imageRep;
     }
     
-	return [super imageRepresentation];
+	return super.imageRepresentation;
 }
 
 

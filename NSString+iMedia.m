@@ -72,7 +72,7 @@
 		return nil;
 	}
 	
-	if (FSPathMakeRef((const UInt8 *)[anAbsolutePath fileSystemRepresentation], &fileRef, &isDirectory) == noErr)
+	if (FSPathMakeRef((const UInt8 *)anAbsolutePath.fileSystemRepresentation, &fileRef, &isDirectory) == noErr)
 	{
 		// get the content type (UTI) of this file
 		CFStringRef uti = NULL;
@@ -91,7 +91,7 @@
 	// check extension if we can't find the actual file
 	if (nil == result)
 	{
-		NSString *extension = [anAbsolutePath pathExtension];
+		NSString *extension = anAbsolutePath.pathExtension;
 		if ( (nil != extension) && ![extension isEqualToString:@""] )
 		{
 			result = [self imb_UTIForFilenameExtension:extension];
@@ -102,7 +102,7 @@
 	if ( nil == result || [result isEqualToString:(NSString *)kUTTypeData])
 	{
 		NSString *fileType = NSHFSTypeOfFile(anAbsolutePath);
-		if (6 == [fileType length])
+		if (6 == fileType.length)
 		{
 			fileType = [fileType substringWithRange:NSMakeRange(1,4)];
 		}
@@ -205,7 +205,7 @@
 
 - (BOOL)validIndex:(NSInteger)index
 {
-    return index < [self length] && index >= 0;
+    return index < self.length && index >= 0;
 }
 
 // Returns the longest common sub path of self with inPath.
@@ -215,17 +215,17 @@
 {
     if (!inPath || self.length == 0 || inPath.length == 0) return nil;
     
-    NSArray *pathComponents1 = [self pathComponents];
-    NSArray *pathComponents2 = [inPath pathComponents];
+    NSArray *pathComponents1 = self.pathComponents;
+    NSArray *pathComponents2 = inPath.pathComponents;
     
     __block NSInteger lastIdenticalComponentNumber = -1;
     
     // Determine last identical component
     
     [pathComponents1 enumerateObjectsUsingBlock:^(id pathComponent1, NSUInteger idx, BOOL *stop) {
-        if ([pathComponents2 count] > idx)
+        if (pathComponents2.count > idx)
         {
-            NSString *pathComponent2 = (NSString *)[pathComponents2 objectAtIndex:idx];
+            NSString *pathComponent2 = (NSString *)pathComponents2[idx];
             
             if ([pathComponent1 isEqualToString:pathComponent2])
             {
@@ -265,7 +265,7 @@
 	if ([self hasPrefix:@"file://"])
 	{
 		NSURL* url = [NSURL URLWithString:self];
-		result = [url path];
+		result = url.path;
 	}
 	return result;
 }
@@ -333,23 +333,23 @@
     
     // Must use a locale compatible with gregorian calendar
     NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    [parser setLocale:locale];
+    parser.locale = locale;
     
     // This is for EXIF-formatted dates
     
-	[parser setDateFormat:@"yyyy':'MM':'dd kk':'mm':'ss"];	
+	parser.dateFormat = @"yyyy':'MM':'dd kk':'mm':'ss";	
 	NSDate *date = [parser dateFromString:self];
     
     // This is for Lightroom-formatted dates
     
     if (!date)
     {
-        [parser setDateFormat:@"yyyy'-'MM'-'dd'T'kk':'mm':'ss'.'SS"];
+        parser.dateFormat = @"yyyy'-'MM'-'dd'T'kk':'mm':'ss'.'SS";
         date = [parser dateFromString:self];
     }
     if (!date)
     {
-        [parser setDateFormat:@"yyyy'-'MM'-'dd'T'kk':'mm':'ss"];
+        parser.dateFormat = @"yyyy'-'MM'-'dd'T'kk':'mm':'ss";
         date = [parser dateFromString:self];
     }
     
@@ -357,7 +357,7 @@
     
     if (!date)
     {
-        [parser setDateFormat:@"yyyy'-'MM'-'dd'T'kk':'mm':'ssZ"];
+        parser.dateFormat = @"yyyy'-'MM'-'dd'T'kk':'mm':'ssZ";
         date = [parser dateFromString:self];
     }
     
@@ -369,15 +369,15 @@
         f.allowsFloats = YES;
         f.decimalSeparator = @".";
         NSNumber *timeInterval = [f numberFromString:self];
-        if ([timeInterval integerValue] > 0) {
-            date = [NSDate dateWithTimeIntervalSinceReferenceDate:[timeInterval integerValue]];
+        if (timeInterval.integerValue > 0) {
+            date = [NSDate dateWithTimeIntervalSinceReferenceDate:timeInterval.integerValue];
         }
     }
     
 	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-	[formatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-	[formatter setDateStyle:NSDateFormatterMediumStyle];    // medium date
-	[formatter setTimeStyle:NSDateFormatterShortStyle];     // no seconds
+	formatter.formatterBehavior = NSDateFormatterBehavior10_4;
+	formatter.dateStyle = NSDateFormatterMediumStyle;    // medium date
+	formatter.timeStyle = NSDateFormatterShortStyle;     // no seconds
 
 	// date should never be nil but clang analyis detects a possibility of
 	// nil date if [timeInterval integerValue] above is 0. Let's cover the

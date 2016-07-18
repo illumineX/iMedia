@@ -88,7 +88,7 @@ static IMBIconCache* sSharedIconCache;
 }
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -157,7 +157,7 @@ static IMBIconCache* sSharedIconCache;
 					NSString* path = [bundle pathForResource:entry->fAlternateIconName ofType:nil];
 
 					image = [[[NSImage alloc] initWithContentsOfFile:path] autorelease];
-					[image setSize:NSMakeSize(16.0,16.0)];
+					image.size = NSMakeSize(16.0,16.0);
 				}
 
 				if (image != nil)
@@ -196,15 +196,15 @@ static IMBIconCache* sSharedIconCache;
                 typeKey = [inType stringByAppendingString:@"_sel"];
             }
             
-			NSMutableDictionary* bundleCache = [_iconCache objectForKey:bundleID];
+			NSMutableDictionary* bundleCache = _iconCache[bundleID];
 			
 			if (bundleCache == nil)
 			{
 				bundleCache = [NSMutableDictionary dictionary];
-				[_iconCache setObject:bundleCache forKey:bundleID];
+				_iconCache[bundleID] = bundleCache;
 			}
             
-			image = [bundleCache objectForKey:typeKey];
+			image = bundleCache[typeKey];
 			
 			if (image == nil)
 			{
@@ -216,7 +216,7 @@ static IMBIconCache* sSharedIconCache;
                     image = [NSImage imb_imageNamed:[NSString stringWithFormat:@"%@.png", typeKey]];
                 }
                 
-				if (image) [bundleCache setObject:image forKey:typeKey];
+				if (image) bundleCache[typeKey] = image;
 			}
 		}
     }
@@ -245,15 +245,15 @@ static IMBIconCache* sSharedIconCache;
                 typeKey = [inType stringByAppendingString:inMappingTable->fHighlightPostfix];
             }
             
-			NSMutableDictionary* bundleCache = [_iconCache objectForKey:inBundleID];
+			NSMutableDictionary* bundleCache = _iconCache[inBundleID];
 			
 			if (bundleCache == nil)
 			{
 				bundleCache = [NSMutableDictionary dictionary];
-				[_iconCache setObject:bundleCache forKey:inBundleID];
+				_iconCache[inBundleID] = bundleCache;
 			}
 
-			image = [bundleCache objectForKey:typeKey];
+			image = bundleCache[typeKey];
 			
 			if (image == nil)
 			{
@@ -262,7 +262,7 @@ static IMBIconCache* sSharedIconCache;
                                withMappingTable:inMappingTable
                                       highlight:inHighlight];
                 
-				if (image) [bundleCache setObject:image forKey:typeKey];
+				if (image) bundleCache[typeKey] = image;
 				else if(!inHighlight && considerFallbackImage) image = [NSImage imb_sharedGenericFolderIcon];
 			}
 		}

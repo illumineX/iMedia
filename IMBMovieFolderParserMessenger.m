@@ -75,7 +75,7 @@
 	return @"IMBMovieFolderParser";
 }
 					
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -113,7 +113,7 @@
 	[pool drain];
 }
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -146,7 +146,7 @@
 	[pool drain];
 }
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{

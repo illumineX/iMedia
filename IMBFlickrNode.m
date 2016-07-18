@@ -76,7 +76,7 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 #pragma mark
 #pragma mark Construction
 
-- (id) init {
+- (instancetype) init {
 	if ((self = [super init])) {
 		self.license = IMBFlickrNodeLicense_Undefined;
 		self.method = IMBFlickrNodeMethod_TextSearch;
@@ -86,7 +86,7 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 }
 
 
-- (id) initWithCoder: (NSCoder*) inCoder {
+- (instancetype) initWithCoder: (NSCoder*) inCoder {
 	if ((self = [super initWithCoder:inCoder])) {
         self.customNode = [inCoder decodeBoolForKey:@"customNode"];
         self.license = [inCoder decodeIntegerForKey:@"license"];
@@ -149,7 +149,7 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 	
 	IMBFlickrNode* node = [self genericFlickrNodeForRoot:root parser:parser];
 	node.icon = [NSImage imageNamed:NSImageNameFolderSmart];
-	[node.icon setSize:NSMakeSize(16.0, 16.0)];
+	(node.icon).size = NSMakeSize(16.0, 16.0);
 	node.identifier = [self identifierWithMethod:IMBFlickrNodeMethod_MostInteresting query:@"30"];
 	//node.mediaSource = node.identifier;
 	node.method = IMBFlickrNodeMethod_MostInteresting;
@@ -164,7 +164,7 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 	
 	IMBFlickrNode* node = [self genericFlickrNodeForRoot:root parser:parser];
 	node.icon = [NSImage imageNamed:NSImageNameFolderSmart];
-	[node.icon setSize:NSMakeSize(16.0, 16.0)];
+	(node.icon).size = NSMakeSize(16.0, 16.0);
 	node.identifier = [self identifierWithMethod:IMBFlickrNodeMethod_Recent query:@"30"];
 	//node.mediaSource = node.identifier;
 	node.method = IMBFlickrNodeMethod_Recent;	
@@ -237,7 +237,7 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 /// From http://gist.github.com/101674
 + (NSString*) base58EncodedValue: (long long) num {
 	NSString* alphabet = @"123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
-	NSInteger baseCount = [alphabet length];
+	NSInteger baseCount = alphabet.length;
 	NSString* encoded = @"";
 	while (num >= baseCount) {
 		double div = num/baseCount;
@@ -318,8 +318,8 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 
 + (NSString*) identifierWithQueryParams: (NSDictionary*) inQueryParams {
 	NSString* parserClassName = NSStringFromClass ([IMBFlickrParser class]);
-	NSString* uuid = [inQueryParams objectForKey:IMBFlickrNodeProperty_UUID];
-	if (uuid == nil) uuid = [inQueryParams objectForKey:IMBFlickrNodeProperty_Query];
+	NSString* uuid = inQueryParams[IMBFlickrNodeProperty_UUID];
+	if (uuid == nil) uuid = inQueryParams[IMBFlickrNodeProperty_Query];
 	return [NSString stringWithFormat:@"%@:/%@",parserClassName,uuid];
 }
 
@@ -328,8 +328,8 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 	if (!dictionary) return;
 	
 	//	extract node data from preferences dictionary...
-	NSInteger method = [[dictionary objectForKey:IMBFlickrNodeProperty_Method] intValue];
-	NSString* query = [dictionary objectForKey:IMBFlickrNodeProperty_Query];
+	NSInteger method = [dictionary[IMBFlickrNodeProperty_Method] intValue];
+	NSString* query = dictionary[IMBFlickrNodeProperty_Query];
 	NSString* title = query;
 	
 	if (!query || !title) {
@@ -340,14 +340,14 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 	//	Flickr stuff...
 	self.customNode = YES;
 	self.icon = [NSImage imageNamed:NSImageNameFolderSmart];
-	[self.icon setSize:NSMakeSize(16.0, 16.0)];
+	(self.icon).size = NSMakeSize(16.0, 16.0);
 	self.identifier = [IMBFlickrNode identifierWithQueryParams:dictionary];
-	self.license = [[dictionary objectForKey:IMBFlickrNodeProperty_License] intValue];
+	self.license = [dictionary[IMBFlickrNodeProperty_License] intValue];
 	//self.mediaSource = self.identifier;
 	self.method = method;
 	self.name = title;
 	self.query = query;
-	self.sortOrder = [[dictionary objectForKey:IMBFlickrNodeProperty_SortOrder] intValue];
+	self.sortOrder = [dictionary[IMBFlickrNodeProperty_SortOrder] intValue];
 }
 
 @end

@@ -106,7 +106,7 @@ enum IMBMouseOperation
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithFrame:(NSRect)inFrame
+- (instancetype) initWithFrame:(NSRect)inFrame
 {
 	if (self = [super initWithFrame:inFrame])
 	{
@@ -120,7 +120,7 @@ enum IMBMouseOperation
 }
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if (self = [super initWithCoder:inCoder])
 	{
@@ -211,7 +211,7 @@ enum IMBMouseOperation
 {
 	// Find the clicked object...
 	
-	NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+	NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
     _clickedObjectIndex = [self rowAtPoint:mouse];
 
 	if (_clickedObjectIndex != -1)
@@ -223,7 +223,7 @@ enum IMBMouseOperation
 		}
 		if (arrayController)
 		{
-			self.clickedObject = [arrayController.arrangedObjects objectAtIndex:_clickedObjectIndex];
+			self.clickedObject = (arrayController.arrangedObjects)[_clickedObjectIndex];
 		}
 	}
 	
@@ -243,7 +243,7 @@ enum IMBMouseOperation
 	else 
 	{
 		IMBObjectViewController* objectViewController = (IMBObjectViewController*) self.delegate;
-		[objectViewController setClickedObject:self.clickedObject];
+		objectViewController.clickedObject = self.clickedObject;
 		_mouseOperation = kMouseOperationNone;
 		[super mouseDown:inEvent];
 	}
@@ -262,7 +262,7 @@ enum IMBMouseOperation
 	
 	if (_mouseOperation == kMouseOperationButtonClick)
 	{
-		NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+		NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
 		BOOL highlighted = [self rowAtPoint: mouse] == _clickedObjectIndex;
 		[(IMBButtonObject*)_clickedObject setImageRepresentationForState:highlighted];
 		[self setNeedsDisplayInRect:[self rectOfRow:_clickedObjectIndex]];
@@ -290,7 +290,7 @@ enum IMBMouseOperation
 	
 	if (_mouseOperation == kMouseOperationButtonClick)
 	{
-		NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+		NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
 		NSInteger objectIndex = [self rowAtPoint:mouse];
 
 		if (objectIndex == _clickedObjectIndex)
@@ -324,9 +324,9 @@ enum IMBMouseOperation
 
 - (NSMenu*) menuForEvent:(NSEvent*)inEvent
 {
-	NSPoint mouse = [self convertPoint:[inEvent locationInWindow] fromView:nil];
+	NSPoint mouse = [self convertPoint:inEvent.locationInWindow fromView:nil];
 	NSInteger i = [self rowAtPoint:mouse];
-	NSInteger n = [self numberOfRows];
+	NSInteger n = self.numberOfRows;
 	IMBObject* object = nil;
 	
 	IMBObjectViewController* objectViewController = (IMBObjectViewController*) self.delegate;
@@ -334,7 +334,7 @@ enum IMBMouseOperation
 	// Change the selection to the clicked row so that contextual menu matches properly.
 	if (i>=0 && i<n && [objectViewController respondsToSelector:@selector(objectArrayController)])
 	{
-		object = [[objectViewController.objectArrayController arrangedObjects] objectAtIndex:i];
+		object = (objectViewController.objectArrayController).arrangedObjects[i];
 		[objectViewController.objectArrayController setSelectionIndex:i];
 	}
 
@@ -364,7 +364,7 @@ enum IMBMouseOperation
  */
 - (NSInteger)firstVisibleItemIndex
 {
-    NSRange visibleIndexes = [self rowsInRect:[self visibleRect]];
+    NSRange visibleIndexes = [self rowsInRect:self.visibleRect];
     
     if (visibleIndexes.length == 0) {
         return NSNotFound;
@@ -387,8 +387,8 @@ enum IMBMouseOperation
 
 - (void) keyDown:(NSEvent*)inEvent
 {
-    NSString* key = [inEvent charactersIgnoringModifiers];
-	NSUInteger modifiers = [inEvent modifierFlags];
+    NSString* key = inEvent.charactersIgnoringModifiers;
+	NSUInteger modifiers = inEvent.modifierFlags;
 	
     if([key isEqual:@"y"] && (modifiers&NSCommandKeyMask)!=0)
 	{

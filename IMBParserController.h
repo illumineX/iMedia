@@ -104,7 +104,7 @@
 
 /**
  */
-- (NSString *)parserMessengerIdentifiersDescription;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *parserMessengerIdentifiersDescription;
 
 @end
 

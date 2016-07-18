@@ -120,14 +120,14 @@
 	
 	@synchronized(sImageCache)
 	{
-		image = (NSImage*)[sImageCache objectForKey:inName];
+		image = (NSImage*)sImageCache[inName];
 		
 		if (image == nil)
 		{
 			NSBundle* bundle = [NSBundle bundleForClass:[IMBNode class]];	
 			NSString* path = [bundle pathForResource:inName ofType:nil];
 			image = [[NSImage alloc] initWithContentsOfFile:path];
-            if (image) [sImageCache setObject:image forKey:inName];
+            if (image) sImageCache[inName] = image;
             [image release];
 		}
 	}
@@ -150,7 +150,7 @@
 
 	@synchronized(sImageCache)
 	{
-		image = (CGImageRef)[sImageCache objectForKey:inName];
+		image = (CGImageRef)sImageCache[inName];
 
 		if (image == nil)
 		{
@@ -164,7 +164,7 @@
 				if (imageSource)
 				{
 					image = CGImageSourceCreateImageAtIndex(imageSource,0,NULL);
-					[sImageCache setObject:(id)image forKey:inName];
+					sImageCache[inName] = (id)image;
 					CGImageRelease(image);
 					CFRelease(imageSource);
 				}
@@ -192,26 +192,26 @@
 			if (propsCF)
 			{
 				NSDictionary *props = (NSDictionary *)propsCF;
-				NSNumber *width = (NSNumber*) [props objectForKey:(NSString *)kCGImagePropertyPixelWidth];
-				NSNumber *height= (NSNumber*) [props objectForKey:(NSString *)kCGImagePropertyPixelHeight];
-				NSNumber *depth = (NSNumber*) [props objectForKey:(NSString *)kCGImagePropertyDepth];
-				NSString *model = [props objectForKey:(NSString *)kCGImagePropertyColorModel];
-				NSString *filetype = [[url pathExtension] uppercaseString];
-				if (width) [md setObject:width forKey:@"width"];
-				if (height) [md setObject:height forKey:@"height"];
-				if (depth) [md setObject:depth forKey:@"depth"];
-				if (model) [md setObject:model forKey:@"model"];
-				if (filetype) [md setObject:filetype forKey:@"filetype"];
-				[md setObject:[url path] forKey:@"path"];
+				NSNumber *width = (NSNumber*) props[(NSString *)kCGImagePropertyPixelWidth];
+				NSNumber *height= (NSNumber*) props[(NSString *)kCGImagePropertyPixelHeight];
+				NSNumber *depth = (NSNumber*) props[(NSString *)kCGImagePropertyDepth];
+				NSString *model = props[(NSString *)kCGImagePropertyColorModel];
+				NSString *filetype = url.pathExtension.uppercaseString;
+				if (width) md[@"width"] = width;
+				if (height) md[@"height"] = height;
+				if (depth) md[@"depth"] = depth;
+				if (model) md[@"model"] = model;
+				if (filetype) md[@"filetype"] = filetype;
+				md[@"path"] = url.path;
 				
-				NSDictionary *exif = [props objectForKey:(NSString *)kCGImagePropertyExifDictionary];
+				NSDictionary *exif = props[(NSString *)kCGImagePropertyExifDictionary];
 				if ( nil != exif )
 				{
-					NSString *dateTime = [exif objectForKey:(NSString *)kCGImagePropertyExifDateTimeOriginal];
+					NSString *dateTime = exif[(NSString *)kCGImagePropertyExifDateTimeOriginal];
 					// format from EXIF -- we could convert to a date and make more localized....
 					if (nil != dateTime)
 					{
-						[md setObject:dateTime forKey:@"dateTime"];
+						md[@"dateTime"] = dateTime;
 					}
 				}
 				CFRelease(propsCF);
@@ -220,16 +220,16 @@
         CFRelease(source);
     }
     
-    if (aCheckSpotlight && [url isFileURL])	// done from folder parsers, but not library-based items like iPhoto
+    if (aCheckSpotlight && url.fileURL)	// done from folder parsers, but not library-based items like iPhoto
     {
-        MDItemRef item = MDItemCreate(NULL,(CFStringRef)[url path]);
+        MDItemRef item = MDItemCreate(NULL,(CFStringRef)url.path);
         
         if (item)
         {
             CFStringRef comment = MDItemCopyAttribute(item,kMDItemFinderComment);
             if (comment)
             {
-                [md setObject:(NSString*)comment forKey:@"comment"]; 
+                md[@"comment"] = (NSString*)comment; 
                 CFRelease(comment);
             }
             CFRelease(item);
@@ -245,19 +245,19 @@
 + (NSString*) imb_imageMetadataDescriptionForMetadata:(NSDictionary*)inMetadata
 {
 	NSMutableString* metaDesc = [NSMutableString string];
-	NSNumber* width = [inMetadata objectForKey:@"width"];
-	NSNumber* height = [inMetadata objectForKey:@"height"];
-	NSNumber* depth = [inMetadata objectForKey:@"depth"];
-	NSNumber* model = [inMetadata objectForKey:@"model"];
-	NSString* type = [inMetadata objectForKey:@"ImageType"];
-	NSString* filetype = [inMetadata objectForKey:@"filetype"];
-	NSString* dateTime = [inMetadata objectForKey:@"dateTime"];
-	NSString* path = [inMetadata objectForKey:@"path"];
-	NSString* comment = [inMetadata objectForKey:@"comment"];
-	NSArray* keywords = [inMetadata objectForKey:@"iMediaKeywords"];
-	NSInteger rating = [[inMetadata objectForKey:@"Rating"] integerValue];
+	NSNumber* width = inMetadata[@"width"];
+	NSNumber* height = inMetadata[@"height"];
+	NSNumber* depth = inMetadata[@"depth"];
+	NSNumber* model = inMetadata[@"model"];
+	NSString* type = inMetadata[@"ImageType"];
+	NSString* filetype = inMetadata[@"filetype"];
+	NSString* dateTime = inMetadata[@"dateTime"];
+	NSString* path = inMetadata[@"path"];
+	NSString* comment = inMetadata[@"comment"];
+	NSArray* keywords = inMetadata[@"iMediaKeywords"];
+	NSInteger rating = [inMetadata[@"Rating"] integerValue];
 
-	if (comment == nil) comment = [inMetadata objectForKey:@"Comment"];	// uppercase from iPhoto
+	if (comment == nil) comment = inMetadata[@"Comment"];	// uppercase from iPhoto
 	if (comment) comment = [comment stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
 	if ((width != nil && height != nil) || depth != nil || model != nil || type != nil)
@@ -312,14 +312,14 @@
 		}
 	}
 	
-	if (keywords != nil && [keywords count])
+	if (keywords != nil && keywords.count)
 	{
 		[metaDesc imb_appendNewline];
 		for (NSString *keyword in keywords)
 		{
 			[metaDesc appendFormat:@"%@, ", keyword];
 		}
-		[metaDesc deleteCharactersInRange:NSMakeRange([metaDesc length] - 2, 2)];	// remove last comma+space
+		[metaDesc deleteCharactersInRange:NSMakeRange(metaDesc.length - 2, 2)];	// remove last comma+space
 	}
 	
 	if (rating > 0)
@@ -352,7 +352,7 @@
 	dispatch_once(&sOnceToken,^()
                   {
                       sGenericFolderIcon = [[[NSWorkspace imb_threadSafeWorkspace] iconForFileType: NSFileTypeForHFSTypeCode(kGenericFolderIcon)] retain];
-                      [sGenericFolderIcon setSize:NSMakeSize(16,16)];
+                      sGenericFolderIcon.size = NSMakeSize(16,16);
                       
                       if (sGenericFolderIcon == nil)
                       {
@@ -371,7 +371,7 @@
 	dispatch_once(&sOnceToken,^()
                   {
                       sLargeGenericFolderIcon = [[[NSWorkspace imb_threadSafeWorkspace] iconForFileType: NSFileTypeForHFSTypeCode(kGenericFolderIcon)] retain];
-                      [sLargeGenericFolderIcon setSize:NSMakeSize(128,128)];
+                      sLargeGenericFolderIcon.size = NSMakeSize(128,128);
                       
                       if (sLargeGenericFolderIcon == nil)
                       {
@@ -390,7 +390,7 @@
 	dispatch_once(&sOnceToken,^()
                   {
                       sGenericFileIcon = [[[NSWorkspace imb_threadSafeWorkspace] iconForFileType: NSFileTypeForHFSTypeCode(kGenericDocumentIcon)] retain];
-                      [sGenericFileIcon setSize:NSMakeSize(16,16)];
+                      sGenericFileIcon.size = NSMakeSize(16,16);
                   });
 	
 	return sGenericFileIcon;
@@ -426,7 +426,7 @@
 - (NSBitmapImageRep *) imb_firstBitmap	
 {
 	NSBitmapImageRep *result = nil;
-	NSArray *reps = [self representations];
+	NSArray *reps = self.representations;
     
 	for (NSImageRep *theRep in reps )
 	{
@@ -449,7 +449,7 @@
 	if (nil == result)	
 	{
 		NSInteger width, height;
-		NSSize sz = [self size];
+		NSSize sz = self.size;
 		width = sz.width;
 		height = sz.height;
 		[self lockFocus];
@@ -468,8 +468,8 @@
     NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
     NSTextAttachmentCell* cell = [[NSTextAttachmentCell alloc] init];
  
-	[cell setImage:self];
-    [attachment setAttachmentCell:cell];
+	cell.image = self;
+    attachment.attachmentCell = cell;
     NSAttributedString* string = [NSAttributedString attributedStringWithAttachment:attachment];
 
     [attachment release];

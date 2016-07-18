@@ -137,19 +137,19 @@
 	if (inValue != nil && [inValue isKindOfClass:[NSString class]])
 	{
 		NSArray* parts = [(NSString*)inValue componentsSeparatedByString:@":"];
-		NSInteger n = [parts count];
+		NSInteger n = parts.count;
 		double multiplier = 1.0;
 		
 		for (NSInteger i=n-1; i>=0; i--)
 		{
-			NSString* string = [parts objectAtIndex:i];
-			double value = [string doubleValue];
+			NSString* string = parts[i];
+			double value = string.doubleValue;
 			t += value * multiplier;
 			multiplier *= 60.0;
 		}
 	}
 	
-	return [NSNumber numberWithDouble:t];
+	return @(t);
 }
 	
 

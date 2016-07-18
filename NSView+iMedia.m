@@ -96,7 +96,7 @@
 {
 	// First completely unbind this view...
 	
-	NSArray* bindings = [inRootView exposedBindings];
+	NSArray* bindings = inRootView.exposedBindings;
 	
 	for (NSString* key in bindings)
 	{

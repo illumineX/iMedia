@@ -60,15 +60,14 @@
 
 // Designated initializer
 
-- (id) initWithView:(NSView *)inView;
+- (instancetype) initWithView:(NSView *)inView NS_DESIGNATED_INITIALIZER;
 
 // Returns the background color of its view if the view itself supports -backgroundColor
 
-- (NSColor *)backgroundColor;
+@property (NS_NONATOMIC_IOSONLY, copy) NSColor *backgroundColor;
 
 // Sets the background color on its view if the view itself supports -setBackgroundColor:
 
-- (void) setBackgroundColor:(NSColor *)inColor;
 
 @end
 

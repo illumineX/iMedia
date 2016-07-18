@@ -120,8 +120,8 @@ extern NSString* kIMBImageBrowserShowTitlesNotification;
 
 // Current view...
 
-- (NSString*) currentMediaType;
-- (IMBNodeViewController*) currentNodeViewController;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *currentMediaType;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) IMBNodeViewController *currentNodeViewController;
 
 // Persistence...
 
@@ -134,8 +134,8 @@ extern NSString* kIMBImageBrowserShowTitlesNotification;
 - (IBAction) hideWindow:(id)inSender;
 
 - (IBAction) showInfoWindow:(id)inSender;
-- (BOOL) isInfoWindowVisible;
-- (NSWindow *)infoWindow;
+@property (NS_NONATOMIC_IOSONLY, getter=isInfoWindowVisible, readonly) BOOL infoWindowVisible;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) NSWindow *infoWindow;
 
 @end
 

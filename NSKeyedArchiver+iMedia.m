@@ -77,9 +77,7 @@
 		
 		if (dest)
 		{
-			NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithFloat:0.7],(id)kCGImageDestinationLossyCompressionQuality,
-				nil];
+			NSDictionary* options = @{(id)kCGImageDestinationLossyCompressionQuality: @0.7f};
 				
 			CGImageDestinationAddImage(dest,inImage,(CFDictionaryRef)options);
 			CGImageDestinationFinalize(dest);
@@ -95,9 +93,9 @@
 
 - (void) encodeNSImage:(NSImage*)inImage forKey:(NSString*)inKey
 {
-	if ([[inImage representations] count] == 0)
+	if (inImage.representations.count == 0)
 	{
-		NSData* tiff = [inImage TIFFRepresentation];
+		NSData* tiff = inImage.TIFFRepresentation;
 		NSBitmapImageRep* bitmap = [NSBitmapImageRep imageRepWithData:tiff];
 		[inImage addRepresentation:bitmap];
 	}

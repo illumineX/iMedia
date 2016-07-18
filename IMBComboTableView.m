@@ -152,30 +152,22 @@
     IMBComboTableViewAppearance* appearance = [[[IMBComboTableViewAppearance alloc] initWithView:self] autorelease];
     
     NSMutableParagraphStyle* paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
-    [paragraphStyle setLineBreakMode:NSLineBreakByTruncatingTail];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     
-    appearance.rowTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [NSFont systemFontOfSize:13.0],NSFontAttributeName,
-                                    paragraphStyle,NSParagraphStyleAttributeName,
-                                    nil];
+    appearance.rowTextAttributes = @{NSFontAttributeName: [NSFont systemFontOfSize:13.0],
+                                    NSParagraphStyleAttributeName: paragraphStyle};
     
-    appearance.rowTextHighlightAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [NSFont systemFontOfSize:13.0],NSFontAttributeName,
-                                             [NSColor selectedMenuItemTextColor], NSForegroundColorAttributeName,
-                                             paragraphStyle,NSParagraphStyleAttributeName,
-                                             nil];
+    appearance.rowTextHighlightAttributes = @{NSFontAttributeName: [NSFont systemFontOfSize:13.0],
+                                             NSForegroundColorAttributeName: [NSColor selectedMenuItemTextColor],
+                                             NSParagraphStyleAttributeName: paragraphStyle};
     
-    appearance.subRowTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                       [NSFont systemFontOfSize:11.0],NSFontAttributeName,
-                                       [[NSColor textColor] colorWithAlphaComponent:0.4], NSForegroundColorAttributeName,
-                                       paragraphStyle,NSParagraphStyleAttributeName,
-                                    nil];
+    appearance.subRowTextAttributes = @{NSFontAttributeName: [NSFont systemFontOfSize:11.0],
+                                       NSForegroundColorAttributeName: [[NSColor textColor] colorWithAlphaComponent:0.4],
+                                       NSParagraphStyleAttributeName: paragraphStyle};
     
-    appearance.subRowTextHighlightAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                [NSFont systemFontOfSize:11.0],NSFontAttributeName,
-                                                [[NSColor selectedMenuItemTextColor] colorWithAlphaComponent:0.4], NSForegroundColorAttributeName,
-                                                paragraphStyle,NSParagraphStyleAttributeName,
-                                             nil];
+    appearance.subRowTextHighlightAttributes = @{NSFontAttributeName: [NSFont systemFontOfSize:11.0],
+                                                NSForegroundColorAttributeName: [[NSColor selectedMenuItemTextColor] colorWithAlphaComponent:0.4],
+                                                NSParagraphStyleAttributeName: paragraphStyle};
     
    return appearance;
 }

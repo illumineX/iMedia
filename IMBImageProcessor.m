@@ -83,7 +83,7 @@
  */
 - (NSImage *)imageMosaicFromImages:(NSArray *)images withBackgroundImage:(NSImage *)backgroundImage withCornerRadius:(CGFloat)cornerRadius
 {
-    if ([images count] == 0) {
+    if (images.count == 0) {
         return nil;
     }
     
@@ -102,7 +102,7 @@
         backgroundHeight = CGImageGetHeight(backgroundImageRef);
         squareSize = MIN(backgroundWidth, backgroundHeight);
     } else {
-        colorSpaceRef = CGImageGetColorSpace([(NSImage *)[images firstObject] imb_CGImage]);
+        colorSpaceRef = CGImageGetColorSpace([(NSImage *)images.firstObject imb_CGImage]);
     }
     
     CGContextRef bitmapContext = CGBitmapContextCreate(NULL,
@@ -146,7 +146,7 @@
         for (NSInteger col = 0; col < 3; col++) {
             NSInteger imageIndex = row * rowCount + col;
             
-            if (imageIndex >= [images count])  break;
+            if (imageIndex >= images.count)  break;
             
             NSImage *image = images[imageIndex];
             CGImageRef squaredImageRef = [self CGImageSquaredWithCornerRadius:0.0 fromImage:[image imb_CGImage]];

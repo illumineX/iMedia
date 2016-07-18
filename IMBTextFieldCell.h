@@ -50,13 +50,12 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-typedef enum
+typedef NS_ENUM(unsigned int, IMBTextAlignment)
 {
 	kIMBTopTextAlignment,
 	kIMBVerticalCenterTextAlignment,
 	kIMBBottomTextAlignment
-} 
-IMBTextAlignment;
+};
 
 
 //----------------------------------------------------------------------------------------------------------------------

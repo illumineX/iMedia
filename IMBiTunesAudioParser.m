@@ -107,7 +107,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -138,10 +138,10 @@
 
 - (IMBNode*) unpopulatedTopLevelNode:(NSError**)outError
 {
-	NSString* path = [self.mediaSource path];
+	NSString* path = (self.mediaSource).path;
 
 	NSImage* icon = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:self.appPath];
-	[icon setSize:NSMakeSize(16.0,16.0)];
+	icon.size = NSMakeSize(16.0,16.0);
 	
 	// Create an empty (unpopulated) root node...
 	
@@ -156,7 +156,7 @@
 	
 	if (self.shouldDisplayLibraryName)
 	{
-		NSString* libraryName = [[[path stringByDeletingLastPathComponent] lastPathComponent] stringByDeletingPathExtension];
+		NSString* libraryName = path.stringByDeletingLastPathComponent.lastPathComponent.stringByDeletingPathExtension;
 		node.name = [NSString stringWithFormat:@"%@ (%@)",node.name,libraryName];
 	}
 
@@ -164,7 +164,7 @@
 	// the root node down, as we have no way of finding WHAT has changed in iTunes...
 	
 	node.watcherType = kIMBWatcherTypeFSEvent;
-	node.watchedPath = [path stringByDeletingLastPathComponent];
+	node.watchedPath = path.stringByDeletingLastPathComponent;
 	
 	return node;
 }
@@ -176,8 +176,8 @@
 - (BOOL) populateNode:(IMBNode*)inNode error:(NSError**)outError
 {
 	NSDictionary* plist = self.plist;
-	NSArray* playlists = [plist objectForKey:@"Playlists"];
-	NSDictionary* tracks = [plist objectForKey:@"Tracks"];
+	NSArray* playlists = plist[@"Playlists"];
+	NSDictionary* tracks = plist[@"Tracks"];
 	
 	[self addSubnodesToNode:inNode playlists:playlists tracks:tracks]; 
 	[self populateNode:inNode playlists:playlists tracks:tracks]; 
@@ -190,9 +190,9 @@
     
 	if (inNode.isTopLevelNode)
 	{
-		if ([inNode.subnodes count] > 0)
+		if ((inNode.subnodes).count > 0)
 		{
-			IMBNode* musicNode = [inNode.subnodes objectAtIndex:0];
+			IMBNode* musicNode = (inNode.subnodes)[0];
 			result = [self populateNode:musicNode error:outError];
 			inNode.objects = musicNode.objects;
 		}
@@ -264,7 +264,7 @@
 		{
 			self.atomic_plist = [NSDictionary dictionaryWithContentsOfURL:url];
 			self.modificationDate = modificationDate;
-			self.version = [[_plist objectForKey:@"Application Version"] intValue];
+			self.version = [_plist[@"Application Version"] intValue];
 		}
 	}
 	
@@ -309,23 +309,23 @@
 {
 	if (inPlaylistDict == nil) return NO;
 	
-	NSNumber* visible = [inPlaylistDict objectForKey:@"Visible"];
-	if (visible!=nil && [visible boolValue]==NO) return NO;
+	NSNumber* visible = inPlaylistDict[@"Visible"];
+	if (visible!=nil && visible.boolValue==NO) return NO;
 	
-	if ([[inPlaylistDict objectForKey:@"Distinguished Kind"] intValue]==26) return NO;	// Genius
+	if ([inPlaylistDict[@"Distinguished Kind"] intValue]==26) return NO;	// Genius
 	
 	if ([self.mediaType isEqualToString:kIMBMediaTypeAudio])
 	{
-		if ([inPlaylistDict objectForKey:@"Movies"]) return NO;
-		if ([inPlaylistDict objectForKey:@"TV Shows"]) return NO;
+		if (inPlaylistDict[@"Movies"]) return NO;
+		if (inPlaylistDict[@"TV Shows"]) return NO;
 	}
 	else if ([self.mediaType isEqualToString:kIMBMediaTypeMovie])
 	{
-		if ([inPlaylistDict objectForKey:@"Music"]) return NO;
-		if ([inPlaylistDict objectForKey:@"Podcasts"]) return NO;
-		if ([inPlaylistDict objectForKey:@"Audiobooks"]) return NO;
-		if ([inPlaylistDict objectForKey:@"Purchased Music"]) return NO;
-		if ([inPlaylistDict objectForKey:@"Party Shuffle"]) return NO;
+		if (inPlaylistDict[@"Music"]) return NO;
+		if (inPlaylistDict[@"Podcasts"]) return NO;
+		if (inPlaylistDict[@"Audiobooks"]) return NO;
+		if (inPlaylistDict[@"Purchased Music"]) return NO;
+		if (inPlaylistDict[@"Party Shuffle"]) return NO;
 	}
 	
 	return YES;
@@ -339,7 +339,7 @@
 
 - (BOOL) isLeafPlaylist:(NSDictionary*)inPlaylistDict
 {
-	return [inPlaylistDict objectForKey:@"Folder"] == nil;
+	return inPlaylistDict[@"Folder"] == nil;
 }
 
 
@@ -352,137 +352,137 @@
 	
 	if (_version < 7)
 	{
-		if ([inPlaylistDict objectForKey:@"Library"])
+		if (inPlaylistDict[@"Library"])
 			filename = @"itunes-icon-library.png";
-		else if ([inPlaylistDict objectForKey:@"Movies"])
+		else if (inPlaylistDict[@"Movies"])
 			filename =  @"itunes-icon-movies.png";
-		else if ([inPlaylistDict objectForKey:@"TV Shows"])
+		else if (inPlaylistDict[@"TV Shows"])
 			filename =  @"itunes-icon-tvshows.png";
-		else if ([inPlaylistDict objectForKey:@"Podcasts"])
+		else if (inPlaylistDict[@"Podcasts"])
 			filename =  @"itunes-icon-podcasts.png";
-		else if ([inPlaylistDict objectForKey:@"Audiobooks"])
+		else if (inPlaylistDict[@"Audiobooks"])
 			filename =  @"itunes-icon-audiobooks.png";
-		else if ([inPlaylistDict objectForKey:@"Purchased Music"])
+		else if (inPlaylistDict[@"Purchased Music"])
 			filename =  @"itunes-icon-purchased.png";
-		else if ([inPlaylistDict objectForKey:@"Party Shuffle"])
+		else if (inPlaylistDict[@"Party Shuffle"])
 			filename =  @"itunes-icon-partyshuffle.png";
-		else if ([inPlaylistDict objectForKey:@"Folder"])
+		else if (inPlaylistDict[@"Folder"])
 			filename =  @"itunes-icon-folder.png";
-		else if ([inPlaylistDict objectForKey:@"Smart Info"])
+		else if (inPlaylistDict[@"Smart Info"])
 			filename =  @"itunes-icon-playlist-smart.png";
 		else 
 			filename =  @"itunes-icon-playlist-normal.png";
 	}
 	else if (_version < 9)
 	{
-		if ([inPlaylistDict objectForKey:@"master"])
+		if (inPlaylistDict[@"master"])
 			filename =  @"itunes-icon-music.png";
-		else if ([inPlaylistDict objectForKey:@"Library"])
+		else if (inPlaylistDict[@"Library"])
 			filename =  @"itunes-icon-music.png";
-		else if ([inPlaylistDict objectForKey:@"Music"])
+		else if (inPlaylistDict[@"Music"])
 			filename =  @"itunes-icon-music.png";
-		else if ([inPlaylistDict objectForKey:@"Movies"])
+		else if (inPlaylistDict[@"Movies"])
 			filename =  @"itunes-icon-movies.png";
-		else if ([inPlaylistDict objectForKey:@"TV Shows"])
+		else if (inPlaylistDict[@"TV Shows"])
 			filename =  @"itunes-icon-tvshows.png";
-		else if ([inPlaylistDict objectForKey:@"Podcasts"])
+		else if (inPlaylistDict[@"Podcasts"])
 			filename =  @"itunes-icon-podcasts7.png";
-		else if ([inPlaylistDict objectForKey:@"Audiobooks"])
+		else if (inPlaylistDict[@"Audiobooks"])
 			filename =  @"itunes-icon-audiobooks.png";
-		else if ([inPlaylistDict objectForKey:@"Purchased Music"])
+		else if (inPlaylistDict[@"Purchased Music"])
 			filename =  @"itunes-icon-purchased7.png";
-		else if ([inPlaylistDict objectForKey:@"Party Shuffle"])
+		else if (inPlaylistDict[@"Party Shuffle"])
 			filename =  @"itunes-icon-partyshuffle7.png";
-		else if ([inPlaylistDict objectForKey:@"Folder"])
+		else if (inPlaylistDict[@"Folder"])
 			filename =  @"itunes-icon-folder7.png";
-		else if ([inPlaylistDict objectForKey:@"Smart Info"])
+		else if (inPlaylistDict[@"Smart Info"])
 			filename =  @"itunes-icon-playlist-smart7.png";
 		else 
 			filename =  @"itunes-icon-playlist-normal7.png";
 	}
 	else if (_version < 10)
 	{
-		if ([inPlaylistDict objectForKey:@"master"])
+		if (inPlaylistDict[@"master"])
 			filename =  @"iTunes9-icon-01.png";
-		else if ([inPlaylistDict objectForKey:@"Library"])
+		else if (inPlaylistDict[@"Library"])
 			filename =  @"iTunes9-icon-01.png";
-		else if ([inPlaylistDict objectForKey:@"Music"])
+		else if (inPlaylistDict[@"Music"])
 			filename =  @"iTunes9-icon-01.png";
-		else if ([inPlaylistDict objectForKey:@"Movies"])
+		else if (inPlaylistDict[@"Movies"])
 			filename =  @"iTunes9-icon-02.png";
-		else if ([inPlaylistDict objectForKey:@"TV Shows"])
+		else if (inPlaylistDict[@"TV Shows"])
 			filename =  @"iTunes9-icon-03.png";
-		else if ([inPlaylistDict objectForKey:@"Podcasts"])
+		else if (inPlaylistDict[@"Podcasts"])
 			filename =  @"iTunes9-icon-04.png";
-		else if ([inPlaylistDict objectForKey:@"Audiobooks"])
+		else if (inPlaylistDict[@"Audiobooks"])
 			filename =  @"iTunes9-icon-06.png";
-		else if ([inPlaylistDict objectForKey:@"iTunesU"])
+		else if (inPlaylistDict[@"iTunesU"])
 			filename =  @"iTunes9-icon-30.png";
-		else if ([inPlaylistDict objectForKey:@"Purchased Music"])
+		else if (inPlaylistDict[@"Purchased Music"])
 			filename =  @"iTunes9-icon-07.png";
-		else if ([inPlaylistDict objectForKey:@"Party Shuffle"])
+		else if (inPlaylistDict[@"Party Shuffle"])
 			filename =  @"iTunes9-icon-18.png";
-		else if ([inPlaylistDict objectForKey:@"Folder"])
+		else if (inPlaylistDict[@"Folder"])
 			filename =  @"iTunes9-icon-19.png";
-		else if ([inPlaylistDict objectForKey:@"Smart Info"])
+		else if (inPlaylistDict[@"Smart Info"])
 			filename =  @"iTunes9-icon-20.png";
 		else 
 			filename =  @"iTunes9-icon-21.png";
 	}
 	else if (_version < 11)
 	{
-		if ([inPlaylistDict objectForKey:@"master"])
+		if (inPlaylistDict[@"master"])
 			filename =  @"iTunes10-icon-01.png";
-		else if ([inPlaylistDict objectForKey:@"Library"])
+		else if (inPlaylistDict[@"Library"])
 			filename =  @"iTunes10-icon-01.png";
-		else if ([inPlaylistDict objectForKey:@"Music"])
+		else if (inPlaylistDict[@"Music"])
 			filename =  @"iTunes10-icon-01.png";
-		else if ([inPlaylistDict objectForKey:@"Movies"])
+		else if (inPlaylistDict[@"Movies"])
 			filename =  @"iTunes10-icon-02.png";
-		else if ([inPlaylistDict objectForKey:@"TV Shows"])
+		else if (inPlaylistDict[@"TV Shows"])
 			filename =  @"iTunes10-icon-03.png";
-		else if ([inPlaylistDict objectForKey:@"Podcasts"])
+		else if (inPlaylistDict[@"Podcasts"])
 			filename =  @"iTunes10-icon-04.png";
-		else if ([inPlaylistDict objectForKey:@"Audiobooks"])
+		else if (inPlaylistDict[@"Audiobooks"])
 			filename =  @"iTunes10-icon-06.png";
-		else if ([inPlaylistDict objectForKey:@"iTunesU"])
+		else if (inPlaylistDict[@"iTunesU"])
 			filename =  @"iTunes10-icon-30.png";
-		else if ([inPlaylistDict objectForKey:@"Purchased Music"])
+		else if (inPlaylistDict[@"Purchased Music"])
 			filename =  @"iTunes10-icon-07.png";
-		else if ([inPlaylistDict objectForKey:@"Party Shuffle"])
+		else if (inPlaylistDict[@"Party Shuffle"])
 			filename =  @"iTunes10-icon-18.png";
-		else if ([inPlaylistDict objectForKey:@"Folder"])
+		else if (inPlaylistDict[@"Folder"])
 			filename =  @"iTunes10-icon-19.png";
-		else if ([inPlaylistDict objectForKey:@"Smart Info"])
+		else if (inPlaylistDict[@"Smart Info"])
 			filename =  @"iTunes10-icon-20.png";
 		else 
 			filename =  @"iTunes10-icon-21.png";
 	}
 	else 
 	{
-		if ([inPlaylistDict objectForKey:@"master"])
+		if (inPlaylistDict[@"master"])
 			filename =  @"iTunes11-icon-01.tiff";
-		else if ([inPlaylistDict objectForKey:@"Library"])
+		else if (inPlaylistDict[@"Library"])
 			filename =  @"iTunes11-icon-01.tiff";
-		else if ([inPlaylistDict objectForKey:@"Music"])
+		else if (inPlaylistDict[@"Music"])
 			filename =  @"iTunes11-icon-01.tiff";
-		else if ([inPlaylistDict objectForKey:@"Movies"])
+		else if (inPlaylistDict[@"Movies"])
 			filename =  @"iTunes11-icon-02.tiff";
-		else if ([inPlaylistDict objectForKey:@"TV Shows"])
+		else if (inPlaylistDict[@"TV Shows"])
 			filename =  @"iTunes11-icon-03.tiff";
-		else if ([inPlaylistDict objectForKey:@"Podcasts"])
+		else if (inPlaylistDict[@"Podcasts"])
 			filename =  @"iTunes11-icon-04.tiff";
-		else if ([inPlaylistDict objectForKey:@"Audiobooks"])
+		else if (inPlaylistDict[@"Audiobooks"])
 			filename =  @"iTunes11-icon-06.tiff";
-		else if ([inPlaylistDict objectForKey:@"iTunesU"])
+		else if (inPlaylistDict[@"iTunesU"])
 			filename =  @"iTunes11-icon-30.tiff";
-		else if ([inPlaylistDict objectForKey:@"Purchased Music"])
+		else if (inPlaylistDict[@"Purchased Music"])
 			filename =  @"iTunes11-icon-07.tiff";
-		else if ([inPlaylistDict objectForKey:@"Party Shuffle"])
+		else if (inPlaylistDict[@"Party Shuffle"])
 			filename =  @"iTunes11-icon-18.tiff";
-		else if ([inPlaylistDict objectForKey:@"Folder"])
+		else if (inPlaylistDict[@"Folder"])
 			filename =  @"iTunes11-icon-19.tiff";
-		else if ([inPlaylistDict objectForKey:@"Smart Info"])
+		else if (inPlaylistDict[@"Smart Info"])
 			filename =  @"iTunes11-icon-20.tiff";
 		else 
 			filename =  @"iTunes11-icon-21.tiff";
@@ -516,8 +516,8 @@
 	{
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 		
-		NSString* albumName = [playlistDict objectForKey:@"Name"];
-		NSString* parentID = [playlistDict objectForKey:@"Parent Persistent ID"];
+		NSString* albumName = playlistDict[@"Name"];
+		NSString* parentID = playlistDict[@"Parent Persistent ID"];
 		NSString* parentIdentifier = parentID ? [self identifierWithPersistentID:parentID] : [self identifierForPath:@"/"];
 		
 		if ([self shoudlUsePlaylist:playlistDict] && [inParentNode.identifier isEqualToString:parentIdentifier])
@@ -534,7 +534,7 @@
 			// that older versions of iPhoto didn't have AlbumId, so we are generating fake AlbumIds in this case
 			// for backwards compatibility...
 			
-			NSString* playlistID = [playlistDict objectForKey:@"Playlist Persistent ID"];
+			NSString* playlistID = playlistDict[@"Playlist Persistent ID"];
 			playlistNode.identifier = [self identifierWithPersistentID:playlistID];
 
 			// Add the new album node to its parent (inRootNode)...
@@ -563,26 +563,26 @@
 	for (NSDictionary* playlistDict in inPlaylists)
 	{
 		NSAutoreleasePool* pool1 = [[NSAutoreleasePool alloc] init];
-		NSString* playlistID = [playlistDict objectForKey:@"Playlist Persistent ID"];
+		NSString* playlistID = playlistDict[@"Playlist Persistent ID"];
 		NSString* playlistIdentifier = [self identifierWithPersistentID:playlistID];
 
 		if ([inNode.identifier isEqualToString:playlistIdentifier])
 		{
-			NSArray* trackKeys = [playlistDict objectForKey:@"Playlist Items"];
+			NSArray* trackKeys = playlistDict[@"Playlist Items"];
 			NSUInteger index = 0;
 
 			for (NSDictionary* trackID in trackKeys)
 			{
 				NSAutoreleasePool* pool2 = [[NSAutoreleasePool alloc] init];
-				NSString* key = [[trackID objectForKey:@"Track ID"] stringValue];
-				NSDictionary* trackDict = [inTracks objectForKey:key];
+				NSString* key = [trackID[@"Track ID"] stringValue];
+				NSDictionary* trackDict = inTracks[key];
 			
 				if ([self shouldUseTrack:trackDict])
 				{
 					// Get name and path to file...
 					
-					NSString* name = [trackDict objectForKey:@"Name"];
-					NSString* location = [trackDict objectForKey:@"Location"];
+					NSString* name = trackDict[@"Name"];
+					NSString* location = trackDict[@"Location"];
 					NSURL* url = [NSURL URLWithString:location];
 					
 					// Create an object...
@@ -610,20 +610,20 @@
 					NSMutableDictionary* metadata = [NSMutableDictionary dictionaryWithDictionary:trackDict];
 					object.metadata = metadata;
 					
-					double duration = [[trackDict objectForKey:@"Total Time"] doubleValue] / 1000.0;
-					[metadata setObject:[NSNumber numberWithDouble:duration] forKey:@"duration"]; 
+					double duration = [trackDict[@"Total Time"] doubleValue] / 1000.0;
+					metadata[@"duration"] = @(duration); 
 					
-					NSString* artist = [trackDict objectForKey:@"Artist"];
-					if (artist) [metadata setObject:artist forKey:@"artist"]; 
+					NSString* artist = trackDict[@"Artist"];
+					if (artist) metadata[@"artist"] = artist; 
 					
-					NSString* album = [trackDict objectForKey:@"Album"];
-					if (album) [metadata setObject:album forKey:@"album"]; 
+					NSString* album = trackDict[@"Album"];
+					if (album) metadata[@"album"] = album; 
 					
-					NSString* genre = [trackDict objectForKey:@"Genre"];
-					if (genre) [metadata setObject:genre forKey:@"genre"]; 
+					NSString* genre = trackDict[@"Genre"];
+					if (genre) metadata[@"genre"] = genre; 
 
-					NSString* comment = [trackDict objectForKey:@"Comment"];
-					if (comment) [metadata setObject:comment forKey:@"comment"]; 
+					NSString* comment = trackDict[@"Comment"];
+					if (comment) metadata[@"comment"] = comment; 
 					
 					object.metadataDescription = [self metadataDescriptionForMetadata:metadata];
 				}
@@ -655,11 +655,11 @@
 - (BOOL) shouldUseTrack:(NSDictionary*)inTrackDict
 {
 	if (inTrackDict == nil) return NO;
-	if ([inTrackDict objectForKey:@"Name"] == nil) return NO;
-	if ([[inTrackDict objectForKey:@"Location"] length] == 0) return NO;
-	if ([[inTrackDict objectForKey:@"Has Video"] boolValue] == 1) return NO;
-	if (![[inTrackDict objectForKey:@"Location"] hasPrefix:@"file:"]) return NO;
-	if ([[inTrackDict objectForKey:@"Location"] hasSuffix:@".m4p"]) return NO;
+	if (inTrackDict[@"Name"] == nil) return NO;
+	if ([inTrackDict[@"Location"] length] == 0) return NO;
+	if ([inTrackDict[@"Has Video"] boolValue] == 1) return NO;
+	if (![inTrackDict[@"Location"] hasPrefix:@"file:"]) return NO;
+	if ([inTrackDict[@"Location"] hasSuffix:@".m4p"]) return NO;
 	
 	return YES;
 }

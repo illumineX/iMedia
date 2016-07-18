@@ -75,8 +75,8 @@
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSMutableDictionary* classDict = [NSMutableDictionary dictionary];
-	[classDict setObject:[NSNumber numberWithUnsignedInteger:kIMBObjectViewTypeIcon] forKey:@"viewType"];
-	[classDict setObject:[NSNumber numberWithDouble:0.5] forKey:@"iconSize"];
+	classDict[@"viewType"] = @(kIMBObjectViewTypeIcon);
+	classDict[@"iconSize"] = @0.5;
 	[IMBConfig registerDefaultPrefs:classDict forClass:self.class];
 	[pool drain];
 }
@@ -125,7 +125,7 @@
 
 // Designated initializer
 
-- (id) initForNode:(IMBNode*)inNode
+- (instancetype) initForNode:(IMBNode*)inNode
 {
     NSString *nibName = [[self class] nibName];
     NSBundle *bundle = [NSBundle bundleForClass:[self class]];
@@ -158,11 +158,9 @@
 	[super awakeFromNib];
 	
 	// Prepare for skimming
-	[(IMBImageBrowserView*) [self iconView] enableSkimming];
+	[(IMBImageBrowserView*) self.iconView enableSkimming];
 	
-	ibObjectArrayController.searchableProperties = [NSArray arrayWithObjects:
-													@"name",
-													nil];
+	ibObjectArrayController.searchableProperties = @[@"name"];
 }
 
 
@@ -198,10 +196,10 @@
 // Stop Skimming on the identified item. Restore key image in cell.
 - (void) mouseExitedItemAtIndex:(NSInteger) inIndex
 {
-    NSArray *objects = [ibObjectArrayController arrangedObjects];
-    if (inIndex < [objects count])
+    NSArray *objects = ibObjectArrayController.arrangedObjects;
+    if (inIndex < objects.count)
     {
-        IMBSkimmableObject* item = [objects objectAtIndex:inIndex];
+        IMBSkimmableObject* item = objects[inIndex];
         
         [item resetCurrentSkimmingIndex];
         
@@ -213,10 +211,10 @@
 // Load the next thumbnail if mouse was moved sufficiently
 - (void) mouseSkimmedOnItemAtIndex:(NSInteger)inIndex atPoint:(NSPoint)inPoint
 {
-    NSArray *objects = [ibObjectArrayController arrangedObjects];
-    if (inIndex < [objects count])
+    NSArray *objects = ibObjectArrayController.arrangedObjects;
+    if (inIndex < objects.count)
     {
-        IMBSkimmableObject* item = [objects objectAtIndex:inIndex];
+        IMBSkimmableObject* item = objects[inIndex];
         
         // Derive child object's index in node object from inPoint's relative position in frame
         
@@ -224,12 +222,12 @@
 #if IMB_COMPILING_WITH_SNOW_LEOPARD_OR_NEWER_SDK
         if (IMBRunningOnSnowLeopardOrNewer())
         {
-            skimmingFrame = [[[self iconView] cellForItemAtIndex:inIndex] frame];	// >= 10.6
+            skimmingFrame = [[self.iconView cellForItemAtIndex:inIndex] frame];	// >= 10.6
         }
         else
 #endif
         {
-            skimmingFrame = [[self iconView] itemFrameAtIndex:inIndex];
+            skimmingFrame = [self.iconView itemFrameAtIndex:inIndex];
         }
         
         CGFloat xOffset = inPoint.x - skimmingFrame.origin.x;
@@ -256,12 +254,12 @@
 
 - (void) mouseMoved:(NSEvent *)anEvent
 {
-	IKImageBrowserView* iconView = [self iconView];
+	IKImageBrowserView* iconView = self.iconView;
 	
 	//NSLog( @"Mouse was moved in image browser");
-	NSPoint mouse = [iconView convertPoint:[anEvent locationInWindow] fromView:nil];
+	NSPoint mouse = [iconView convertPoint:anEvent.locationInWindow fromView:nil];
 	
-	if (!NSPointInRect(mouse, [iconView bounds]))
+	if (!NSPointInRect(mouse, iconView.bounds))
 		return;
 	
 	NSUInteger hoverIndex;

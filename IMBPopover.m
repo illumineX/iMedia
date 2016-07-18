@@ -99,7 +99,7 @@
 
 - (void) didScrollParentView:(NSNotification*)inNotification
 {
-	NSClipView* clipview = (NSClipView*)[inNotification object];
+	NSClipView* clipview = (NSClipView*)inNotification.object;
 	
 	NSRect popoverRect = self.positioningRect;
 	NSRect visibleRect = clipview.documentVisibleRect;

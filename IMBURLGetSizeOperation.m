@@ -120,7 +120,7 @@
 	{
 		NSURLRequestCachePolicy policy = NSURLRequestUseProtocolCachePolicy;
 		NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:self.remoteURL cachePolicy:policy timeoutInterval:15.0];
-		[request setHTTPMethod:@"HEAD"];
+		request.HTTPMethod = @"HEAD";
 		
 		self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
 				
@@ -155,7 +155,7 @@
 
 - (void) connection:(NSURLConnection*)inConnection didReceiveResponse:(NSURLResponse*)inResponse
 {
-	_bytesTotal += [inResponse expectedContentLength];
+	_bytesTotal += inResponse.expectedContentLength;
 }
 
 

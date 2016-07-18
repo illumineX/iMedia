@@ -156,8 +156,8 @@
 
 // Badges
 
-- (NSImage*) badgeIcon;
-- (NSImage*) badgeHighlightIcon;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSImage *badgeIcon;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSImage *badgeHighlightIcon;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -171,15 +171,15 @@
 
 // Designated initializer
 
-- (id) initWithParser:(IMBParser*)inParser topLevel:(BOOL)inTopLevel;
+- (instancetype) initWithParser:(IMBParser*)inParser topLevel:(BOOL)inTopLevel NS_DESIGNATED_INITIALIZER;
 
-- (NSUInteger) countOfSubnodes;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSUInteger countOfSubnodes;
 - (IMBNode*) objectInSubnodesAtIndex:(NSUInteger)inIndex;
 
 // For parser classes and IMBLibraryController, who need to modify nodes, use this method. By calling it, the node 
 // is marked as populated...
 
-- (NSMutableArray*) mutableArrayForPopulatingSubnodes;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableArray *mutableArrayForPopulatingSubnodes;
 
 // The parentNode is not retained!
 
@@ -195,13 +195,13 @@
 
 @property (retain) NSArray* objects;
 
-- (NSUInteger) countOfShallowObjects;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSUInteger countOfShallowObjects;
 - (IMBObject*) objectInShallowObjectsAtIndex:(NSUInteger)inIndex;
 
-- (NSUInteger) countOfRecursiveObjects;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSUInteger countOfRecursiveObjects;
 - (IMBObject*) objectInRecursiveObjectsAtIndex:(NSUInteger)inIndex;
 
-- (NSUInteger) countOfBindableObjects;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSUInteger countOfBindableObjects;
 - (IMBObject*) objectInBindableObjectsAtIndex:(NSUInteger)inIndex;
 
 // This property can be used by parsers if the real object count differs from what the NSArrayController sees. 
@@ -254,22 +254,22 @@
 - (BOOL) isAncestorOfNode:(IMBNode*)inNode;
 - (BOOL) isDescendantOfNode:(IMBNode*)inNode;
 
-- (NSIndexPath*) indexPath;
-- (IMBNode*) topLevelNode;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSIndexPath *indexPath;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) IMBNode *topLevelNode;
 
 // Returns the root url of this node's library (may be different from self.mediaSource)
 
-- (NSURL*)libraryRootURL;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSURL *libraryRootURL;
 
 - (IMBNode*) subnodeWithIdentifier:(NSString*)identifier;
-- (BOOL) isPopulated;
+@property (NS_NONATOMIC_IOSONLY, getter=isPopulated, readonly) BOOL populated;
 
 // The normal (non-mouseover), non-loading badge type for this node possibly derived
 // from other properties.
 
-- (IMBBadgeType) badgeTypeNormalNonLoading;
+@property (NS_NONATOMIC_IOSONLY, readonly) IMBBadgeType badgeTypeNormalNonLoading;
 
-- (BOOL)hasBadgeCallback;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasBadgeCallback;
 
 - (void)performBadgeCallback;
 @end

@@ -57,8 +57,8 @@
 
 
 @protocol IMBImageItem <NSObject>
-- (id)imageRepresentation;
-- (NSString *)imageRepresentationType;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) id imageRepresentation;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *imageRepresentationType;
 @end
 
 
@@ -71,8 +71,8 @@
 + (CIImage *)imageWithIMBImageItem:(id <IMBImageItem>)item;
 @end
 
-extern CGImageRef IMB_CGImageCreateWithImageItem(id <IMBImageItem> item);
+extern CGImageRef IMB_CGImageCreateWithImageItem(id <IMBImageItem> item) CF_RETURNS_RETAINED;
 
-extern CGImageSourceRef IMB_CGImageSourceCreateWithImageItem(id <IMBImageItem> item, CFDictionaryRef options);
+extern CGImageSourceRef IMB_CGImageSourceCreateWithImageItem(id <IMBImageItem> item, CFDictionaryRef options) CF_RETURNS_RETAINED;
 
 extern CGSize IMBImageItemGetSize(id <IMBImageItem> item);

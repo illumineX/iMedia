@@ -82,12 +82,12 @@
 
 - (NSComparisonResult) imb_metadataSizeCompare:(NSDictionary*)inDictionary
 {
-	NSInteger w1 = [[self objectForKey:@"width"] integerValue];
-	NSInteger h1 = [[self objectForKey:@"height"] integerValue];
+	NSInteger w1 = [self[@"width"] integerValue];
+	NSInteger h1 = [self[@"height"] integerValue];
 	NSInteger s1 = w1 * h1;
 
-	NSInteger w2 = [[inDictionary objectForKey:@"width"] integerValue];
-	NSInteger h2 = [[inDictionary objectForKey:@"height"] integerValue];
+	NSInteger w2 = [inDictionary[@"width"] integerValue];
+	NSInteger h2 = [inDictionary[@"height"] integerValue];
 	NSInteger s2 = w2 * h2;
 	
 	if (s1 == s2) return NSOrderedSame;
@@ -102,14 +102,14 @@
 + (NSString*)imb_metadataDescriptionForMovieMetadata:(NSDictionary*)inMetadata
 {
 	NSMutableString* description = [NSMutableString string];
-	NSNumber* duration = [inMetadata objectForKey:@"duration"];
-	NSNumber* width = [inMetadata objectForKey:@"width"];
-	NSNumber* height = [inMetadata objectForKey:@"height"];
-	NSString *path = [inMetadata objectForKey:@"path"];
-	NSString *comment = [inMetadata objectForKey:@"comment"];
+	NSNumber* duration = inMetadata[@"duration"];
+	NSNumber* width = inMetadata[@"width"];
+	NSNumber* height = inMetadata[@"height"];
+	NSString *path = inMetadata[@"path"];
+	NSString *comment = inMetadata[@"comment"];
 	if (comment) comment = [comment stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	
-	NSString* type = [inMetadata objectForKey:@"ImageType"];		// like MooV
+	NSString* type = inMetadata[@"ImageType"];		// like MooV
 	NSString* UTI = nil;
 
 	if (type != nil)
@@ -172,15 +172,15 @@
 + (NSString*)imb_metadataDescriptionForAudioMetadata:(NSDictionary*)inMetadata
 {
 	NSMutableString* description = [NSMutableString string];
-	NSNumber* duration = [inMetadata objectForKey:@"duration"];
-	NSString* artist = [inMetadata objectForKey:@"artist"];
-	NSString* album = [inMetadata objectForKey:@"album"];
-	NSString* comment = [inMetadata objectForKey:@"Comments"];
+	NSNumber* duration = inMetadata[@"duration"];
+	NSString* artist = inMetadata[@"artist"];
+	NSString* album = inMetadata[@"album"];
+	NSString* comment = inMetadata[@"Comments"];
 	if (comment) comment = [comment stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	NSString* kind = [inMetadata objectForKey:@"Kind"];
-	NSNumber* width = [inMetadata objectForKey:@"Video Width"];
-	NSNumber* height = [inMetadata objectForKey:@"Video Height"];
-	NSNumber* hasVideo = [inMetadata objectForKey:@"Has Video"];
+	NSString* kind = inMetadata[@"Kind"];
+	NSNumber* width = inMetadata[@"Video Width"];
+	NSNumber* height = inMetadata[@"Video Height"];
+	NSNumber* hasVideo = inMetadata[@"Has Video"];
 	
 	if (hasVideo)
 	{
@@ -267,7 +267,7 @@
 {
 	if (inObject != nil)
 	{
-		[self setObject:inObject forKey:inKey];
+		self[inKey] = inObject;
 	}
 	else
 	{

@@ -37,16 +37,16 @@
         IMBComboTextCell *theCell = (IMBComboTextCell *) inCell;
         
         theCell.textColor = [NSColor controlTextColor];
-        if ([theCell isHighlighted])
+        if (theCell.highlighted)
         {
             if (self.subRowTextHighlightAttributes) {
-                [theCell setSubtitleTextAttributes:self.subRowTextHighlightAttributes];
+                theCell.subtitleTextAttributes = self.subRowTextHighlightAttributes;
             } else if (self.subRowTextAttributes){
-                [theCell setSubtitleTextAttributes:self.subRowTextAttributes];
+                theCell.subtitleTextAttributes = self.subRowTextAttributes;
             }
         } else {    // Non-highlighted cell
             if (self.subRowTextAttributes) {
-                [theCell setSubtitleTextAttributes:self.subRowTextAttributes];
+                theCell.subtitleTextAttributes = self.subRowTextAttributes;
             }
         }
 	}

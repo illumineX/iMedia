@@ -96,7 +96,7 @@ static BOOL sClientAppCanHandleSSBs = NO;
 + (void) registerDefaultPrefsValue:(id)inValue forKey:(NSString*)inKey
 {
 	NSString* key = [NSString stringWithFormat:sIMBPrefsKeyFormat,inKey];
-	NSDictionary* defaults = [NSDictionary dictionaryWithObjectsAndKeys:inValue,key,nil];
+	NSDictionary* defaults = @{key: inValue};
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 }
 
@@ -160,7 +160,7 @@ static BOOL sClientAppCanHandleSSBs = NO;
 
 + (void) setShowsGroupNodes:(BOOL)inState
 {
-	[self setPrefsValue:[NSNumber numberWithBool:inState] forKey:sIMBShowsGroupNodesKey];
+	[self setPrefsValue:@(inState) forKey:sIMBShowsGroupNodesKey];
 }
 
 
@@ -258,7 +258,7 @@ static BOOL sClientAppCanHandleSSBs = NO;
 + (void) setViewerApp:(NSString*)inAppPath forMediaType:(NSString*)inMediaType
 {
 	NSMutableDictionary* viewerAppPaths = [NSMutableDictionary dictionaryWithDictionary:[self prefsValueForKey:sIMBViewerAppPathsKey]];
-	if (inAppPath) [viewerAppPaths setObject:inAppPath forKey:inMediaType];
+	if (inAppPath) viewerAppPaths[inMediaType] = inAppPath;
 	[self setPrefsValue:viewerAppPaths forKey:sIMBViewerAppPathsKey];
 }
 
@@ -266,7 +266,7 @@ static BOOL sClientAppCanHandleSSBs = NO;
 + (NSString*) viewerAppForMediaType:(NSString*)inMediaType
 {
 	NSDictionary* viewerAppPaths = [self prefsValueForKey:sIMBViewerAppPathsKey];
-	return [viewerAppPaths objectForKey:inMediaType];
+	return viewerAppPaths[inMediaType];
 }
 
 
@@ -278,7 +278,7 @@ static BOOL sClientAppCanHandleSSBs = NO;
 + (void) setEditorApp:(NSString*)inAppPath forMediaType:(NSString*)inMediaType
 {
 	NSMutableDictionary* editorAppPaths = [NSMutableDictionary dictionaryWithDictionary:[self prefsValueForKey:sIMBEditorAppPathsKey]];
-	if (inAppPath) [editorAppPaths setObject:inAppPath forKey:inMediaType];
+	if (inAppPath) editorAppPaths[inMediaType] = inAppPath;
 	[self setPrefsValue:editorAppPaths forKey:sIMBEditorAppPathsKey];
 }
 
@@ -286,7 +286,7 @@ static BOOL sClientAppCanHandleSSBs = NO;
 + (NSString*) editorAppForMediaType:(NSString*)inMediaType
 {
 	NSDictionary* editorAppPaths = [self prefsValueForKey:sIMBEditorAppPathsKey];
-	return [editorAppPaths objectForKey:inMediaType];
+	return editorAppPaths[inMediaType];
 }
 
 
@@ -313,9 +313,9 @@ static BOOL sClientAppCanHandleSSBs = NO;
 {
 	NSString* path = [NSHomeDirectory() stringByAppendingPathComponent:@"Downloads"];	// brute force fallback
 	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory,NSUserDomainMask,YES);
-	if ([paths count] > 0) path = [paths objectAtIndex:0];
+	if (paths.count > 0) path = paths[0];
 	
-	[self registerDefaultPrefsValue:[NSNumber numberWithBool:YES] forKey:sIMBShowsGroupNodesKey];
+	[self registerDefaultPrefsValue:@YES forKey:sIMBShowsGroupNodesKey];
 	[self registerDefaultPrefsValue:path forKey:sIMBDownloadFolderPathKey];
 	[self registerDefaultPrefsValue:[NSNumber numberWithInt:kIMBFlickrSizeSpecifierLarge] forKey:sIMBFlickrDownloadSizeKey];
 
@@ -326,15 +326,15 @@ static BOOL sClientAppCanHandleSSBs = NO;
 	NSString* photoshop = [[NSWorkspace imb_threadSafeWorkspace] absolutePathForAppBundleWithIdentifier:@"com.adobe.Photoshop"];
 
 	NSMutableDictionary* viewerAppPaths = [NSMutableDictionary dictionary];
-	if (preview) [viewerAppPaths setObject:preview forKey:kIMBMediaTypeImage];
-	if (qtplayerx) [viewerAppPaths setObject:qtplayerx forKey:kIMBMediaTypeAudio];
-	if (qtplayerx) [viewerAppPaths setObject:qtplayerx forKey:kIMBMediaTypeMovie];
-	if (safari) [viewerAppPaths setObject:safari forKey:kIMBMediaTypeLink];
-	if (addressbook) [viewerAppPaths setObject:addressbook forKey:kIMBMediaTypeContact];
+	if (preview) viewerAppPaths[kIMBMediaTypeImage] = preview;
+	if (qtplayerx) viewerAppPaths[kIMBMediaTypeAudio] = qtplayerx;
+	if (qtplayerx) viewerAppPaths[kIMBMediaTypeMovie] = qtplayerx;
+	if (safari) viewerAppPaths[kIMBMediaTypeLink] = safari;
+	if (addressbook) viewerAppPaths[kIMBMediaTypeContact] = addressbook;
 	[self registerDefaultPrefsValue:viewerAppPaths forKey:sIMBViewerAppPathsKey];
 
 	NSMutableDictionary* editorAppPaths = [NSMutableDictionary dictionary];
-	if (photoshop) [editorAppPaths setObject:photoshop forKey:kIMBMediaTypeImage];
+	if (photoshop) editorAppPaths[kIMBMediaTypeImage] = photoshop;
 	[self registerDefaultPrefsValue:editorAppPaths forKey:sIMBEditorAppPathsKey];
 }
 
@@ -366,7 +366,7 @@ static NSMutableSet *sLibraryPaths = nil;
 
 + (BOOL) isLibraryAtURL:(NSURL *)url;
 {
-	return [url isFileURL] && [sLibraryPaths containsObject:[url path]];
+	return url.fileURL && [sLibraryPaths containsObject:url.path];
 }
 
 // Future: We may need a method that loops through the library paths and asks if the given
@@ -393,7 +393,7 @@ static NSMutableSet *sLibraryPaths = nil;
     ^{
 		// Create the URL...
 	
-		NSString* bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+		NSString* bundleIdentifier = [NSBundle mainBundle].bundleIdentifier;
 		NSString* path = [NSHomeDirectory() stringByAppendingFormat:@"/Library/Preferences/%@.plist",bundleIdentifier];
 		sBookmarkBaseURL = [[NSURL fileURLWithPath:path] retain];
 	

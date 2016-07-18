@@ -3,11 +3,11 @@
 
 @implementation FMDatabase
 
-+ (id)databaseWithPath:(NSString*)aPath {
++ (instancetype)databaseWithPath:(NSString*)aPath {
     return [[[self alloc] initWithPath:aPath] autorelease];
 }
 
-- (id)initWithPath:(NSString*)aPath {
+- (instancetype)initWithPath:(NSString*)aPath {
     self = [super init];
 	
     if (self) {
@@ -43,7 +43,7 @@
 }
 
 - (BOOL) open {
-	int err = sqlite3_open([databasePath fileSystemRepresentation], &db );
+	int err = sqlite3_open(databasePath.fileSystemRepresentation, &db );
 	if(err != SQLITE_OK) {
         NSLog(@"error opening!: %d", err);
 		return NO;
@@ -54,7 +54,7 @@
 
 #if SQLITE_VERSION_NUMBER >= 3005000
 - (BOOL) openWithFlags:(int)flags {
-    int err = sqlite3_open_v2([databasePath fileSystemRepresentation], &db, flags, NULL /* Name of VFS module to use */);
+    int err = sqlite3_open_v2(databasePath.fileSystemRepresentation, &db, flags, NULL /* Name of VFS module to use */);
 	if(err != SQLITE_OK) {
 		NSLog(@"error opening!: %d", err);
 		return NO;
@@ -109,14 +109,14 @@
 }
 
 - (FMStatement*) cachedStatementForQuery:(NSString*)query {
-    return [cachedStatements objectForKey:query];
+    return cachedStatements[query];
 }
 
 - (void) setCachedStatement:(FMStatement*)statement forQuery:(NSString*)query {
     //NSLog(@"setting query: %@", query);
     query = [query copy]; // in case we got handed in a mutable string...
     [statement setQuery:query];
-    [cachedStatements setObject:statement forKey:query];
+    cachedStatements[query] = statement;
     [query release];
 }
 
@@ -179,7 +179,7 @@
 }
 
 - (NSString*) lastErrorMessage {
-    return [NSString stringWithUTF8String:sqlite3_errmsg(db)];
+    return @(sqlite3_errmsg(db));
 }
 
 - (BOOL) hadError {
@@ -241,11 +241,11 @@
             sqlite3_bind_double(pStmt, idx, [obj doubleValue]);
         }
         else {
-            sqlite3_bind_text(pStmt, idx, [[obj description] UTF8String], -1, SQLITE_STATIC);
+            sqlite3_bind_text(pStmt, idx, [obj description].UTF8String, -1, SQLITE_STATIC);
         }
     }
     else {
-        sqlite3_bind_text(pStmt, idx, [[obj description] UTF8String], -1, SQLITE_STATIC);
+        sqlite3_bind_text(pStmt, idx, [obj description].UTF8String, -1, SQLITE_STATIC);
     }
 }
 
@@ -279,7 +279,7 @@
     if (!pStmt) {
         do {
             retry   = NO;
-            rc      = sqlite3_prepare_v2(db, [sql UTF8String], -1, &pStmt, 0);
+            rc      = sqlite3_prepare_v2(db, sql.UTF8String, -1, &pStmt, 0);
             
             if (SQLITE_BUSY == rc) {
                 retry = YES;
@@ -323,7 +323,7 @@
     while (idx < queryCount) {
         
         if (arrayArgs) {
-            obj = [arrayArgs objectAtIndex:idx];
+            obj = arrayArgs[idx];
         }
         else {
             obj = va_arg(args, id);
@@ -412,7 +412,7 @@
         
         do {
             retry   = NO;
-            rc      = sqlite3_prepare_v2(db, [sql UTF8String], -1, &pStmt, 0);
+            rc      = sqlite3_prepare_v2(db, sql.UTF8String, -1, &pStmt, 0);
             if (SQLITE_BUSY == rc) {
                 retry = YES;
                 usleep(20);
@@ -456,7 +456,7 @@
     while (idx < queryCount) {
         
         if (arrayArgs) {
-            obj = [arrayArgs objectAtIndex:idx];
+            obj = arrayArgs[idx];
         }
         else {
             obj = va_arg(args, id);
@@ -744,7 +744,7 @@
 }
 
 - (NSString*) description {
-    return [NSString stringWithFormat:@"%@ %ld hit(s) for query %@", [super description], useCount, query];
+    return [NSString stringWithFormat:@"%@ %ld hit(s) for query %@", super.description, useCount, query];
 }
 
 

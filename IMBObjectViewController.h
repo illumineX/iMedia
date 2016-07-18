@@ -83,21 +83,19 @@
 
 #pragma mark CONSTANTS
 
-enum
+typedef NS_ENUM(NSUInteger, kIMBObjectViewType)
 {
 	kIMBObjectViewTypeIcon,
 	kIMBObjectViewTypeList,
 	kIMBObjectViewTypeCombo,
 };
-typedef NSUInteger kIMBObjectViewType;
 
-typedef enum
+typedef NS_ENUM(unsigned int, IMBObjectFilter)
 { 
 	kIMBObjectFilterAll = 0,
 	kIMBObjectFilterBadge,
 	kIMBObjectFilterNoBadge
-} 
-IMBObjectFilter;
+};
 
 extern NSString* kIMBObjectBadgesDidChangeNotification;
 
@@ -178,7 +176,7 @@ extern NSString* kIMBObjectBadgesDidChangeNotification;
 // the IMBObjectArrayController with content...
 
 @property (nonatomic, retain) IMBLibraryController* libraryController;
-- (NSString*) mediaType;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *mediaType;
 @property (assign) id<IMBObjectViewControllerDelegate> delegate;
 
 @property (nonatomic, retain) IMBNode* currentNode;
@@ -208,7 +206,7 @@ extern NSString* kIMBObjectBadgesDidChangeNotification;
 /**
  @return The object view that is currently selected through the tab view.
  */
-- (NSView *)selectedObjectView;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) NSView *selectedObjectView;
 
 - (void) willShowView;	// Called when an object view is shown
 - (void) didShowView;

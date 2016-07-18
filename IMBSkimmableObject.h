@@ -65,10 +65,10 @@
 
 // Returns the number of images to be skimmed through. Must be subclassed.
 
-- (NSUInteger) imageCount;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSUInteger imageCount;
 
 // Returns the image location that corresponds to the current skimming index. Must be subclassed.
-- (id) imageLocationForCurrentSkimmingIndex;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) id imageLocationForCurrentSkimmingIndex;
 
 // Need to set this flag from skimmable controller while skimming
 

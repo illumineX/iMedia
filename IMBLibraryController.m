@@ -171,12 +171,12 @@ static NSMutableDictionary* sLibraryControllers = nil;
 			sLibraryControllers = [[NSMutableDictionary alloc] init];
 		}
 
-		controller = [sLibraryControllers objectForKey:inMediaType];
+		controller = sLibraryControllers[inMediaType];
 		
 		if (controller == nil)
 		{
 			controller = [[[self class] alloc] initWithMediaType:inMediaType];
-			[sLibraryControllers setObject:controller forKey:inMediaType];
+			sLibraryControllers[inMediaType] = controller;
 			[controller release];
 		}
 	}
@@ -188,7 +188,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithMediaType:(NSString*)inMediaType
+- (instancetype) initWithMediaType:(NSString*)inMediaType
 {
 	if (self = [super init])
 	{
@@ -211,25 +211,25 @@ static NSMutableDictionary* sLibraryControllers = nil;
 			
 		// When volume are unmounted we would like to be notified so that we can stop listening for those paths...
 		
-		[[[NSWorkspace sharedWorkspace] notificationCenter]
+		[[NSWorkspace sharedWorkspace].notificationCenter
 			addObserver:self 
 			selector:@selector(_willUnmountVolume:)
 			name:NSWorkspaceWillUnmountNotification 
 			object:nil];
 			
-		[[[NSWorkspace sharedWorkspace] notificationCenter]
+		[[NSWorkspace sharedWorkspace].notificationCenter
 			addObserver:self
 			selector:@selector(_volumesDidChange)
 			name:NSWorkspaceDidMountNotification
 			object:nil];
 
-		[[[NSWorkspace sharedWorkspace] notificationCenter]
+		[[NSWorkspace sharedWorkspace].notificationCenter
 			addObserver:self
 			selector:@selector(_volumesDidChange)
 			name:NSWorkspaceDidUnmountNotification
 			object:nil];
 
-		[[[NSWorkspace sharedWorkspace] notificationCenter]
+		[[NSWorkspace sharedWorkspace].notificationCenter
 			addObserver:self
 			selector:@selector(_volumesDidChange)
 			name:NSWorkspaceDidRenameVolumeNotification
@@ -243,7 +243,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 - (void) dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+	[[NSWorkspace sharedWorkspace].notificationCenter removeObserver:self];
 
 	IMBRelease(_mediaType);
 	IMBRelease(_subnodes);
@@ -361,10 +361,8 @@ static NSMutableDictionary* sLibraryControllers = nil;
 							node.name,
 							node.parserIdentifier];
 							
-						NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-							title,@"title",
-							description,NSLocalizedDescriptionKey,
-							nil];
+						NSDictionary* info = @{@"title": title,
+							NSLocalizedDescriptionKey: description};
 							
 						node.error = [NSError errorWithDomain:kIMBErrorDomain code:paramErr userInfo:info];
 						if (node.error) NSLog(@"%s ERROR:\n\n%@",__FUNCTION__,node.error);
@@ -405,7 +403,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 - (void)populateNode:(IMBNode *)inNode errorHandler:(void(^)(NSError* error))inErrorHandler
 {
 	if ([IMBConfig suspendBackgroundTasks]) return;
-	if ([inNode isGroupNode]) return;
+	if (inNode.isGroupNode) return;
 	if ([inNode isPopulated]) return;
 //	if ([inNode error]) return;
 	
@@ -459,10 +457,8 @@ static NSMutableDictionary* sLibraryControllers = nil;
 						inNode.name,
 						inNewNode.parserIdentifier];
 						
-					NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-						title,@"title",
-						description,NSLocalizedDescriptionKey,
-						nil];
+					NSDictionary* info = @{@"title": title,
+						NSLocalizedDescriptionKey: description};
 						
 					inError = [NSError errorWithDomain:kIMBErrorDomain code:kIMBErrorInvalidState userInfo:info];
 				}
@@ -523,7 +519,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 - (void)reloadNodeTree:(IMBNode *)inOldNode errorHandler:(void(^)(NSError* error))inErrorHandler
 {
 	if ([IMBConfig suspendBackgroundTasks]) return;
-	if ([inOldNode isGroupNode]) return;
+	if (inOldNode.isGroupNode) return;
 
 	NSString* parentNodeIdentifier = inOldNode.parentNode.identifier;
 	IMBParserMessenger* messenger = inOldNode.parserMessenger;
@@ -675,14 +671,14 @@ static NSMutableDictionary* sLibraryControllers = nil;
 			
 			for (IMBNode* node2 in subnodes2)
 			{
-                if (!fileSystemBasedOnly || [node2.mediaSource isFileURL]) {
+                if (!fileSystemBasedOnly || (node2.mediaSource).fileURL) {
                     [self _reloadTopLevelNode:node2];
                 }
 			}
 		}
 		else 
 		{
-            if (!fileSystemBasedOnly || [node.mediaSource isFileURL]) {
+            if (!fileSystemBasedOnly || (node.mediaSource).fileURL) {
                 [self _reloadTopLevelNode:node];
             }
 		}
@@ -916,7 +912,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 		if (inOldNode != nil && inNewNode != nil)
         {
 			index = [subnodes indexOfObject:inOldNode];
-			[subnodes replaceObjectAtIndex:index withObject:inNewNode];
+			subnodes[index] = inNewNode;
 		}
 		
         // CASE 2: Remove the old node from the correct place...
@@ -998,13 +994,13 @@ static NSMutableDictionary* sLibraryControllers = nil;
 
 - (NSUInteger) countOfSubnodes
 {
-	return [_subnodes count];
+	return _subnodes.count;
 }
 
 
 - (IMBNode*) objectInSubnodesAtIndex:(NSUInteger)inIndex
 {
-	return [_subnodes objectAtIndex:inIndex];
+	return _subnodes[inIndex];
 }
 
 
@@ -1043,7 +1039,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 {
 	if (inIndex < _subnodes.count)
 	{
-		[_subnodes replaceObjectAtIndex:inIndex withObject:inNode];
+		_subnodes[inIndex] = inNode;
 	}
 	else 
 	{
@@ -1209,23 +1205,21 @@ static NSMutableDictionary* sLibraryControllers = nil;
 
 		if (inNode.isGroupNode) 
 		{
-			[item setTarget:inTarget];						// Group nodes get a dummy action that will be disabled
-			[item setAction:@selector(__dummyAction:)];		// in - [IMBNodeViewController validateMenuItem:]
+			item.target = inTarget;						// Group nodes get a dummy action that will be disabled
+			item.action = @selector(__dummyAction:);		// in - [IMBNodeViewController validateMenuItem:]
 
 			NSFont* font = [NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]];
 			NSColor* color = [NSColor disabledControlTextColor];
-			NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-				font,NSFontAttributeName,
-				color,NSForegroundColorAttributeName,
-				nil];
+			NSDictionary* attributes = @{NSFontAttributeName: font,
+				NSForegroundColorAttributeName: color};
 				
 			NSAttributedString* title = [[[NSAttributedString alloc] initWithString:name attributes:attributes] autorelease];
-			[item setAttributedTitle:title];
+			item.attributedTitle = title;
 		}
 		else
 		{
-			[item setTarget:inTarget];						// Normal nodes get the desired target/action
-			[item setAction:inSelector];
+			item.target = inTarget;						// Normal nodes get the desired target/action
+			item.action = inSelector;
 			
 			if (!(inNode.accessibility == kIMBResourceIsAccessible) ||
                 inNode.isAccessRevocable)
@@ -1233,9 +1227,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
                 // Nodes are badged under these circumstances
                 
 				NSFont* font = [NSFont menuFontOfSize:[NSFont systemFontSize]];
-				NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-					font,NSFontAttributeName,
-					nil];
+				NSDictionary* attributes = @{NSFontAttributeName: font};
 				
                 NSString* iconName = nil;
                 switch (inNode.accessibility)
@@ -1255,7 +1247,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
                         break;
                 }
 				NSImage* icon = [[NSImage imb_imageNamed:iconName] copy];
-				[icon setSize:NSMakeSize(16.0,16.0)];
+				icon.size = NSMakeSize(16.0,16.0);
 				
 				NSMutableAttributedString* title = [[[NSMutableAttributedString alloc] initWithString:name attributes:attributes] autorelease];
 				NSMutableAttributedString* space = [[[NSMutableAttributedString alloc] initWithString:@" " attributes:attributes] autorelease];
@@ -1265,19 +1257,19 @@ static NSMutableDictionary* sLibraryControllers = nil;
 
 				if (warning.length > 0)
 				{
-					[warning addAttribute:NSBaselineOffsetAttributeName value:[NSNumber numberWithFloat:-3.0] range:NSMakeRange(0,1)];
+					[warning addAttribute:NSBaselineOffsetAttributeName value:@-3.0f range:NSMakeRange(0,1)];
 					[title appendAttributedString:warning];
 				}
 				
-				[item setAttributedTitle:title];
+				item.attributedTitle = title;
 				
 				[icon release];
 			}
 		}
 		
-		[item setImage:icon];
-		[item setRepresentedObject:inNode.identifier];
-		[item setIndentationLevel:inIndentation];
+		item.image = icon;
+		item.representedObject = inNode.identifier;
+		item.indentationLevel = inIndentation;
 		[inMenu addItem:item];
 		[item release];
 		
@@ -1320,14 +1312,14 @@ static NSMutableDictionary* sLibraryControllers = nil;
 		else
 		{
 			NSImage* icon = node.icon;
-			NSString* name = [node name];
+			NSString* name = node.name;
 			if (name == nil) name = @"";
 			
 			NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:name action:inSelector keyEquivalent:@""];
-			[item setImage:icon];
-			[item setRepresentedObject:node.identifier];
-			[item setTarget:inTarget];
-			[item setIndentationLevel:0];
+			item.image = icon;
+			item.representedObject = node.identifier;
+			item.target = inTarget;
+			item.indentationLevel = 0;
 			
 			[menu addItem:item];
 			[item release];
@@ -1338,7 +1330,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 	
 	if (didAddSeparator) 
 	{
-		NSInteger n = [menu numberOfItems];
+		NSInteger n = menu.numberOfItems;
 		[menu removeItemAtIndex:n-1];
 	}
 	
@@ -1428,7 +1420,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 
 - (void) pathDidChange:(NSNotification*)inNotification 
 {
-	NSString* path = [inNotification object];
+	NSString* path = inNotification.object;
 	[self _reloadNodesWithWatchedPath:path];
 }
 
@@ -1443,11 +1435,11 @@ static NSMutableDictionary* sLibraryControllers = nil;
 
 - (void) _reloadNodesWithWatchedPath:(NSString*)inPath nodes:(NSArray*)inNodes
 {
-	NSString* watchedPath = [inPath stringByStandardizingPath];
+	NSString* watchedPath = inPath.stringByStandardizingPath;
 	
 	for (IMBNode* node in inNodes)
 	{
-		NSString* nodePath = [(NSString*)node.watchedPath stringByStandardizingPath];
+		NSString* nodePath = ((NSString*)node.watchedPath).stringByStandardizingPath;
 		
 		if ([nodePath isEqualToString:watchedPath])
 		{
@@ -1475,7 +1467,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 
 - (void) _willUnmountVolume:(NSNotification*)inNotification 
 {
-	NSString* volume = [[inNotification userInfo] objectForKey:@"NSDevicePath"];
+	NSString* volume = inNotification.userInfo[@"NSDevicePath"];
 	[self _unmountNodes: self.subnodes onVolume:volume];
 }
 
@@ -1491,7 +1483,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 		else
 		{
 			NSURL* url = node.mediaSource;
-			NSString* path = [[url path] stringByStandardizingPath];
+			NSString* path = url.path.stringByStandardizingPath;
 			
 			if ([path hasPrefix:inVolume])
 			{
@@ -1533,7 +1525,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 
 + (NSArray*) knownMediaTypes
 {
-	return [NSArray arrayWithObjects:kIMBMediaTypeImage,kIMBMediaTypeMovie,kIMBMediaTypeAudio,kIMBMediaTypeLink,nil];
+	return @[kIMBMediaTypeImage,kIMBMediaTypeMovie,kIMBMediaTypeAudio,kIMBMediaTypeLink];
 }
 
 
@@ -1552,7 +1544,7 @@ static NSMutableDictionary* sLibraryControllers = nil;
 	{
 		for (IMBNode* node in _subnodes)
 		{
-			[text appendFormat:@"%@\n",[node description]];
+			[text appendFormat:@"%@\n",node.description];
 		}
 	}
 	

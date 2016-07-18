@@ -94,7 +94,7 @@ NSString* SBHomeDirectory()
 {
 	struct passwd* passInfo = getpwuid(getuid());
 	char* homeDir = passInfo->pw_dir;
-	return [NSString stringWithUTF8String:homeDir];
+	return @(homeDir);
 }
 
 
@@ -106,7 +106,7 @@ NSString* SBApplicationContainerHomeDirectory(NSString* inBundleIdentifier)
     
     if (bundleIdentifier == nil) 
     {
-        bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+        bundleIdentifier = [NSBundle mainBundle].bundleIdentifier;
     }
     
     NSString* appContainerDir = SBHomeDirectory();
@@ -147,7 +147,7 @@ static CFTypeRef _SBCopyValue(NSDictionary* inPrefsFileContents,CFStringRef inKe
 
     if (inPrefsFileContents) 
     {
-        id tmp = [inPrefsFileContents objectForKey:(NSString*)inKey];
+        id tmp = inPrefsFileContents[(NSString*)inKey];
     
         if (tmp)
         {
@@ -228,7 +228,7 @@ NSOperationQueue* constrainedTargetQueue()
                   ^{
                      const NSInteger kMaximumThumbnailLoadingConcurrency = 8;
                      sSharedInstance = [[NSOperationQueue alloc] init];
-                     [sSharedInstance setMaxConcurrentOperationCount:kMaximumThumbnailLoadingConcurrency];
+                     sSharedInstance.maxConcurrentOperationCount = kMaximumThumbnailLoadingConcurrency;
                   });
     
  	return sSharedInstance;
@@ -259,15 +259,13 @@ void SBPerformSelectorAsync(id inConnection,id inTarget,SEL inSelector,id inObje
          {
              // Avoid direct propagation of technical XPC errors to app
              
-             if ([[inError domain] isEqualToString:kXPCKitErrorDomain])
+             if ([inError.domain isEqualToString:kXPCKitErrorDomain])
              {
                  NSString* title = NSLocalizedStringWithDefaultValue(@"SB.XPCError.requestFailed", @"SandboxingKit", IMBBundle(), @"Media Browser Error", @"Error title");
                  NSString* description = NSLocalizedStringWithDefaultValue(@"SB.XPCError.couldNotComplete", @"SandboxingKit", IMBBundle(), @"The last operation could not be completed. It is possible that some media files are not displayed correctly.", @"Error description");
                  
-                 NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                                       title,@"title",
-                                       description,NSLocalizedDescriptionKey,
-                                       nil];
+                 NSDictionary* info = @{@"title": title,
+                                       NSLocalizedDescriptionKey: description};
                  
                  inError = [NSError errorWithDomain:kSandboxingKitErrorDomain
                                                code:kSandboxingKitErrorCouldNotComplete

@@ -91,7 +91,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
 - (instancetype)initializeMediaLibrary
 {
     START_MEASURE(4);
-    NSDictionary *libraryOptions = @{MLMediaLoadIncludeSourcesKey : [NSArray arrayWithObject:[self.configuration mediaSourceIdentifier]]};
+    NSDictionary *libraryOptions = @{MLMediaLoadIncludeSourcesKey : @[[self.configuration mediaSourceIdentifier]]};
     self.AppleMediaLibrary = [[MLMediaLibrary alloc] initWithOptions:libraryOptions];
     STOP_MEASURE(4);
     LOG_MEASURED_TIME(4, @"Create library object for %@", [self.configuration mediaSourceIdentifier]);
@@ -129,7 +129,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
     node.identifier = [self nodeIdentifierForMediaGroupIdentifier:@""]; // Root node solely lives on identifier prefix
     
     if ([self mediaSourceAccessibility] == kIMBResourceIsAccessible) {
-        node.watchedPath = [self.mediaSource path];
+        node.watchedPath = (self.mediaSource).path;
     }
     if (outError) {
         *outError = error;
@@ -143,7 +143,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
 {
     NSError *error = nil;
     MLMediaGroup *parentGroup = [self mediaGroupForNode:inParentNode];
-    NSArray *childGroups = [parentGroup childGroups];
+    NSArray *childGroups = parentGroup.childGroups;
 
     // Create the objects array on demand  - even if turns out to be empty after exiting this method, because without creating an array we would cause an endless loop...
     
@@ -151,7 +151,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
     
     BOOL shouldUseChildGroupsAsMediaObjects = [self.configuration shouldUseChildGroupsAsMediaObjectsForMediaGroup:parentGroup];
     
-    if (!inParentNode.objects && ([childGroups count] == 0 || !shouldUseChildGroupsAsMediaObjects))
+    if (!inParentNode.objects && (childGroups.count == 0 || !shouldUseChildGroupsAsMediaObjects))
     {
         START_MEASURE(1);
         NSArray *mediaObjects = [IMBAppleMediaLibraryPropertySynchronizer mediaObjectsForMediaGroup:parentGroup];
@@ -350,7 +350,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
 {
     IMBNode* node = [[IMBNode alloc] initWithParser:self topLevel:NO];
     
-    node.isLeafNode = [[mediaGroup childGroups] count] == 0;
+    node.isLeafNode = mediaGroup.childGroups.count == 0;
     
     NSImage *icon = nil, *highlightIcon = nil;
     if ([self.configuration respondsToSelector:@selector(groupIconForTypeIdentifier:highlight:)]) {
@@ -447,7 +447,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
     NSParameterAssert(mediaGroupIdentifier != nil);
     
     if (mediaGroupIdentifier) {
-        NSString *concatenationSeparator = [mediaGroupIdentifier length] > 0 ? @"." : @"";
+        NSString *concatenationSeparator = mediaGroupIdentifier.length > 0 ? @"." : @"";
         return [NSString stringWithFormat:@"%@%@%@", [self identifierPrefix], concatenationSeparator, mediaGroupIdentifier];
     } else {
         NSLog(@"%s: cannot derive node identifier from media group identifier: %@", __FUNCTION__, mediaGroupIdentifier);
@@ -460,7 +460,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
  */
 - (MLMediaGroup *)mediaGroupForNodeIdentifier:(NSString *)nodeIdentifier
 {
-    NSInteger mediaGroupIdentifierStartIndex = [[self identifierPrefix] length]+1;  // +1 for concatenation separator
+    NSInteger mediaGroupIdentifierStartIndex = [self identifierPrefix].length+1;  // +1 for concatenation separator
     
     NSString *mediaGroupIdentifier = @"";
     if ([nodeIdentifier validIndex:mediaGroupIdentifierStartIndex])
@@ -506,7 +506,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
     IMBObject *object = [[IMBObject alloc] init];
     
     object.identifier = mediaObject.identifier;
-    object.parserIdentifier = [self identifier];
+    object.parserIdentifier = self.identifier;
     object.name = [self nameForMediaObject:mediaObject];
 
     if ([IMBConfig clientAppCanHandleSecurityScopedBookmarks])
@@ -556,7 +556,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
     if (mediaObject.name) {
         return mediaObject.name;
     } else {
-        return [[mediaObject.URL lastPathComponent] stringByDeletingPathExtension];
+        return (mediaObject.URL).lastPathComponent.stringByDeletingPathExtension;
     }
 }
 
@@ -567,12 +567,12 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
  */
 - (BOOL)hiddenMediaObject:(MLMediaObject *)mediaObject
 {
-    return [((NSNumber *)mediaObject.attributes[@"Hidden"]) boolValue];
+    return ((NSNumber *)mediaObject.attributes[@"Hidden"]).boolValue;
 }
 
 - (NSString *)persistentResourceIdentifierForObject:(IMBObject *)inObject
 {
-    return [[self mediaObjectForObject:inObject].URL absoluteString];
+    return ([self mediaObjectForObject:inObject].URL).absoluteString;
 }
 
 #pragma mark - Utility
@@ -596,7 +596,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
     if ([self.configuration respondsToSelector:@selector(libraryName)]) {
         libraryName = [self.configuration libraryName];
     } else {
-        libraryName = [[NSBundle bundleWithPath:[self appPath]] localizedInfoDictionary][@"CFBundleDisplayName"];
+        libraryName = [NSBundle bundleWithPath:[self appPath]].localizedInfoDictionary[@"CFBundleDisplayName"];
     }
 #if USE_PARSER_ANNOTATED_LIBRARY_NAME
     return [NSString stringWithFormat:@"%@ (Apple Media Library)", libraryName];
@@ -607,7 +607,7 @@ NSString *kIMBMLMediaGroupTypeFacesFolder = @"FacesFolder";
 
 - (NSString *)identifierPrefix
 {
-    NSString *mediaSourcePath = [self.mediaSource path];
+    NSString *mediaSourcePath = (self.mediaSource).path;
     return mediaSourcePath ? mediaSourcePath : [NSString stringWithFormat:@"%@://%@",
                                                 NSStringFromClass([self class]), [self.configuration mediaSourceIdentifier]];
 }

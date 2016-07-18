@@ -85,7 +85,7 @@ static NSString *const	lightroomAssignString		= @"=";
 	while (1) {
 		[self scanLightroomWhiteSpace];
 
-		NSUInteger scanLoaction = [self scanLocation];
+		NSUInteger scanLoaction = self.scanLocation;
 
 		if ([self scanLightroomStartString]) {
 			id nestedRules = nil;
@@ -103,7 +103,7 @@ static NSString *const	lightroomAssignString		= @"=";
 			dictionary = nil;
 		}
 		else if ([self scanLightroomStopString]) {
-			[self setScanLocation:scanLoaction];
+			self.scanLocation = scanLoaction;
 
 			break;
 		}
@@ -140,10 +140,10 @@ static NSString *const	lightroomAssignString		= @"=";
 				return NO;
 			}
 
-			[array addObject:[NSDictionary dictionaryWithObject:value forKey:key]];
+			[array addObject:@{key: value}];
 
-			if ([dictionary objectForKey:key] == nil) {
-				[dictionary setObject:value forKey:key];
+			if (dictionary[key] == nil) {
+				dictionary[key] = value;
 			}
 			else {
 				dictionary = nil;
@@ -171,10 +171,10 @@ static NSString *const	lightroomAssignString		= @"=";
 
 - (BOOL)scanLightroomString:(NSString **)string
 {
-	NSUInteger location = [self scanLocation];
+	NSUInteger location = self.scanLocation;
 
 	if ([self scanLightroomQuoteString]) {
-		[self setScanLocation:location];
+		self.scanLocation = location;
 
 		return [self scanLightroomQuotedString:string];
 	}
@@ -207,14 +207,14 @@ static NSString *const	lightroomAssignString		= @"=";
 
 		[scannedString appendString:fragment];
 
-		NSUInteger	location = [self scanLocation];
+		NSUInteger	location = self.scanLocation;
 
 		if ([self scanLightroomEscapeString]) {
 			if ([self scanLightroomEscapeString]) {
 				[scannedString appendString:lightroomEscapeString];
 			}
 			else {
-				[self setScanLocation:location];
+				self.scanLocation = location;
 
 				if (! [self scanLightroomEscapeSequence:&fragment]) {
 					return NO;
@@ -225,7 +225,7 @@ static NSString *const	lightroomAssignString		= @"=";
 		}
 	}
 
-	if ([scannedString length] > 0) {
+	if (scannedString.length > 0) {
 		if (string != NULL) {
 			*string = scannedString;
 		}
@@ -265,7 +265,7 @@ static NSString *const	lightroomAssignString		= @"=";
 
 		[scannedString appendString:fragment];
 
-		NSUInteger	location = [self scanLocation];
+		NSUInteger	location = self.scanLocation;
 
 		if ([self scanLightroomEscapeString]) {
 			if ([self scanLightroomEscapeString]) {
@@ -275,7 +275,7 @@ static NSString *const	lightroomAssignString		= @"=";
 				[scannedString appendString:lightroomQuoteString];
 			}
 			else {
-				[self setScanLocation:location];
+				self.scanLocation = location;
 
 				if (! [self scanLightroomEscapeSequence:&fragment]) {
 					return NO;
@@ -303,16 +303,16 @@ static NSString *const	lightroomAssignString		= @"=";
 		return NO;
 	}
 
-	if ([self isAtEnd]) {
+	if (self.atEnd) {
 		return NO;
 	}
 
 	NSString	*scannedString	= nil;
 
-	NSUInteger	location		= [self scanLocation];
-	unichar		currentChar		= [[self string] characterAtIndex:location];
+	NSUInteger	location		= self.scanLocation;
+	unichar		currentChar		= [self.string characterAtIndex:location];
 
-	[self setScanLocation:(location + 1)];
+	self.scanLocation = (location + 1);
 
 	switch (currentChar) {
 		case '\\':
@@ -370,9 +370,9 @@ static NSString *const	lightroomAssignString		= @"=";
 
 - (BOOL)scanLightroomUnicodeSequence:(NSString **)string
 {
-	NSUInteger				scanLocation			= [self scanLocation];
-	NSString				*scanString				= [self string];
-	NSUInteger				scanStringLength		= [scanString length];
+	NSUInteger				scanLocation			= self.scanLocation;
+	NSString				*scanString				= self.string;
+	NSUInteger				scanStringLength		= scanString.length;
 	NSUInteger				hexStringLength			= 4;
 
 	if ((scanLocation + hexStringLength) > scanStringLength) {
@@ -438,7 +438,7 @@ static NSString *const	lightroomAssignString		= @"=";
 
 - (BOOL)scanLightroomWhiteSpace
 {
-	NSCharacterSet *acceptedCharacterSet = [[NSCharacterSet whitespaceAndNewlineCharacterSet] invertedSet];
+	NSCharacterSet *acceptedCharacterSet = [NSCharacterSet whitespaceAndNewlineCharacterSet].invertedSet;
 
 	return [self scanUpToCharactersFromSet:acceptedCharacterSet intoString:NULL];
 }

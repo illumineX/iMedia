@@ -33,8 +33,8 @@
 // We call this to start the animation just beyond the first frame.
 
 - (void)startAtProgress:(NSAnimationProgress)value withDuration:(NSTimeInterval)duration {
-	[super setCurrentProgress:value];
-	[self setDuration:duration];
+	super.currentProgress = value;
+	self.duration = duration;
 	[self startAnimation];
 }
 
@@ -42,11 +42,11 @@
 
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
 // Call super to update the progress value.
-	[super setCurrentProgress:progress];
-	if ([self isAnimating]&&(progress<0.99)) {
+	super.currentProgress = progress;
+	if (self.animating&&(progress<0.99)) {
 /// Update the window unless we're nearly at the end. No sense duplicating the final window.
 // We can be sure the delegate responds to display.
-		[(NSView*)[self delegate] display];
+		[(NSView*)self.delegate display];
 	}
 }
 
@@ -87,9 +87,9 @@
 // and reproduce reasonably well the standard Tiger NSWindow shadow.
 // You should change these when flipping NSPanels and/or on Leopard.
 		shadow = [[NSShadow alloc] init];
-		[shadow setShadowColor:[[NSColor shadowColor] colorWithAlphaComponent:0.6]];
-		[shadow setShadowBlurRadius:5];
-		[shadow setShadowOffset:NSMakeSize(0,-4)];
+		shadow.shadowColor = [[NSColor shadowColor] colorWithAlphaComponent:0.6];
+		shadow.shadowBlurRadius = 5;
+		shadow.shadowOffset = NSMakeSize(0,-4);
 	}
 	return self;
 }
@@ -123,8 +123,8 @@
 		finalWindow = final;
 		direction = forward?1:-1;
 // Here we reposition and resize the flipping window so that originalRect will cover the original windows.
-		NSRect frame = [initialWindow frame];
-		NSRect flp = [flipr frame];
+		NSRect frame = initialWindow.frame;
+		NSRect flp = flipr.frame;
 		flp.origin.x = frame.origin.x-originalRect.origin.x;
 		flp.origin.y = frame.origin.y-originalRect.origin.y;
 		flp.size.width += frame.size.width-originalRect.size.width;
@@ -132,8 +132,8 @@
 		[flipr setFrame:flp display:NO];
 		originalRect.size = frame.size;
 // Here we get an image of the initial window and make a CIImage from it.
-		NSView* view = [[initialWindow contentView] superview];
-		flp = [view bounds];
+		NSView* view = initialWindow.contentView.superview;
+		flp = view.bounds;
 		NSBitmapImageRep* bitmap = [view bitmapImageRepForCachingDisplayInRect:flp];
 		[view cacheDisplayInRect:flp toBitmapImageRep:bitmap];
 		CIImage* initialImage = [[CIImage alloc] initWithBitmapImageRep:bitmap];
@@ -152,14 +152,14 @@
 			im = [f valueForKey:@"outputImage"];
 			
 			f = [CIFilter filterWithName:@"CIGaussianBlur"];
-			[f setValue:[NSNumber numberWithFloat:1.0] forKey:@"inputRadius"];
+			[f setValue:@1.0f forKey:@"inputRadius"];
 			[f setValue:im forKey:@"inputImage"];
 			im = [f valueForKey:@"outputImage"];
 
 			f = [CIFilter filterWithName:@"CIColorControls"];
-			[f setValue:[NSNumber numberWithFloat:0.42] forKey:@"inputBrightness"];
-			[f setValue:[NSNumber numberWithFloat:1.0] forKey:@"inputSaturation"];
-			[f setValue:[NSNumber numberWithFloat:0.15] forKey:@"inputContrast"];
+			[f setValue:@0.42f forKey:@"inputBrightness"];
+			[f setValue:@1.0f forKey:@"inputSaturation"];
+			[f setValue:@0.15f forKey:@"inputContrast"];
 			[f setValue:im forKey:@"inputImage"];
 			im = [f valueForKey:@"outputImage"];
 
@@ -174,7 +174,7 @@
 			NSCIImageRep *ir = [NSCIImageRep imageRepWithCIImage:im];
 			NSImage* reflex = [[[NSImage alloc] initWithSize:flp.size] autorelease];
 			[reflex addRepresentation:ir];
-			[reflection setImage:reflex];
+			reflection.image = reflex;
 		}
 // We immediately pass the initial image to the filter and release it.
 		[transitionFilter setValue:initialImage forKey:@"inputImage"];
@@ -182,11 +182,11 @@
 // To prevent flicker...
 		NSDisableScreenUpdates();
 // We bring the final window to the front in order to build the final image.
-		[finalWindow setAlphaValue:0];
+		finalWindow.alphaValue = 0;
 		[finalWindow makeKeyAndOrderFront:self];
 // Here we get an image of the final window and make a CIImage from it.
-		view = [[finalWindow contentView] superview];
-		flp = [view bounds];
+		view = finalWindow.contentView.superview;
+		flp = view.bounds;
 		bitmap = [view bitmapImageRepForCachingDisplayInRect:flp];
 		[view cacheDisplayInRect:flp toBitmapImageRep:bitmap];
 		finalImage = [[CIImage alloc] initWithBitmapImageRep:bitmap];
@@ -196,13 +196,13 @@
 // but we need to compensate for the time spent here, which seems to be about 3 to 5x what's needed
 // for subsequent frames.
 		animation = [[FliprAnimation alloc] initWithAnimationCurve:NSAnimationEaseInOut];
-		[animation setDelegate:self];
+		animation.delegate = self;
 // This is probably redundant...
-		[animation setCurrentProgress:0.0];
-		[flipr orderWindow:NSWindowBelow relativeTo:[finalWindow windowNumber]];
+		animation.currentProgress = 0.0;
+		[flipr orderWindow:NSWindowBelow relativeTo:finalWindow.windowNumber];
 		NSTimeInterval duration = DURATION;
 // Slow down by a factor of 5 if the shift key is down.
-		if ([[NSApp currentEvent] modifierFlags]&NSShiftKeyMask) {
+		if (NSApp.currentEvent.modifierFlags&NSShiftKeyMask) {
 			duration *= 5.0;
 		}
 // We accumulate drawing time and draw a second frame at the point where the rotation starts to show.
@@ -229,7 +229,7 @@
 // We order the flipping window out and make the final window visible again.
 	NSDisableScreenUpdates();
 	[[NSWindow flippingWindow] orderOut:self];
-	[finalWindow setAlphaValue:1.0];
+	finalWindow.alphaValue = 1.0;
 	[finalWindow display];
 	NSEnableScreenUpdates();
 // Clear stuff out...
@@ -252,7 +252,7 @@
 // For calculating the draw time...
 	AbsoluteTime startTime = UpTime();
 // time will vary from 0.0 to 1.0. 0.5 means halfway.
-	NSTimeInterval time = [animation currentValue];
+	NSTimeInterval time = animation.currentValue;
 // This code was adapted from http://www.macs.hw.ac.uk/~rpointon/osx/coreimage.html by Robert Pointon.
 // First we calculate the perspective.
 	CGFloat radius = originalRect.size.width/2;
@@ -289,7 +289,7 @@
 // This will make the standard window shadow appear beneath the flipping window
 	[shadow set];
 // And we draw the result image.
-	NSRect bounds = [self bounds];
+	NSRect bounds = self.bounds;
 	[outputCIImage drawInRect:bounds fromRect:NSMakeRect(-originalRect.origin.x,-originalRect.origin.y,bounds.size.width,bounds.size.height) operation:NSCompositingOperationSourceOver fraction:1.0];
 // Calculate the time spent drawing
 	frameTime = UnsignedWideToUInt64(AbsoluteDeltaToNanoseconds(UpTime(),startTime))/1E9;
@@ -326,7 +326,7 @@ static NSWindow* flippingWindow = nil;
 // This is a little arbitary... the window will be resized every time it's used.
 			NSRect frame = NSMakeRect(128,128,512,768);
 			flippingWindow = [[NSWindow alloc] initWithContentRect:frame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
-			[flippingWindow setBackgroundColor:[NSColor clearColor]];
+			flippingWindow.backgroundColor = [NSColor clearColor];
 			[flippingWindow setOpaque:NO];	
 			[flippingWindow setHasShadow:NO];
 			[flippingWindow setOneShot:YES];
@@ -334,8 +334,8 @@ static NSWindow* flippingWindow = nil;
 // The inset values seem large enough so the animation doesn't slop over the frame.
 // They could be calculated more exactly, though.
 			FliprView* view = [[[FliprView alloc] initWithFrame:frame andOriginalRect:NSInsetRect(frame,64,256)] autorelease];
-			[view setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-			[flippingWindow setContentView:view];
+			view.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
+			flippingWindow.contentView = view;
 		}
 	}
 	return flippingWindow;
@@ -352,7 +352,7 @@ static NSWindow* flippingWindow = nil;
 
 - (void)flipToShowWindow:(NSWindow*)window forward:(BOOL)forward reflectInto:(NSImageView*)reflection {
 // We resize the final window to exactly the same frame.
-	[window setFrame:[self frame] display:NO];
+	[window setFrame:self.frame display:NO];
 	NSWindow* flipr = [NSWindow flippingWindow];
 	if (!flipr) {
 // If we fall in here, the CPU isn't able to animate and we just change windows.
@@ -360,8 +360,8 @@ static NSWindow* flippingWindow = nil;
 		[self orderOut:self];
 		return;
 	}
-	[flipr setLevel:[self level]];
-	[(FliprView*)[flipr contentView] setInitialWindow:self andFinalWindow:window forward:forward reflectInto:reflection];
+	flipr.level = self.level;
+	[(FliprView*)flipr.contentView setInitialWindow:self andFinalWindow:window forward:forward reflectInto:reflection];
 }
 
 @end

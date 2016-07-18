@@ -77,7 +77,7 @@
 
 - (NSURL*) previewItemURL
 {
-	NSString *quickLookURLString = [self.metadata objectForKey:@"quickLookURL"];
+	NSString *quickLookURLString = (self.metadata)[@"quickLookURL"];
     if (!quickLookURLString) return nil;
     
     NSURL *quickLookURL = [NSURL URLWithString:quickLookURLString];
@@ -94,7 +94,7 @@
 		// Build a path for the download file...
 		
 		previewItemURL = [NSURL fileURLWithPath:folder isDirectory:YES];
-        previewItemURL = [previewItemURL URLByAppendingPathComponent:[quickLookURL lastPathComponent]];
+        previewItemURL = [previewItemURL URLByAppendingPathComponent:quickLookURL.lastPathComponent];
 		
 		// If the file is already there, then use it...
 		// If not, then download it...
@@ -121,7 +121,7 @@
 
 - (BOOL) isSelectable 
 {
-	return [super isSelectable]; // [[self.metadata objectForKey:@"can_download"] boolValue];
+	return super.isSelectable; // [[self.metadata objectForKey:@"can_download"] boolValue];
 }
 
 
@@ -140,13 +140,13 @@
 
 - (void) postProcessLocalURL:(NSURL*)localURL
 {
-	NSDictionary *metadata = [self metadata];
+	NSDictionary *metadata = self.metadata;
 	
 	NSURL *shortWebPageURL = [NSURL URLWithString:[@"http://flic.kr/p/" stringByAppendingString:
-												   [IMBFlickrNode base58EncodedValue:[[metadata objectForKey:@"id"] longLongValue]]]];
+												   [IMBFlickrNode base58EncodedValue:[metadata[@"id"] longLongValue]]]];
 	
-	NSString *licenseDescription = [IMBFlickrNode descriptionOfLicense:[[metadata objectForKey:@"license"] intValue]];
-	NSString *credit = [metadata objectForKey:@"ownername"];
+	NSString *licenseDescription = [IMBFlickrNode descriptionOfLicense:[metadata[@"license"] intValue]];
+	NSString *credit = metadata[@"ownername"];
 	
 	NSMutableData *data = [NSMutableData data];
 	NSAssert(localURL, @"Nil image source URL");
@@ -155,18 +155,16 @@
 																  (CFStringRef)@"public.jpeg", 1, NULL);
 	
 	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-	if (!appName) appName = [[NSProcessInfo processInfo] processName];
+	if (!appName) appName = [NSProcessInfo processInfo].processName;
 	NSString *appSource = NSNotFound != [appName rangeOfString:@"iMedia"].location
 	? appName
 	: [NSString stringWithFormat:@"%@, iMedia Browser", appName];
 	
-	NSString *creatorAndURL = [NSString stringWithFormat:@"%@ - %@", credit, [shortWebPageURL absoluteString]];
-	NSDictionary *IPTCProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-									creatorAndURL, kCGImagePropertyIPTCSource,
-									licenseDescription, @"UsageTerms", // kCGImagePropertyIPTCRightsUsageTerms claims to be 10.6+ but in reality is not found when launched on 10.6, killing your app on launch
-									appSource, kCGImagePropertyIPTCOriginatingProgram,
-									nil];
-	NSDictionary *properties = [NSDictionary dictionaryWithObject:IPTCProperties forKey:(NSString *)kCGImagePropertyIPTCDictionary];
+	NSString *creatorAndURL = [NSString stringWithFormat:@"%@ - %@", credit, shortWebPageURL.absoluteString];
+	NSDictionary *IPTCProperties = @{(id)kCGImagePropertyIPTCSource: creatorAndURL,
+									@"UsageTerms": licenseDescription, // kCGImagePropertyIPTCRightsUsageTerms claims to be 10.6+ but in reality is not found when launched on 10.6, killing your app on launch
+									(id)kCGImagePropertyIPTCOriginatingProgram: appSource};
+	NSDictionary *properties = @{(NSString *)kCGImagePropertyIPTCDictionary: IPTCProperties};
 	
 	CGImageDestinationAddImageFromSource (dest, source, 0, (CFDictionaryRef) properties);
 	
@@ -177,7 +175,7 @@
 		NSError *error = nil;
 		success = [data writeToURL:localURL options:NSAtomicWrite error:&error];
 		// atomic write should mean that original is not lost.
-		if (!success) NSLog(@"couldn't modify file, %@", [error localizedDescription]);
+		if (!success) NSLog(@"couldn't modify file, %@", error.localizedDescription);
 	}
 	CFRelease(dest);
 	CFRelease(source);

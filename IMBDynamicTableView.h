@@ -65,7 +65,7 @@
 	
 }
 
-- (BOOL)wantsThumbnails;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL wantsThumbnails;
 
 // @property(assign) id <IMBDynamicTableViewDelegate> delegate;
 

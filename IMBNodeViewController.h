@@ -136,9 +136,9 @@ extern NSString* kIMBExpandAndSelectNodeWithIdentifierNotification;
 // Support for subclasses; please don't rely on it in your own apps
 + (NSImage *)iconForAppWithBundleIdentifier:(NSString *)identifier fallbackFolder:(NSSearchPathDirectory)directory;
 
-- (NSString*) mediaType;
-- (NSImage*) icon;
-- (NSString*) displayName;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *mediaType;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSImage *icon;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *displayName;
 
 // Delegate...
 
@@ -153,7 +153,7 @@ extern NSString* kIMBExpandAndSelectNodeWithIdentifierNotification;
 // Selecting a node...
 
 - (void) selectNode:(IMBNode*)inNode;
-- (IMBNode*) selectedNode;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) IMBNode *selectedNode@property (NS_NONATOMIC_IOSONLY, readonly, strong) IMBNode *selectedNode;
 
 - (void) expandSelectedNode;
 
@@ -170,13 +170,13 @@ extern NSString* kIMBExpandAndSelectNodeWithIdentifierNotification;
 
 # pragma mark Actions
 
-- (BOOL) canReloadNode;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL canReloadNode;
 - (IBAction) reloadNode:(id)inSender;
 
-- (BOOL) canAddNode;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL canAddNode;
 - (IBAction) addNode:(id)inSender;
 
-- (BOOL) canRemoveNode;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL canRemoveNode;
 - (IBAction) removeNode:(id)inSender;
 
 # pragma mark Navigation
@@ -194,7 +194,7 @@ extern NSString* kIMBExpandAndSelectNodeWithIdentifierNotification;
 @property (retain) NSViewController* footerViewController;
 
 - (void) installObjectViewForNode:(IMBNode*)inNode;
-- (NSSize) minimumViewSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSSize minimumViewSize;
 
 // Use this method in your host app to tell the current object view (icon, list, or combo view)
 // that it needs to re-display itself (e.g. when a badge on an image needs to be updated)...
@@ -231,7 +231,7 @@ extern NSString* kIMBExpandAndSelectNodeWithIdentifierNotification;
 - (NSViewController*) nodeViewController:(IMBNodeViewController*)inNodeViewController customFooterViewControllerForNode:(IMBNode*)inNode;
 
 // May supply a Facebook app id if app wants to integrate Facebook node into node view
-- (NSString*) facebookAppId;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *facebookAppId;
 
 @end
 //----------------------------------------------------------------------------------------------------------------------

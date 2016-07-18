@@ -83,12 +83,12 @@
 
 - (NSUInteger)count;
 {
-    return [_array count];
+    return _array.count;
 }
 
 - (id)objectForKey:(id)inKey
 {
-	return [_dictionary objectForKey:inKey];
+	return _dictionary[inKey];
 }
 
 - (NSEnumerator *)keyEnumerator;
@@ -100,9 +100,9 @@
 
 - (void)setObject:(id)inObject forKey:(id)inKey
 {
-	BOOL isNewKey = ([_dictionary objectForKey:inKey] == nil);
+	BOOL isNewKey = (_dictionary[inKey] == nil);
 	
-	[_dictionary setObject:inObject forKey:inKey];
+	_dictionary[inKey] = inObject;
 	
 	if (isNewKey) {
 		[_array addObject:inKey];
@@ -111,7 +111,7 @@
 
 - (void)removeObjectForKey:(id)inKey
 {
-	id object = [_dictionary objectForKey:inKey];
+	id object = _dictionary[inKey];
 	
 	if (object != nil) {
 		[_dictionary removeObjectForKey:inKey];

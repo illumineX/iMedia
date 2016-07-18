@@ -53,10 +53,10 @@ static void FSEventCallback(ConstFSEventStreamRef inStreamRef,
 				{
 					[delegate watcher:watcher receivedNotification:UKFileWatcherWriteNotification forPath:path];
 					
-					[[[NSWorkspace sharedWorkspace] notificationCenter] 
+					[[NSWorkspace sharedWorkspace].notificationCenter 
 						postNotificationName: UKFileWatcherWriteNotification
 						object:watcher
-						userInfo:[NSDictionary dictionaryWithObjectsAndKeys:path,@"path",nil]];
+						userInfo:@{@"path": path}];
 				}
 			}
 		}
@@ -212,7 +212,7 @@ static void FSEventCallback(ConstFSEventStreamRef inStreamRef,
 	
 	if (exists && directory==NO && package==NO)
 	{
-		inPath = [inPath stringByDeletingLastPathComponent];
+		inPath = inPath.stringByDeletingLastPathComponent;
 	}
 	
 	return inPath;		
@@ -228,7 +228,7 @@ static void FSEventCallback(ConstFSEventStreamRef inStreamRef,
 	context.release = NULL;
 	context.copyDescription = NULL;
 
-	NSArray* pathArray = [NSArray arrayWithObject:path];
+	NSArray* pathArray = @[path];
 	FSEventStreamRef stream = FSEventStreamCreate(NULL,&FSEventCallback,&context,(CFArrayRef)pathArray,kFSEventStreamEventIdSinceNow,latency,flags);
 
 	if (stream)
@@ -238,7 +238,7 @@ static void FSEventCallback(ConstFSEventStreamRef inStreamRef,
 
 		FSEventStreamStart(stream);
 
-		[eventStreams setObject:[NSValue valueWithPointer:stream] forKey:path];
+		eventStreams[path] = [NSValue valueWithPointer:stream];
 	}	
 	else
 	{
@@ -315,7 +315,7 @@ static void FSEventCallback(ConstFSEventStreamRef inStreamRef,
 			// Clear everything out if we've gone to zero
 			if (newRegistrationCount == 0)
 			{
-				valueToRemove = [[[eventStreams objectForKey:path] retain] autorelease];
+				valueToRemove = [[eventStreams[path] retain] autorelease];
 				[eventStreams removeObjectForKey:path];				
 			}
 		}
@@ -323,7 +323,7 @@ static void FSEventCallback(ConstFSEventStreamRef inStreamRef,
     
 	if (valueToRemove)
 	{
-		FSEventStreamRef stream = [valueToRemove pointerValue];
+		FSEventStreamRef stream = valueToRemove.pointerValue;
 		
 		if (stream)
 		{
@@ -345,12 +345,12 @@ static void FSEventCallback(ConstFSEventStreamRef inStreamRef,
 		// Unregister them all indiscriminately, then remove all objects from 
 		// our tracking collections.
 		
-		NSEnumerator* eventStreamEnum = [[eventStreams allValues] objectEnumerator];
+		NSEnumerator* eventStreamEnum = [eventStreams.allValues objectEnumerator];
 		NSValue* thisEventStreamPointer = nil;
 		
 		while (thisEventStreamPointer = [eventStreamEnum nextObject])
 		{
-			FSEventStreamRef stream = [thisEventStreamPointer pointerValue];
+			FSEventStreamRef stream = thisEventStreamPointer.pointerValue;
 
 			if (stream)
 			{

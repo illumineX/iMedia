@@ -74,7 +74,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -202,7 +202,7 @@
 		return (NSImage*)imageRepresentation;
 	}
 	
-	return [super icon];
+	return super.icon;
 }
 
 

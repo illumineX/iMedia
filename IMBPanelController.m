@@ -146,12 +146,10 @@ static IMBPanelController* sSharedPanelController = nil;
 {
 	if (sSharedPanelController == nil)
 	{
-		sSharedPanelController = [self sharedPanelControllerWithDelegate:nil mediaTypes:[NSArray arrayWithObjects:
-			kIMBMediaTypeImage,
+		sSharedPanelController = [self sharedPanelControllerWithDelegate:nil mediaTypes:@[kIMBMediaTypeImage,
 			kIMBMediaTypeAudio,
 			kIMBMediaTypeMovie,
-			kIMBMediaTypeLink,
-			nil]];
+			kIMBMediaTypeLink]];
 	}
 	
 	return sSharedPanelController;
@@ -192,7 +190,7 @@ static IMBPanelController* sSharedPanelController = nil;
 
 #pragma mark 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super initWithWindowNibName:@"IMBPanel"])
 	{
@@ -237,7 +235,7 @@ static IMBPanelController* sSharedPanelController = nil;
 	// Load the parsers...
 	
 	IMBParserController* parserController = [IMBParserController sharedParserController];
-	[parserController setDelegate:self.delegate];
+	parserController.delegate = self.delegate;
 	[parserController loadParserMessengers];
 	
 	for (NSString* mediaType in self.mediaTypes)
@@ -245,7 +243,7 @@ static IMBPanelController* sSharedPanelController = nil;
 		// Load the library for each media type...
 		
 		libraryController = [IMBLibraryController sharedLibraryControllerWithMediaType:mediaType];
-		[libraryController setDelegate:self.delegate];
+		libraryController.delegate = self.delegate;
 
 		// Create the top-level view controller (IMBNodeViewController) with attached standard
 		// object view (IMBObjectViewController) for each media type...
@@ -254,7 +252,7 @@ static IMBPanelController* sSharedPanelController = nil;
 		objectViewController = [IMBObjectViewController viewControllerForLibraryController:libraryController delegate:self.delegate];
 		
 		nodeViewController.standardObjectViewController = objectViewController;
-		[self.nodeViewControllers setObject:nodeViewController forKey:mediaType];
+		(self.nodeViewControllers)[mediaType] = nodeViewController;
 	}
 }
 
@@ -263,7 +261,7 @@ static IMBPanelController* sSharedPanelController = nil;
 
 - (IMBNodeViewController*) nodeViewControllerForMediaType:(NSString*)inMediaType
 {
-	return [self.nodeViewControllers objectForKey:inMediaType];
+	return (self.nodeViewControllers)[inMediaType];
 }
 
 
@@ -280,7 +278,7 @@ static IMBPanelController* sSharedPanelController = nil;
 	
     [(NSPanel*)self.window setBecomesKeyOnlyIfNeeded:YES];
     
-	[ibTabView setDelegate:self];
+	ibTabView.delegate = self;
 	[ibToolbar setAllowsUserCustomization:NO];
 	
 	[self setupInfoWindow];
@@ -341,9 +339,9 @@ static IMBPanelController* sSharedPanelController = nil;
 	
 	for (NSString* mediaType in self.nodeViewControllers)
 	{
-		IMBNodeViewController* nodeViewController = [_nodeViewControllers objectForKey:mediaType];
-		NSView* nodeView = [nodeViewController view];
-		[nodeView setFrame:[ibTabView bounds]];
+		IMBNodeViewController* nodeViewController = _nodeViewControllers[mediaType];
+		NSView* nodeView = nodeViewController.view;
+		nodeView.frame = ibTabView.bounds;
 		
 		// Query each node controller for its minimum size so we can be sure to constrain our panel's minimum to 
 		// suit the most restrictive controller...
@@ -365,8 +363,8 @@ static IMBPanelController* sSharedPanelController = nil;
 		[nodeViewController installObjectViewForNode:nil];
 
 		NSTabViewItem* item = [[NSTabViewItem alloc] initWithIdentifier:mediaType];
-		[item setLabel:mediaType];
-		[item setView:nodeView];
+		item.label = mediaType;
+		item.view = nodeView;
 		[ibTabView addTabViewItem:item];
 		[item release];
 		
@@ -380,7 +378,7 @@ static IMBPanelController* sSharedPanelController = nil;
 	
 	_isLoadingWindow = NO;
 
-	[self.window setContentMinSize:largestMinimumSize];
+	(self.window).contentMinSize = largestMinimumSize;
 	[self restoreStateFromPreferences];
 }
 
@@ -407,11 +405,11 @@ static IMBPanelController* sSharedPanelController = nil;
 	NSString* frame = NSStringFromRect(self.window.frame);
 	if (frame) [IMBConfig setPrefsValue:frame forKey:@"windowFrame"];
 	
-	int sizeMode = 	[ibToolbar sizeMode];
+	int sizeMode = 	ibToolbar.sizeMode;
 	BOOL isSmall = (sizeMode == NSToolbarSizeModeSmall);
-	[IMBConfig setPrefsValue:[NSNumber numberWithBool:isSmall] forKey:@"toolbarIsSmall"];
+	[IMBConfig setPrefsValue:@(isSmall) forKey:@"toolbarIsSmall"];
 	
-	NSToolbarDisplayMode displayMode = [ibToolbar displayMode];
+	NSToolbarDisplayMode displayMode = ibToolbar.displayMode;
 	[IMBConfig setPrefsValue:[NSNumber numberWithInt:displayMode] forKey:@"toolbarDisplayMode"];
 
 	NSString* mediaType = ibTabView.selectedTabViewItem.identifier;
@@ -426,15 +424,15 @@ static IMBPanelController* sSharedPanelController = nil;
 	if (frame) [self.window setFrame:NSRectFromString(frame) display:YES animate:NO];
 
 	NSString* toolbarDisplayMode = [IMBConfig prefsValueForKey:@"toolbarDisplayMode"];
-	if (toolbarDisplayMode) [ibToolbar setDisplayMode:[toolbarDisplayMode intValue]];
+	if (toolbarDisplayMode) ibToolbar.displayMode = toolbarDisplayMode.intValue;
 
 	NSString* toolbarIsSmall = [IMBConfig prefsValueForKey:@"toolbarIsSmall"];
-	BOOL small = (nil == toolbarIsSmall) ? NO : [toolbarIsSmall boolValue];
+	BOOL small = (nil == toolbarIsSmall) ? NO : toolbarIsSmall.boolValue;
 	int sizeMode = (small ? NSToolbarSizeModeSmall : NSToolbarSizeModeRegular);
-	[ibToolbar setSizeMode:sizeMode];
+	ibToolbar.sizeMode = sizeMode;
 
 	NSString* mediaType = [IMBConfig prefsValueForKey:@"selectedMediaType"];
-	NSTabViewItem* tabViewItem = [ibTabView selectedTabViewItem];
+	NSTabViewItem* tabViewItem = ibTabView.selectedTabViewItem;
 
 	if (mediaType)
 	{
@@ -489,36 +487,36 @@ static IMBPanelController* sSharedPanelController = nil;
 - (void) setupInfoWindow
 {
 	// set up special button
-	NSButton *but = [[self window] standardWindowButton:NSWindowCloseButton];
-	NSView *container = [but superview];
-	float containerWidth = [container frame].size.width;
-	NSRect frame = [but frame];
+	NSButton *but = [self.window standardWindowButton:NSWindowCloseButton];
+	NSView *container = but.superview;
+	float containerWidth = container.frame.size.width;
+	NSRect frame = but.frame;
 	NSButton *iButton = [[[IMBHoverButton alloc] initWithFrame:NSMakeRect(frame.origin.x + containerWidth - 11 - 11,frame.origin.y+2,11,11)] autorelease];
-	[iButton setAutoresizingMask:NSViewMinYMargin|NSViewMinXMargin];
+	iButton.autoresizingMask = NSViewMinYMargin|NSViewMinXMargin;
 	
-	[iButton setAction:@selector(showInfoWindow:)];
-	[iButton setTarget:self];
+	iButton.action = @selector(showInfoWindow:);
+	iButton.target = self;
 	[container addSubview:iButton];
 	
 	// Now do another button on the flip-side
 	but = [ibInfoWindow standardWindowButton:NSWindowCloseButton];
-	container = [but superview];
-	containerWidth = [container frame].size.width;
-	frame = [but frame];
+	container = but.superview;
+	containerWidth = container.frame.size.width;
+	frame = but.frame;
 	iButton = [[[IMBHoverButton alloc] initWithFrame:NSMakeRect(frame.origin.x + containerWidth - 11 - 11,frame.origin.y+2,11,11)] autorelease];
-	[iButton setAutoresizingMask:NSViewMinYMargin|NSViewMinXMargin];
+	iButton.autoresizingMask = NSViewMinYMargin|NSViewMinXMargin;
 	
-	[iButton setAction:@selector(flipBackToMainWindow:)];
-	[iButton setTarget:self];
+	iButton.action = @selector(flipBackToMainWindow:);
+	iButton.target = self;
 	[container addSubview:iButton];
 	
 	// get flipping window ready
 	[NSWindow flippingWindow];
 	[ibInfoTextView setDrawsBackground:NO];
 	//[ibInfoTextView setTextContainerInset:NSMakeSize(2,2)];
-	NSScrollView *scrollView = [ibInfoTextView enclosingScrollView];
+	NSScrollView *scrollView = ibInfoTextView.enclosingScrollView;
 	[scrollView setDrawsBackground:NO];
-	[[scrollView contentView] setCopiesOnScroll:NO];
+	[scrollView.contentView setCopiesOnScroll:NO];
 	
 	NSAttributedString *attr = nil;
 	NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"Credits" ofType:@"html"];
@@ -563,23 +561,23 @@ static IMBPanelController* sSharedPanelController = nil;
 		[htmlString replaceOccurrencesOfString:@"{IMB.introduction}"
 									withString:imediaDescription
 									   options:0
-										 range:NSMakeRange(0,[htmlString length])];
+										 range:NSMakeRange(0,htmlString.length)];
 		[htmlString replaceOccurrencesOfString:@"{IMB.availableLink}"
 									withString:availableLink
 									   options:0
-										 range:NSMakeRange(0,[htmlString length])];
+										 range:NSMakeRange(0,htmlString.length)];
 		[htmlString replaceOccurrencesOfString:@"{IMB.credits}"
 									withString:credits
 									   options:0
-										 range:NSMakeRange(0,[htmlString length])];
+										 range:NSMakeRange(0,htmlString.length)];
 		[htmlString replaceOccurrencesOfString:@"{IMB.localization}"
 									withString:localization
 									   options:0
-										 range:NSMakeRange(0,[htmlString length])];
+										 range:NSMakeRange(0,htmlString.length)];
 		[htmlString replaceOccurrencesOfString:@"{IMB.licenseIntro}"
 									withString:licenseIntro
 									   options:0
-										 range:NSMakeRange(0,[htmlString length])];
+										 range:NSMakeRange(0,htmlString.length)];
 		
 		NSData *backToData = [htmlString dataUsingEncoding:NSUTF8StringEncoding];
 		attr = [[[NSAttributedString alloc] initWithHTML:backToData documentAttributes:nil] autorelease];
@@ -589,17 +587,17 @@ static IMBPanelController* sSharedPanelController = nil;
 		attr = [[[NSAttributedString alloc] initWithString:@"Unable to load Info"] autorelease];
 	}
 
-	[[ibInfoTextView textStorage] setAttributedString:attr];
+	[ibInfoTextView.textStorage setAttributedString:attr];
 	
 	// set up cursors in text
 	
-	NSEnumerator* attrRuns = [[[ibInfoTextView textStorage] attributeRuns] objectEnumerator];
+	NSEnumerator* attrRuns = [ibInfoTextView.textStorage.attributeRuns objectEnumerator];
 	NSTextStorage* run;
 	while ((run = [attrRuns nextObject]))
 	{
 		if ([run attribute:NSLinkAttributeName atIndex:0 effectiveRange:NULL])
 		{
-			[run addAttribute:NSCursorAttributeName value:[NSCursor pointingHandCursor] range:NSMakeRange(0,[run length])];
+			[run addAttribute:NSCursorAttributeName value:[NSCursor pointingHandCursor] range:NSMakeRange(0,run.length)];
 		}
 	};
 }
@@ -610,15 +608,15 @@ static IMBPanelController* sSharedPanelController = nil;
 
 - (IBAction) showInfoWindow:(id)inSender
 {
-	[ibInfoWindow setFrame:[[self window] frame] display:NO];
-	[[self window] flipToShowWindow:ibInfoWindow forward:YES reflectInto:ibBackgroundImageView];
+	[ibInfoWindow setFrame:self.window.frame display:NO];
+	[self.window flipToShowWindow:ibInfoWindow forward:YES reflectInto:ibBackgroundImageView];
 }
 
 
 - (IBAction) flipBackToMainWindow:(id)inSender
 {
-	[[self window] setFrame:[ibInfoWindow frame] display:NO];	// not really needed unless window is resized
-	[ibInfoWindow flipToShowWindow:[self window] forward:NO reflectInto:nil];
+	[self.window setFrame:ibInfoWindow.frame display:NO];	// not really needed unless window is resized
+	[ibInfoWindow flipToShowWindow:self.window forward:NO reflectInto:nil];
 }
 
 - (NSWindow *)infoWindow;
@@ -631,7 +629,7 @@ static IMBPanelController* sSharedPanelController = nil;
 
 - (BOOL) isInfoWindowVisible
 {
-	return [ibInfoWindow isVisible];
+	return ibInfoWindow.visible;
 }
 
 
@@ -690,11 +688,11 @@ static IMBPanelController* sSharedPanelController = nil;
 
 		// If the library for the new tab has been loaded yet then do it now...
 		
-		if ([_loadedLibraries objectForKey:newMediaType] == nil)
+		if (_loadedLibraries[newMediaType] == nil)
 		{
 			IMBLibraryController* libraryController = [IMBLibraryController sharedLibraryControllerWithMediaType:newMediaType];
 			[libraryController reload];
-			[_loadedLibraries setObject:newMediaType forKey:newMediaType];
+			_loadedLibraries[newMediaType] = newMediaType;
 		}
 		
 		// Notify the controllers...
@@ -732,7 +730,7 @@ static IMBPanelController* sSharedPanelController = nil;
 	if (!_isLoadingWindow)
 	{
 		NSString* newMediaType = inTabViewItem.identifier;
-		[ibToolbar setSelectedItemIdentifier:newMediaType];
+		ibToolbar.selectedItemIdentifier = newMediaType;
 		
 		// Notify the controllers...
 
@@ -790,13 +788,13 @@ static IMBPanelController* sSharedPanelController = nil;
 
 	NSString* name = [nodeViewController displayName];
 	NSImage* icon = [nodeViewController icon];
-	[icon setSize:NSMakeSize(32,32)];
+	icon.size = NSMakeSize(32,32);
 
 	NSToolbarItem* item = [[[NSToolbarItem alloc] initWithItemIdentifier:inIdentifier] autorelease];
-	if (icon) [item setImage:icon];
-	if (name) [item setLabel:name];
-	[item setAction:@selector(selectTabViewItemWithIdentifier:)];
-	[item setTarget:self];
+	if (icon) item.image = icon;
+	if (name) item.label = name;
+	item.action = @selector(selectTabViewItemWithIdentifier:);
+	item.target = self;
 	
 	return item;
 }
@@ -817,13 +815,13 @@ static IMBPanelController* sSharedPanelController = nil;
 
 - (void) setToolbarDisplayMode:(int)aMode
 {
-	[ibToolbar setDisplayMode:aMode];
+	ibToolbar.displayMode = aMode;
 }
 
 
 - (int) toolbarDisplayMode
 {
-	int displayMode = [ibToolbar displayMode];
+	int displayMode = ibToolbar.displayMode;
 	if (0 == displayMode) displayMode = NSToolbarDisplayModeIconAndLabel;
 	return displayMode;
 }
@@ -835,13 +833,13 @@ static IMBPanelController* sSharedPanelController = nil;
 - (void) setToolbarIsSmall:(BOOL)aFlag
 {
 	int sizeMode = (aFlag ? NSToolbarSizeModeSmall : NSToolbarSizeModeRegular);
-	[ibToolbar setSizeMode:sizeMode];
+	ibToolbar.sizeMode = sizeMode;
 }
 
 
 - (BOOL)toolbarIsSmall
 {
-	int sizeMode = 	[ibToolbar sizeMode];
+	int sizeMode = 	ibToolbar.sizeMode;
 	if (0 == sizeMode) sizeMode = NSToolbarSizeModeRegular;
 	return (sizeMode == NSToolbarSizeModeSmall);
 }
@@ -853,16 +851,16 @@ static IMBPanelController* sSharedPanelController = nil;
 - (void) setPrefersFilenamesInPhotoBasedBrowsers:(BOOL)aFlag
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:kIMBImageBrowserShowTitlesNotification object:
-	 [NSNumber numberWithBool:aFlag]];
+	 @(aFlag)];
 
-	[IMBConfig setPrefsValue:[NSNumber numberWithBool:aFlag] forKey:@"prefersFilenamesInPhotoBasedBrowsers"];
+	[IMBConfig setPrefsValue:@(aFlag) forKey:@"prefersFilenamesInPhotoBasedBrowsers"];
 }
 
 
 - (BOOL)prefersFilenamesInPhotoBasedBrowsers
 {
 	NSString* filenames = [IMBConfig prefsValueForKey:@"prefersFilenamesInPhotoBasedBrowsers"];
-	BOOL flag = (nil == filenames) ? YES : [filenames boolValue];
+	BOOL flag = (nil == filenames) ? YES : filenames.boolValue;
 	return flag;
 }
 
@@ -876,11 +874,11 @@ static IMBPanelController* sSharedPanelController = nil;
 
 - (void) keyDown:(NSEvent*)inEvent
 {
-    NSString* key = [inEvent charactersIgnoringModifiers];
+    NSString* key = inEvent.charactersIgnoringModifiers;
 	
     if([key isEqual:@" "])
 	{
-		NSString* mediaType = [[ibTabView selectedTabViewItem] identifier];
+		NSString* mediaType = ibTabView.selectedTabViewItem.identifier;
 		IMBNodeViewController* nodeViewController = [self nodeViewControllerForMediaType:mediaType];
 		IMBObjectViewController* objectViewController = (IMBObjectViewController*)nodeViewController.objectViewController;
 		[objectViewController quicklook:self];
@@ -900,7 +898,7 @@ static IMBPanelController* sSharedPanelController = nil;
 
 - (void) beginPreviewPanelControl:(QLPreviewPanel*)inPanel
 {
-	NSString* mediaType = [[ibTabView selectedTabViewItem] identifier];
+	NSString* mediaType = ibTabView.selectedTabViewItem.identifier;
 	IMBNodeViewController* nodeViewController = [self nodeViewControllerForMediaType:mediaType];
 	IMBObjectViewController* objectViewController = (IMBObjectViewController*)nodeViewController.objectViewController;
 	inPanel.delegate = objectViewController;

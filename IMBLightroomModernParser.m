@@ -151,7 +151,7 @@
 
 - (NSNumber*) databaseVersion
 {
-	FMDatabase *database = [self database];
+	FMDatabase *database = self.database;
 	NSNumber *databaseVersion = nil;
 	
 	if (database != nil) {		
@@ -163,7 +163,7 @@
 		FMResultSet* results = [database executeQuery:query, @"Adobe_DBVersion"];
 		
 		if ([results next]) {				
-			databaseVersion = [NSNumber numberWithLong:[results longForColumn:@"value"]];
+			databaseVersion = @([results longForColumn:@"value"]);
 		}
 		
 		[results close];
@@ -183,7 +183,7 @@
 	
 	// Add the Folders node...
 	
-	NSNumber* id_local = [NSNumber numberWithInt:-1];
+	NSNumber* id_local = @-1;
 	
 	NSString* foldersName = NSLocalizedStringWithDefaultValue(
 															  @"IMBLightroomParser.foldersName",
@@ -226,10 +226,10 @@
 																  @"Name of Collections node in IMBLightroomParser");
 	NSMutableDictionary *collectionsAttributes = [NSMutableDictionary dictionaryWithCapacity:5];
 	
-	[collectionsAttributes setValue:[NSNumber numberWithInt:IMBLightroomNodeTypeRootCollection] forKey:@"nodeType"];
+	[collectionsAttributes setValue:@(IMBLightroomNodeTypeRootCollection) forKey:@"nodeType"];
 
 	IMBNode* collectionsNode = [[[IMBNode alloc] initWithParser:self topLevel:NO] autorelease];
-	collectionsNode.identifier = [self identifierWithCollectionId:[NSNumber numberWithLong:0]];
+	collectionsNode.identifier = [self identifierWithCollectionId:@0L];
 	collectionsNode.name = collectionsName;
 	collectionsNode.icon = [[self class] groupIcon];
 	collectionsNode.isLeafNode = NO;
@@ -254,7 +254,7 @@
 
 - (NSString*) pyramidPathForImage:(NSNumber*)idLocal
 {
-	FMDatabase *database = [self database];
+	FMDatabase *database = self.database;
 	NSString *uuid = nil;
 	NSString *digest = nil;
 
@@ -301,7 +301,7 @@
 
 + (NSData*) previewDataForLightroomObject:(IMBLightroomObject*)lightroomObject maximumSize:(NSNumber*)maximumSize
 {
-	NSString* absolutePyramidPath = [lightroomObject absolutePyramidPath];
+	NSString* absolutePyramidPath = lightroomObject.absolutePyramidPath;
 	NSData* data = nil;
 
 	if (absolutePyramidPath != nil) {
@@ -334,7 +334,7 @@
 		}
 
 		NSData* previousData = nil;
-		CGFloat maximumSizeFloat = [maximumSize floatValue];
+		CGFloat maximumSizeFloat = maximumSize.floatValue;
 
 		while (index != NSNotFound) {
 			unsigned short headerLengthValue; // size 2
@@ -348,7 +348,7 @@
 
 			NSData* jpegData = nil;
 
-            if ((index + headerLengthValue + dataLengthValue) <= [data length]) {
+            if ((index + headerLengthValue + dataLengthValue) <= data.length) {
                 jpegData = [data subdataWithRange:NSMakeRange(index + headerLengthValue, dataLengthValue)];
             }
 			else {
@@ -386,7 +386,7 @@
 				}
 			}
 
-			index = [data indexOfBytes:pattern length:4 options:0 range:NSMakeRange(index + 4, [data length] - index - 4)];
+			index = [data indexOfBytes:pattern length:4 options:0 range:NSMakeRange(index + 4, data.length - index - 4)];
 		}
 
 		return previousData;

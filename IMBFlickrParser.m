@@ -160,7 +160,7 @@
 
 
 - (NSString*) persistentResourceIdentifierForObject: (IMBObject*) inObject {
-    return [[[inObject URL] fileReferenceURL] absoluteString];
+    return [[inObject URL] fileReferenceURL].absoluteString;
 }
 
 
@@ -170,17 +170,15 @@
     if (SBIsSandboxed()) xpc_transaction_begin ();
 
     //  determine preview URL...
-    NSString* thumbnailURLString = [inObject.preliminaryMetadata objectForKey:@"url_m"];
-    if (!thumbnailURLString) thumbnailURLString = [inObject.preliminaryMetadata objectForKey:@"url_s"];
-    if (!thumbnailURLString) thumbnailURLString = [inObject.preliminaryMetadata objectForKey:@"url_l"];
+    NSString* thumbnailURLString = (inObject.preliminaryMetadata)[@"url_m"];
+    if (!thumbnailURLString) thumbnailURLString = (inObject.preliminaryMetadata)[@"url_s"];
+    if (!thumbnailURLString) thumbnailURLString = (inObject.preliminaryMetadata)[@"url_l"];
     if (!thumbnailURLString) {
         NSString* title = @"Flickr Error";
         NSString* description = @"Can't determine image preview URL.";
         
-        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                              title,@"title",
-                              description,NSLocalizedDescriptionKey,
-                              nil];
+        NSDictionary* info = @{@"title": title,
+                              NSLocalizedDescriptionKey: description};
         
         NSError* error = [NSError errorWithDomain:kIMBErrorDomain code:paramErr userInfo:info];        
         if (outError) *outError = error;
@@ -200,10 +198,8 @@
         NSString* title = @"Flickr Image Loading Error";
         NSString* description = @"Can't determine image source.";
         
-        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                              title,@"title",
-                              description,NSLocalizedDescriptionKey,
-                              nil];
+        NSDictionary* info = @{@"title": title,
+                              NSLocalizedDescriptionKey: description};
         
         NSError* error = [NSError errorWithDomain:kIMBErrorDomain code:paramErr userInfo:info];        
         if (outError) *outError = error;

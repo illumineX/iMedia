@@ -85,7 +85,7 @@
 	if (videoURL)
 	{
 		metadata = [NSMutableDictionary dictionaryWithDictionary:inObject.preliminaryMetadata];
-		[metadata setObject:[videoURL path] forKey:@"path"];
+		metadata[@"path"] = videoURL.path;
 		[metadata addEntriesFromDictionary:[NSURL imb_metadataFromVideoAtURL:videoURL]];
 	}
 

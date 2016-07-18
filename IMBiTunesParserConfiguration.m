@@ -32,17 +32,17 @@ IMBMLParserConfigurationFactory IMBMLiTunesParserConfigurationFactory =
     NSDictionary *internalMetadata = mediaObject.attributes;
     NSMutableDictionary* externalMetadata = [NSMutableDictionary dictionary];
     
-    double duration = [[internalMetadata objectForKey:@"Total Time"] doubleValue] / 1000.0;
-    [externalMetadata setObject:[NSNumber numberWithDouble:duration] forKey:@"duration"];
+    double duration = [internalMetadata[@"Total Time"] doubleValue] / 1000.0;
+    externalMetadata[@"duration"] = @(duration);
     
-    NSString* artist = [internalMetadata objectForKey:@"Artist"];
-    if (artist) [externalMetadata setObject:artist forKey:@"artist"];
+    NSString* artist = internalMetadata[@"Artist"];
+    if (artist) externalMetadata[@"artist"] = artist;
     
-    NSString* album = [internalMetadata objectForKey:@"Album"];
-    if (album) [externalMetadata setObject:album forKey:@"album"];
+    NSString* album = internalMetadata[@"Album"];
+    if (album) externalMetadata[@"album"] = album;
     
-    NSString* genre = [internalMetadata objectForKey:@"Genre"];
-    if (genre) [externalMetadata setObject:genre forKey:@"genre"];
+    NSString* genre = internalMetadata[@"Genre"];
+    if (genre) externalMetadata[@"genre"] = genre;
     
 //    NSString* comment = [internalMetadata objectForKey:@"Comment"];
 //    if (comment) [externalMetadata setObject:comment forKey:@"comment"];

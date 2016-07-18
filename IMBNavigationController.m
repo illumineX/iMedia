@@ -69,7 +69,7 @@
 - (void)validateLocations
 {
     NSUInteger locationIndex = 0;
-    while (locationIndex < [self.navigationStack count]) {
+    while (locationIndex < (self.navigationStack).count) {
         if (![self.locationProvider isValidLocation:self.navigationStack[locationIndex]]) {
             [self.navigationStack removeObjectAtIndex:locationIndex];
             self.currentIndex = self.currentIndex - 1;
@@ -101,7 +101,7 @@
 - (void)updateCurrentLocationWithLocation:(id<IMBNavigationLocation>)location
 {
     if (self.currentIndex >= 0) {
-        [self setCurrentLocation:location];
+        self.currentLocation = location;
     } else {
         [self pushLocation:location];
     }
@@ -117,7 +117,7 @@
     }
     
     [self.navigationStack addObject:location];
-    self.currentIndex = [self.navigationStack count] - 1;   // Always point to last object after push
+    self.currentIndex = (self.navigationStack).count - 1;   // Always point to last object after push
 
     if (self.currentIndex >= 0 && [self.delegate respondsToSelector:@selector(didGoForwardToLatestLocation)]) {
         [self.delegate didGoForwardToLatestLocation];
@@ -208,7 +208,7 @@
 
 - (BOOL)canGoForward
 {
-    return self.currentIndex < ([self.navigationStack count] - 1);
+    return self.currentIndex < ((self.navigationStack).count - 1);
 }
 
 #pragma mark - Buttons
@@ -255,7 +255,7 @@
 
 - (BOOL)validIndex:(NSInteger)index
 {
-    return index < [self.navigationStack count] && index >= 0;
+    return index < (self.navigationStack).count && index >= 0;
 }
 
 - (NSRange)rangeToTopOfNavigation
@@ -263,7 +263,7 @@
     NSInteger loc = self.currentIndex+1;
     
     if (loc > 0) {
-        NSInteger len = [self.navigationStack count] - loc;
+        NSInteger len = (self.navigationStack).count - loc;
         return NSMakeRange(loc, len);
     }
     return NSMakeRange(0, 0);
@@ -271,7 +271,7 @@
 
 - (BOOL)atTopOfNavigation
 {
-    return (self.currentIndex == [self.navigationStack count] - 1);
+    return (self.currentIndex == (self.navigationStack).count - 1);
 }
 
 - (void)reset
@@ -287,7 +287,7 @@
 {
     NSString *description = @"\n";
     
-    for (NSInteger index = self.currentIndex; index < [self.navigationStack count]; index++) {
+    for (NSInteger index = self.currentIndex; index < (self.navigationStack).count; index++) {
         NSString *rowPrefix = nil;
         if (index == self.currentIndex) {
             rowPrefix = @"-->";

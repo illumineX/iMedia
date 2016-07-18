@@ -125,7 +125,7 @@
                 rectParentView = outlineView;
             }
             
-            [facebook getAccessTokenForPermissions: [NSArray arrayWithObjects: @"user_photos", /*@"user_friends", @"friends_photos",*/ nil]
+            [facebook getAccessTokenForPermissions: @[@"user_photos"]
                                             cached: NO
                                     relativeToRect:rect
                                             ofView:rectParentView
@@ -212,8 +212,8 @@
 - (void) deleteFacebookCookies
 {
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    [cookieStorage setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyOnlyFromMainDocumentDomain];
-    NSArray *domains = [NSArray arrayWithObjects:@"http://facebook.com/", @"https://facebook.com/", nil];
+    cookieStorage.cookieAcceptPolicy = NSHTTPCookieAcceptPolicyOnlyFromMainDocumentDomain;
+    NSArray *domains = @[@"http://facebook.com/", @"https://facebook.com/"];
     for (NSString *domain in domains) {
         NSArray *cookies = [cookieStorage cookiesForURL:[NSURL URLWithString:domain]];
         for (NSHTTPCookie *cookie in cookies) {

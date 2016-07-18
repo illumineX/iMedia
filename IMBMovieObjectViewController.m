@@ -81,8 +81,8 @@
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSMutableDictionary* classDict = [NSMutableDictionary dictionary];
-	[classDict setObject:[NSNumber numberWithUnsignedInteger:kIMBObjectViewTypeIcon] forKey:@"viewType"];
-	[classDict setObject:[NSNumber numberWithDouble:0.5] forKey:@"iconSize"];
+	classDict[@"viewType"] = @(kIMBObjectViewTypeIcon);
+	classDict[@"iconSize"] = @0.5;
 	[IMBConfig registerDefaultPrefs:classDict forClass:self.class];
 	[pool drain];
 }
@@ -92,13 +92,11 @@
 {
 	[super awakeFromNib];
 
-	ibObjectArrayController.searchableProperties = [NSArray arrayWithObjects:
-		@"name",
+	ibObjectArrayController.searchableProperties = @[@"name",
 		@"metadata.artist",
 		@"metadata.Comment",
 		@"preliminaryMetadata.artist",
-		@"preliminaryMetadata.Comment",
-		nil];
+		@"preliminaryMetadata.Comment"];
 }
 
 

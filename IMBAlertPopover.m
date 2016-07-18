@@ -101,19 +101,19 @@
 
 - (void) setHeaderTextColor:(NSColor*)inColor
 {
-	[(IMBAlertPopoverViewController*)self.contentViewController setHeaderTextColor:inColor];
+	((IMBAlertPopoverViewController*)self.contentViewController).headerTextColor = inColor;
 }
 
 
 - (void) setBodyTextColor:(NSColor*)inColor
 {
-	[(IMBAlertPopoverViewController*)self.contentViewController setBodyTextColor:inColor];
+	((IMBAlertPopoverViewController*)self.contentViewController).bodyTextColor = inColor;
 }
 
 
 - (void) setFooterTextColor:(NSColor*)inColor
 {
-	[(IMBAlertPopoverViewController*)self.contentViewController setFooterTextColor:inColor];
+	((IMBAlertPopoverViewController*)self.contentViewController).footerTextColor = inColor;
 }
 
 

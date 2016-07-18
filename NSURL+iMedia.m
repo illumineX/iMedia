@@ -75,10 +75,10 @@
 	if (!result)
 	{
 		// In 10.5, we often get a nil
-		NSString *path = [self path];
+		NSString *path = self.path;
 		NSImage *icon = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:path];	// Don't worry about size
 		// Now get this into a CGImageRef.  Not the most efficient implementation, though.
-		NSData * imageData = [icon TIFFRepresentation];
+		NSData * imageData = icon.TIFFRepresentation;
 		CGImageRef imageRef = nil;
 		if(imageData)
 		{
@@ -118,7 +118,7 @@
 	else
 	{
 		// In 10.5, we often get a nil
-		NSString *path = [self path];
+		NSString *path = self.path;
 		nsimage = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:path];	// Don't worry about size
 	}
 	return nsimage;
@@ -126,13 +126,13 @@
 
 + (NSDictionary *)imb_metadataFromVideoAtURL:(NSURL*)inURL
 {
-	if (![inURL isFileURL]) {
+	if (!inURL.fileURL) {
 		return nil;
 	}
 	
 	NSMutableDictionary* metadata = [NSMutableDictionary dictionary];
 	
-	[metadata setObject:[inURL path] forKey:@"path"];
+	metadata[@"path"] = inURL.path;
 	
 	MDItemRef item = NULL;
 #if IMB_COMPILING_WITH_SNOW_LEOPARD_OR_NEWER_SDK
@@ -143,7 +143,7 @@
 	else
 #endif
 	{
-		item = MDItemCreate(NULL, (CFStringRef) [inURL path]);
+		item = MDItemCreate(NULL, (CFStringRef) inURL.path);
 	}
 
 //	NSLog(@"%@", [NSMakeCollectable(MDItemCopyAttributeNames(item)) autorelease]);
@@ -156,19 +156,19 @@
 		
 		if (seconds)
 		{
-			[metadata setObject:(NSNumber*)seconds forKey:@"duration"]; 
+			metadata[@"duration"] = (NSNumber*)seconds; 
 			CFRelease(seconds);
 		}
 		
 		if (width)
 		{
-			[metadata setObject:(NSNumber*)width forKey:@"width"]; 
+			metadata[@"width"] = (NSNumber*)width; 
 			CFRelease(width);
 		}
 		
 		if (height)
 		{
-			[metadata setObject:(NSNumber*)height forKey:@"height"]; 
+			metadata[@"height"] = (NSNumber*)height; 
 			CFRelease(height);
 		}
 		
@@ -186,7 +186,7 @@
 {
 	NSMutableDictionary* metadata = nil;
 	
-	if ([inURL isFileURL])
+	if (inURL.fileURL)
 	{
 		MDItemRef item =  MDItemCreateWithURL(NULL,(CFURLRef)inURL); 
 
@@ -194,7 +194,7 @@
 		{
 			metadata = [NSMutableDictionary dictionary];
 
-			NSString* path = [inURL path];
+			NSString* path = inURL.path;
 			CFNumberRef seconds = MDItemCopyAttribute(item,kMDItemDurationSeconds);
 			CFArrayRef authors = MDItemCopyAttribute(item,kMDItemAuthors);
 			CFStringRef album = MDItemCopyAttribute(item,kMDItemAlbum);
@@ -202,37 +202,37 @@
 
 			if (path)
 			{
-				[metadata setObject:path forKey:@"path"];
+				metadata[@"path"] = path;
 			}
 			
 			if (seconds)
 			{
-				[metadata setObject:(NSNumber*)seconds forKey:@"duration"]; 
+				metadata[@"duration"] = (NSNumber*)seconds; 
 				CFRelease(seconds);
 			}
 			else
 			{
 				NSSound* sound = [[NSSound alloc] initWithContentsOfURL:inURL byReference:YES];
-				[metadata setObject:[NSNumber numberWithDouble:sound.duration] forKey:@"duration"]; 
+				metadata[@"duration"] = @(sound.duration); 
 				[sound release];
 			}
 			
 			if (authors)
 			{
 				NSArray* artists = (NSArray*)authors;
-				if (artists.count > 0) [metadata setObject:[artists objectAtIndex:0] forKey:@"artist"]; 
+				if (artists.count > 0) metadata[@"artist"] = artists[0]; 
 				CFRelease(authors);
 			}
 			
 			if (album)
 			{
-				[metadata setObject:(NSString*)album forKey:@"album"]; 
+				metadata[@"album"] = (NSString*)album; 
 				CFRelease(album);
 			}
 			
 			if (comment)
 			{
-				[metadata setObject:(NSString*)comment forKey:@"comment"]; 
+				metadata[@"comment"] = (NSString*)comment; 
 				CFRelease(comment);
 			}
 			
@@ -253,13 +253,13 @@
 
 - (IMBResourceAccessibility) imb_accessibility
 {
-    if (![self isFileURL])
+    if (!self.fileURL)
     {
         // TODO/JJ: Deal with non-file URLs more intelligently
         return kIMBResourceIsAccessible;
     }
     
-	const char* path = [[self path] cStringUsingEncoding:NSUTF8StringEncoding];
+	const char* path = [self.path cStringUsingEncoding:NSUTF8StringEncoding];
     BOOL exists = access(path,F_OK) == 0;
     BOOL isReadable = access(path,R_OK) == 0;
     
@@ -280,17 +280,17 @@
 
 - (NSString*) imb_externalVolumeName
 {
-	if ([self isFileURL])
+	if (self.fileURL)
 	{
-		NSString* path = [[self path] stringByStandardizingPath];
+		NSString* path = self.path.stringByStandardizingPath;
 		
 		if ([path hasPrefix:@"/Volumes/"])
 		{
-			NSArray* components = [path pathComponents];
+			NSArray* components = path.pathComponents;
 			
 			if (components.count >= 3)
 			{
-				NSString* name = [components objectAtIndex:2];
+				NSString* name = components[2];
 				return name;
 			}
 		}
@@ -305,13 +305,13 @@
 - (NSURL *)imb_URLByResolvingBookmarkFilesInPath;
 {
     // Resolve any bookmarks higher up the chain first
-    NSURL *parent = [self URLByDeletingLastPathComponent];
+    NSURL *parent = self.URLByDeletingLastPathComponent;
     if (parent != self)
     {
         NSURL *resolvedParent = [parent imb_URLByResolvingBookmarkFilesInPath];
         if (!resolvedParent) return nil;
         
-        if (resolvedParent != parent) self = [resolvedParent URLByAppendingPathComponent:[self lastPathComponent]];
+        if (resolvedParent != parent) self = [resolvedParent URLByAppendingPathComponent:self.lastPathComponent];
     }
     
     
@@ -328,7 +328,7 @@
 {
     // Bookmark resolution will invisibly handle symlinks, so do that first
     NSURL *result = [self imb_URLByResolvingBookmarkFilesInPath];
-    return [result URLByResolvingSymlinksInPath];
+    return result.URLByResolvingSymlinksInPath;
 }
 
 
@@ -336,11 +336,11 @@
 
 - (BOOL)imb_setExtendedAttribute:(NSString *)value forKey:(NSString *)key
 {
-    if (![self isFileURL]) {
+    if (!self.fileURL) {
         return NO;
     }
     
-    const char *path = [[self path] fileSystemRepresentation];
+    const char *path = self.path.fileSystemRepresentation;
     const char *keyCString = [key cStringUsingEncoding:NSUTF8StringEncoding];
     const char *valueCString = [value cStringUsingEncoding:NSUTF8StringEncoding];
     

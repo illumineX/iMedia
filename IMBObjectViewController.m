@@ -212,7 +212,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 			sRegisteredObjectViewControllerClasses = [[NSMutableDictionary alloc] init];
 		}
 		
-		[sRegisteredObjectViewControllerClasses setObject:inObjectViewControllerClass forKey:inMediaType];
+		sRegisteredObjectViewControllerClasses[inMediaType] = inObjectViewControllerClass;
 		
 		[pool drain];
 	}
@@ -227,7 +227,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	// Create a viewController of appropriate class type...
 	
 	NSString* mediaType = inLibraryController.mediaType;
-	Class objectViewControllerClass = [sRegisteredObjectViewControllerClasses objectForKey:mediaType];
+	Class objectViewControllerClass = sRegisteredObjectViewControllerClasses[mediaType];
 
     NSString* nibName = [objectViewControllerClass nibName];
     NSBundle* bundle = [objectViewControllerClass bundle];
@@ -236,7 +236,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 	// Load the view *before* setting the libraryController, so that outlets are set before we load the preferences...
     
-	[objectViewController view];										
+	objectViewController.view;										
 	objectViewController.libraryController = inLibraryController;		
 	return objectViewController;
 }
@@ -326,7 +326,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 #pragma mark Lifetime
 
 
-- (id) initWithNibName:(NSString*)inNibName bundle:(NSBundle*)inBundle
+- (instancetype) initWithNibName:(NSString*)inNibName bundle:(NSBundle*)inBundle
 {
 	if (self = [super initWithNibName:inNibName bundle:inBundle])
 	{
@@ -405,8 +405,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	// Just naming an image file '*Template' is not enough. So we explicitly make sure that all images in the
 	// NSSegmentedControl are templates, so that they get correctly inverted when a segment is highlighted...
 	
-	NSInteger n = [ibSegments segmentCount];
-	NSSegmentedCell *cell = [ibSegments cell];
+	NSInteger n = ibSegments.segmentCount;
+	NSSegmentedCell *cell = ibSegments.cell;
 
 	for (NSInteger i=0; i<n; i++)
 	{
@@ -453,7 +453,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 				break;
 		}
 		
-		[[segmentChildren objectAtIndex:i] accessibilitySetOverrideValue:axDesc forAttribute:NSAccessibilityDescriptionAttribute];
+		[segmentChildren[i] accessibilitySetOverrideValue:axDesc forAttribute:NSAccessibilityDescriptionAttribute];
 	}
 	
 	// Observe changes to object array...
@@ -466,8 +466,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	// that will naturally indicate a change in visible items (unfortunately IKImageBrowserView's 
 	// visibleItemIndexes attribute doesn't seem to be KVO compatible.
 
-	NSScrollView* iconViewScroller = [ibIconView enclosingScrollView];
-	NSClipView* clipView = [iconViewScroller contentView];
+	NSScrollView* iconViewScroller = ibIconView.enclosingScrollView;
+	NSClipView* clipView = iconViewScroller.contentView;
 	
 	if (iconViewScroller)
 	{
@@ -511,7 +511,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	
 	if ([self.delegate respondsToSelector:@selector(objectViewController:didLoadViews:)])
 	{
-		NSDictionary* views = [NSDictionary dictionaryWithObjectsAndKeys:ibSegments, IMBObjectViewControllerSegmentedControlKey, nil];
+		NSDictionary* views = @{IMBObjectViewControllerSegmentedControlKey: ibSegments};
 		[self.delegate objectViewController:self didLoadViews:views];
 	}
 }
@@ -594,13 +594,13 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) _saveStateToPreferences
 {
-	NSIndexSet* selectionIndexes = [ibObjectArrayController selectionIndexes];
+	NSIndexSet* selectionIndexes = ibObjectArrayController.selectionIndexes;
 	NSData* selectionData = [NSKeyedArchiver archivedDataWithRootObject:selectionIndexes];
 	
 	NSMutableDictionary* stateDict = [self _preferences];
-	[stateDict setObject:[NSNumber numberWithUnsignedInteger:self.viewType] forKey:@"viewType"];
-	[stateDict setObject:[NSNumber numberWithDouble:self.iconSize] forKey:@"iconSize"];
-	[stateDict setObject:selectionData forKey:@"selectionData"];
+	stateDict[@"viewType"] = @(self.viewType);
+	stateDict[@"iconSize"] = @(self.iconSize);
+	stateDict[@"selectionData"] = selectionData;
 	
 	[self _setPreferences:stateDict];
 }
@@ -609,8 +609,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 - (void) _loadStateFromPreferences
 {
 	NSMutableDictionary* stateDict = [self _preferences];
-	self.viewType = [[stateDict objectForKey:@"viewType"] unsignedIntegerValue];
-	self.iconSize = [[stateDict objectForKey:@"iconSize"] doubleValue];
+	self.viewType = [stateDict[@"viewType"] unsignedIntegerValue];
+	self.iconSize = [stateDict[@"iconSize"] doubleValue];
 	
 	//	NSData* selectionData = [stateDict objectForKey:@"selectionData"];
 	//	NSIndexSet* selectionIndexes = [NSKeyedUnarchiver unarchiveObjectWithData:selectionData];
@@ -677,7 +677,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	else if (inContext == (void*)kGlobalViewTypeKey && [IMBConfig useGlobalViewType])
 	{
 		[self willChangeValueForKey:@"viewType"];
-		_viewType = [[IMBConfig globalViewType] unsignedIntegerValue];
+		_viewType = [IMBConfig globalViewType].unsignedIntegerValue;
 		[self didChangeValueForKey:@"viewType"];
 	}
 	
@@ -687,7 +687,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 		
 	else if (inContext == (void*)kIMBObjectImageRepresentationKey)
 	{
-		NSInteger row = [(IMBObject*)inObject index];
+		NSInteger row = ((IMBObject*)inObject).index;
 		if (row == NSNotFound) row = [ibObjectArrayController.arrangedObjects indexOfObjectIdenticalTo:inObject];
 
 		if (row != NSNotFound)
@@ -733,9 +733,9 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) _configureListView
 {
-	[ibListView setTarget:self];
-	[ibListView setAction:@selector(tableViewWasClicked:)];
-	[ibListView setDoubleAction:@selector(tableViewWasDoubleClicked:)];
+	ibListView.target = self;
+	ibListView.action = @selector(tableViewWasClicked:);
+	ibListView.doubleAction = @selector(tableViewWasDoubleClicked:);
 	
     [ibListView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];	// I think this was to work around a bug
     [ibListView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:YES];
@@ -744,9 +744,9 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) _configureComboView
 {
-	[ibComboView setTarget:self];
-	[ibComboView setAction:@selector(tableViewWasClicked:)];
-	[ibComboView setDoubleAction:@selector(tableViewWasDoubleClicked:)];
+	ibComboView.target = self;
+	ibComboView.action = @selector(tableViewWasClicked:);
+	ibComboView.doubleAction = @selector(tableViewWasDoubleClicked:);
 	
     [ibComboView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];	// I think this was to work around a bug
     [ibComboView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:YES];
@@ -834,7 +834,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 {
 	[self willChangeValueForKey:@"canUseIconSize"];
 	_viewType = inViewType;
-	[IMBConfig setGlobalViewType:[NSNumber numberWithUnsignedInteger:inViewType]];
+	[IMBConfig setGlobalViewType:@(inViewType)];
 	[self didChangeValueForKey:@"canUseIconSize"];
 }
 
@@ -860,17 +860,17 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 {
 	// Get the row that seems most important in the combo view. Its either the selected row or the middle visible row...
 	
-	NSRange visibleRows = [ibComboView rowsInRect:[ibComboView visibleRect]];
+	NSRange visibleRows = [ibComboView rowsInRect:ibComboView.visibleRect];
 	NSUInteger firstVisibleRow = visibleRows.location;
 	NSUInteger lastVisibleRow = visibleRows.location + visibleRows.length;
 	NSUInteger anchorRow = (firstVisibleRow + lastVisibleRow) / 2;
 	
-	NSIndexSet* selection = [ibObjectArrayController selectionIndexes];
+	NSIndexSet* selection = ibObjectArrayController.selectionIndexes;
 	
 	if (selection) 
 	{
-		NSUInteger firstSelectedRow = [selection firstIndex];
-		NSUInteger lastSelectedRow = [selection lastIndex];
+		NSUInteger firstSelectedRow = selection.firstIndex;
+		NSUInteger lastSelectedRow = selection.lastIndex;
 
 		if (firstSelectedRow != NSNotFound &&
 			lastSelectedRow != NSNotFound &&
@@ -884,7 +884,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	// Change the cell size of the icon view. Also notify the parser so it can update thumbnails if necessary...
 	
 	_iconSize = inIconSize;
-	[IMBConfig setPrefsValue:[NSNumber numberWithDouble:inIconSize] forKey:@"globalIconSize"];
+	[IMBConfig setPrefsValue:@(inIconSize) forKey:@"globalIconSize"];
 	
 //	NSSize size = [ibIconView cellSize];
 //	IMBParser* parser = self.currentNode.parser;
@@ -900,22 +900,22 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	[ibComboView setNeedsDisplay:YES];
 
 	CGFloat height = 60.0 + 100.0 * _iconSize;
-	[ibComboView setRowHeight:height];
+	ibComboView.rowHeight = height;
 	
 	// Scroll the combo view so that it appears to be anchored at the same image as before...
 	
 	NSRect cellFrame = [ibComboView frameOfCellAtColumn:0 row:anchorRow];
-	NSRect viewFrame = [ibComboView  frame];
-	NSRect superviewFrame = [[ibComboView superview] frame];
+	NSRect viewFrame = ibComboView.frame;
+	NSRect superviewFrame = ibComboView.superview.frame;
 	
 	CGFloat y = NSMidY(cellFrame) - 0.5 * NSHeight(superviewFrame);
 	CGFloat ymax = NSHeight(viewFrame) - NSHeight(superviewFrame);
 	if (y < 0.0) y = 0.0;
 	if (y > ymax) y = ymax;
 	
-	NSClipView* clipview = (NSClipView*)[ibComboView superview];
+	NSClipView* clipview = (NSClipView*)ibComboView.superview;
 	[clipview scrollToPoint:NSMakePoint(0.0,y)];
-	[[ibComboView enclosingScrollView] reflectScrolledClipView:clipview];
+	[ibComboView.enclosingScrollView reflectScrolledClipView:clipview];
 	
 	// Tooltips in the icon view need to be rebuilt...
 	
@@ -943,7 +943,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (NSString*) objectCountString
 {
-	IMBNode* node = [self currentNode];
+	IMBNode* node = self.currentNode;
 	NSInteger count = node.displayedObjectCount;
 	
 	// If the node has an uninitialized count, or if we exist apart from a node view controller, or a search
@@ -951,7 +951,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	
 	if ((count < 0) || node == nil || ibObjectArrayController.searchString.length > 0)
 	{
-		count = (NSInteger) [[ibObjectArrayController arrangedObjects] count];
+		count = (NSInteger) [ibObjectArrayController.arrangedObjects count];
 	}
 	
 	NSString* format = count==1 ? self.objectCountFormatSingular : self.objectCountFormatPlural;
@@ -966,7 +966,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) _reloadIconView
 {
-	if ([ibIconView.window isVisible])
+	if ((ibIconView.window).visible)
 	{
 		// Remove all tool tips before we start the reload, because there is a narrow window during reload when we have
 		// our old tooltips configured and they refer to OLD objects in the icon view. This is a window for crashing 
@@ -983,7 +983,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) _reloadListView
 {
-	if ([ibListView.window isVisible])
+	if ((ibListView.window).visible)
 	{
         [ibListView reloadData];
 	}
@@ -992,7 +992,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) _reloadComboView
 {
-	if ([ibComboView.window isVisible])
+	if ((ibComboView.window).visible)
 	{
         [ibComboView reloadData];
 	}
@@ -1024,11 +1024,11 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	
 	NSArray* objects = ibObjectArrayController.arrangedObjects;
 	NSIndexSet* indexes = [ibIconView visibleItemIndexes];
-	NSUInteger index = [indexes firstIndex];
+	NSUInteger index = indexes.firstIndex;
 	
 	while (index != NSNotFound)
 	{
-		IMBObject* object = [objects objectAtIndex:index];
+		IMBObject* object = objects[index];
 		NSRect rect = [ibIconView itemFrameAtIndex:index];
 		[ibIconView addToolTipRect:rect owner:object userData:NULL];
 		index = [indexes indexGreaterThanIndex:index];
@@ -1095,14 +1095,14 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	if ([delegate respondsToSelector:@selector(libraryController:didDoubleClickSelectedObjects:inNode:)])
 	{
 		IMBNode* node = self.currentNode;
-		NSArray* objects = [ibObjectArrayController selectedObjects];
+		NSArray* objects = ibObjectArrayController.selectedObjects;
 		didHandleEvent = [delegate libraryController:controller didDoubleClickSelectedObjects:objects inNode:node];
 	}
 	
 	if (!didHandleEvent && inIndex != NSNotFound)
 	{
-		NSArray* objects = [ibObjectArrayController arrangedObjects];
-		IMBObject* object = [objects objectAtIndex:inIndex];
+		NSArray* objects = ibObjectArrayController.arrangedObjects;
+		IMBObject* object = objects[inIndex];
 		
 		if ([object isKindOfClass:[IMBNodeObject class]])
 		{
@@ -1136,7 +1136,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) imageBrowser:(IKImageBrowserView*)inView cellWasRightClickedAtIndex:(NSUInteger)inIndex withEvent:(NSEvent*)inEvent
 {
-	IMBObject* object = [[ibObjectArrayController arrangedObjects] objectAtIndex:inIndex];
+	IMBObject* object = ibObjectArrayController.arrangedObjects[inIndex];
 	NSMenu* menu = [self menuForObject:object];
 	[NSMenu popUpContextMenu:menu withEvent:inEvent forView:inView];
 }
@@ -1151,7 +1151,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (id) imageBrowser:(IKImageBrowserView*)inView itemAtIndex:(NSUInteger)inIndex
 {
-	IMBObject* object = [[ibObjectArrayController arrangedObjects] objectAtIndex:inIndex];
+	IMBObject* object = ibObjectArrayController.arrangedObjects[inIndex];
 	return object;
 }
 
@@ -1163,7 +1163,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (NSUInteger) imageBrowser:(IKImageBrowserView*)inView writeItemsAtIndexes:(NSIndexSet*)inIndexes toPasteboard:(NSPasteboard*)inPasteboard
 {
-	if ([self.clickedObject isDraggable])
+	if ((self.clickedObject).isDraggable)
 	{
 		return [self writeItemsAtIndexes:inIndexes toPasteboard:inPasteboard];
 	}	
@@ -1222,10 +1222,10 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
  */
 - (void) imb_imageBrowser:(IKImageBrowserView *)inView cellWasClickedAtIndex:(NSUInteger)inIndex
 {
-	if (inIndex < [[ibObjectArrayController arrangedObjects] count] &&
+	if (inIndex < [ibObjectArrayController.arrangedObjects count] &&
         self.viewType == kIMBObjectViewTypeIcon)
 	{
-		IMBObject* object = [[ibObjectArrayController arrangedObjects] objectAtIndex:inIndex];
+		IMBObject* object = ibObjectArrayController.arrangedObjects[inIndex];
         
 		if (object)
 		{
@@ -1255,8 +1255,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) tableView:(NSTableView*)inTableView willDisplayCell:(id)inCell forTableColumn:(NSTableColumn*)inTableColumn row:(NSInteger)inRow
 {
-	IMBObject* object = [[ibObjectArrayController arrangedObjects] objectAtIndex:inRow];
-	NSString* columnIdentifier = [inTableColumn identifier];
+	IMBObject* object = ibObjectArrayController.arrangedObjects[inRow];
+	NSString* columnIdentifier = inTableColumn.identifier;
 	
 	// If we are in combo view, then assign thumbnail, title, subd subtitle (metadataDescription). If they are
 	// not available yet, then load them lazily (in that case we'll end up here again once they are available)...
@@ -1339,17 +1339,17 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (BOOL) tableView:(NSTableView*)inTableView shouldSelectRow:(NSInteger)inRow
 {
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
-	IMBObject* object = [objects objectAtIndex:inRow];
-	return [object isSelectable];
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
+	IMBObject* object = objects[inRow];
+	return object.isSelectable;
 }
 
 
 - (BOOL) tableView:(NSTableView*)inTableView shouldTrackCell:(NSCell*)inCell forTableColumn:(NSTableColumn*)inColumn row:(NSInteger)inRow
 {
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
-	IMBObject* object = [objects objectAtIndex:inRow];
-	return [object isSelectable];
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
+	IMBObject* object = objects[inRow];
+	return object.isSelectable;
 }
 
 
@@ -1360,8 +1360,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (NSString*) tableView:(NSTableView*)inTableView toolTipForCell:(NSCell*)inCell rect:(NSRectPointer)inRect tableColumn:(NSTableColumn*)inTableColumn row:(NSInteger)inRow mouseLocation:(NSPoint)inMouseLocation
 {
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
-	IMBObject* object = [objects objectAtIndex:inRow];
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
+	IMBObject* object = objects[inRow];
 	return [object tooltipString];
 }
 
@@ -1380,7 +1380,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (BOOL) tableView:(NSTableView*)inTableView writeRowsWithIndexes:(NSIndexSet*)inIndexes toPasteboard:(NSPasteboard*)inPasteboard 
 {
-	if ([self.clickedObject isDraggable])
+	if ((self.clickedObject).isDraggable)
 	{
 		return ([self writeItemsAtIndexes:inIndexes toPasteboard:inPasteboard] > 0);
 	}
@@ -1398,7 +1398,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (void) dynamicTableView:(IMBDynamicTableView*)inTableView changedVisibleRowsFromRange:(NSRange)inOldVisibleRows toRange:(NSRange)inNewVisibleRows
 {
-	NSArray *newVisibleItems = [[ibObjectArrayController arrangedObjects] subarrayWithRange:inNewVisibleRows];
+	NSArray *newVisibleItems = [ibObjectArrayController.arrangedObjects subarrayWithRange:inNewVisibleRows];
 	NSMutableSet *newVisibleItemsSetRetained = [[NSMutableSet alloc] initWithArray:newVisibleItems];
 	
 	NSMutableSet *itemsNoLongerVisible	= [NSMutableSet set];
@@ -1445,10 +1445,10 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	BOOL didHandleEvent = NO;
 	
 	NSTableView* view = (NSTableView*)inSender;
-	NSUInteger row = [view clickedRow];
+	NSUInteger row = view.clickedRow;
 	NSRect rect = [self iconRectForTableView:view row:row inset:16.0];
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
-	IMBObject* object = row!=-1 ? [objects objectAtIndex:row] : nil;
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
+	IMBObject* object = row!=-1 ? objects[row] : nil;
 		
     if (object != nil)
     {
@@ -1467,14 +1467,14 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 			if ([delegate respondsToSelector:@selector(libraryController:didDoubleClickSelectedObjects:inNode:)])
 			{
 				IMBNode* node = self.currentNode;
-				objects = [ibObjectArrayController selectedObjects];
+				objects = ibObjectArrayController.selectedObjects;
 				didHandleEvent = [delegate libraryController:controller didDoubleClickSelectedObjects:objects inNode:node];
 			}
 			
 			if (!didHandleEvent)
 			{
-				objects = [ibObjectArrayController arrangedObjects];
-				object = row!=-1 ? [objects objectAtIndex:row] : nil;
+				objects = ibObjectArrayController.arrangedObjects;
+				object = row!=-1 ? objects[row] : nil;
 				
 				if ([object isKindOfClass:[IMBNodeObject class]])
 				{
@@ -1506,10 +1506,10 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	// If we do not have access right for the clicked object, then prompt the user to give us access...
 	
 	NSTableView* view = (NSTableView*)inSender;
-	NSUInteger row = [view clickedRow];
+	NSUInteger row = view.clickedRow;
 	NSRect rect = [self iconRectForTableView:view row:row inset:16.0];
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
-	IMBObject* object = row!=-1 ? [objects objectAtIndex:row] : nil;
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
+	IMBObject* object = row!=-1 ? objects[row] : nil;
 	
 	if (object)
 	{
@@ -1588,8 +1588,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 				@"Menu item in context menu of IMBObjectViewController");
 			
 			item = [[NSMenuItem alloc] initWithTitle:title action:@selector(openSubNode:) keyEquivalent:@""];
-			[item setRepresentedObject:[(IMBNodeObject*)inObject representedNodeIdentifier]];
-			[item setTarget:self];
+			item.representedObject = ((IMBNodeObject*)inObject).representedNodeIdentifier;
+			item.target = self;
 			[menu addItem:item];
 			[item release];
 		}
@@ -1598,8 +1598,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 			
 		else
 		{
-			NSURL *location = [inObject location];
-			if ([location isFileURL])
+			NSURL *location = inObject.location;
+			if (location.fileURL)
 			{			
 				if ([location checkResourceIsReachableAndReturnError:NULL])
 				{
@@ -1619,8 +1619,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 						title = [NSString stringWithFormat:title,appName];	
 
 						item = [[NSMenuItem alloc] initWithTitle:title action:@selector(openInEditorApp:) keyEquivalent:@""];
-						[item setRepresentedObject:inObject];
-						[item setTarget:self];
+						item.representedObject = inObject;
+						item.target = self;
 						[menu addItem:item];
 						[item release];
 					}
@@ -1641,15 +1641,15 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 						title = [NSString stringWithFormat:title,appName];	
 
 						item = [[NSMenuItem alloc] initWithTitle:title action:@selector(openInViewerApp:) keyEquivalent:@""];
-						[item setRepresentedObject:inObject];
-						[item setTarget:self];
+						item.representedObject = inObject;
+						item.target = self;
 						[menu addItem:item];
 						[item release];
 					}
 					
 					// Open with default app determined by OS...
 					
-					else if ([[NSWorkspace imb_threadSafeWorkspace] getInfoForFile:[location path] application:&appPath type:&type])
+					else if ([[NSWorkspace imb_threadSafeWorkspace] getInfoForFile:location.path application:&appPath type:&type])
 					{
 						title = NSLocalizedStringWithDefaultValue(
 							@"IMBObjectViewController.menuItem.openWithFinder",
@@ -1658,8 +1658,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 							@"Menu item in context menu of IMBObjectViewController");
 
 						item = [[NSMenuItem alloc] initWithTitle:title action:@selector(openInApp:) keyEquivalent:@""];
-						[item setRepresentedObject:inObject];
-						[item setTarget:self];
+						item.representedObject = inObject;
+						item.target = self;
 						[menu addItem:item];
 						[item release];
 					}
@@ -1673,8 +1673,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 						@"Menu item in context menu of IMBObjectViewController");
 					
 					item = [[NSMenuItem alloc] initWithTitle:title action:@selector(revealInFinder:) keyEquivalent:@""];
-					[item setRepresentedObject:inObject];
-					[item setTarget:self];
+					item.representedObject = inObject;
+					item.target = self;
 					[menu addItem:item];
 					[item release];
 				}
@@ -1691,8 +1691,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
                           @"Menu item in context menu of IMBObjectViewController");
 				
 				item = [[NSMenuItem alloc] initWithTitle:title action:@selector(reload:) keyEquivalent:@""];
-				[item setRepresentedObject:inObject];
-				[item setTarget:self];
+				item.representedObject = inObject;
+				item.target = self;
 				[menu addItem:item];
 				[item release];
 				
@@ -1718,8 +1718,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 					@"Menu item in context menu of IMBObjectViewController");
 				
 				item = [[NSMenuItem alloc] initWithTitle:title action:@selector(openInBrowser:) keyEquivalent:@""];
-				[item setRepresentedObject:location];
-				[item setTarget:self];
+				item.representedObject = location;
+				item.target = self;
 				[menu addItem:item];
 				[item release];
 			}
@@ -1727,7 +1727,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	
 		// QuickLook...
 		
-		if ([inObject isSelectable] && [inObject previewItemURL] != nil)
+		if (inObject.isSelectable && inObject.previewItemURL != nil)
 		{
 			title = NSLocalizedStringWithDefaultValue(
 				@"IMBObjectViewController.menuItem.quickLook",
@@ -1736,9 +1736,9 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 				@"Menu item in context menu of IMBObjectViewController");
 				
 			item = [[NSMenuItem alloc] initWithTitle:title action:@selector(quicklook:) keyEquivalent:@"y"];
-			[item setKeyEquivalentModifierMask:NSCommandKeyMask];
-			[item setRepresentedObject:inObject];
-			[item setTarget:self];
+			item.keyEquivalentModifierMask = NSCommandKeyMask;
+			item.representedObject = inObject;
+			item.target = self;
 			[menu addItem:item];
 			[item release];
 		}
@@ -1748,7 +1748,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	
 	if ([self.delegate respondsToSelector:@selector(objectViewController:badgeForObject:)])
 	{
-		if ([menu numberOfItems] > 0)
+		if (menu.numberOfItems > 0)
 		{
 			[menu addItem:[NSMenuItem separatorItem]];
 		}
@@ -1760,9 +1760,9 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 			@"Menu item in context menu of IMBObjectViewController");
 			
 		item = [[NSMenuItem alloc] initWithTitle:title action:@selector(showFiltered:) keyEquivalent:@""];
-		[item setTag:kIMBObjectFilterAll];
-		[item setTarget:self];
-        [item setState: _objectFilter == kIMBObjectFilterAll ? NSOnState : NSOffState];
+		item.tag = kIMBObjectFilterAll;
+		item.target = self;
+        item.state = _objectFilter == kIMBObjectFilterAll ? NSOnState : NSOffState;
 		[menu addItem:item];
 		[item release];
 
@@ -1773,9 +1773,9 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 			@"Menu item in context menu of IMBObjectViewController");
 			
 		item = [[NSMenuItem alloc] initWithTitle:title action:@selector(showFiltered:) keyEquivalent:@""];
-		[item setTag:kIMBObjectFilterBadge];
-		[item setTarget:self];
-        [item setState: _objectFilter == kIMBObjectFilterBadge ? NSOnState : NSOffState];
+		item.tag = kIMBObjectFilterBadge;
+		item.target = self;
+        item.state = _objectFilter == kIMBObjectFilterBadge ? NSOnState : NSOffState;
 		[menu addItem:item];
 		[item release];
 
@@ -1786,9 +1786,9 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 			@"Menu item in context menu of IMBObjectViewController");
 			
 		item = [[NSMenuItem alloc] initWithTitle:title action:@selector(showFiltered:) keyEquivalent:@""];
-		[item setTag:kIMBObjectFilterNoBadge];
-		[item setTarget:self];
-        [item setState: _objectFilter == kIMBObjectFilterNoBadge ? NSOnState : NSOffState];
+		item.tag = kIMBObjectFilterNoBadge;
+		item.target = self;
+        item.state = _objectFilter == kIMBObjectFilterNoBadge ? NSOnState : NSOffState;
 		[menu addItem:item];
 		[item release];
 	}
@@ -1813,7 +1813,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	
 	// Return the menu...
 	
-	if ([menu numberOfItems] > 0)
+	if (menu.numberOfItems > 0)
 	{
 		return menu;
 	}
@@ -1928,8 +1928,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 		else
 		{
 			NSURL* url = [object URLByResolvingBookmark];
-			NSString* path = [url path];
-			NSString* folder = [path stringByDeletingLastPathComponent];
+			NSString* path = url.path;
+			NSString* folder = path.stringByDeletingLastPathComponent;
 			[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:folder];
 		}
 	}];
@@ -1941,10 +1941,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 	NSString* identifier = (NSString*)[inSender representedObject];
 	IMBNode* node = [[IMBLibraryController sharedLibraryControllerWithMediaType:self.mediaType] nodeWithIdentifier:identifier];
 
-	NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-		self,@"objectViewController",
-		node,@"node",
-		nil];
+	NSDictionary* info = @{@"objectViewController": self,
+		@"node": node};
 			
 	[[NSNotificationCenter defaultCenter] 
 		postNotificationName:kIMBExpandAndSelectNodeWithIdentifierNotification 
@@ -1957,7 +1955,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 {
 	_objectFilter = (IMBObjectFilter)[inSender tag];
 	[inSender setState:NSOnState];
-	[[self objectArrayController] rearrangeObjects];
+	[self.objectArrayController rearrangeObjects];
 	[self.view setNeedsDisplay:YES];
 }
 
@@ -1973,14 +1971,14 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (NSIndexSet*) filteredDraggingIndexes:(NSIndexSet*)inIndexes
 {
-	NSArray* objects = [ibObjectArrayController arrangedObjects];
+	NSArray* objects = ibObjectArrayController.arrangedObjects;
 	
 	NSMutableIndexSet* indexes = [NSMutableIndexSet indexSet];
-	NSUInteger index = [inIndexes firstIndex];
+	NSUInteger index = inIndexes.firstIndex;
 	
 	while (index != NSNotFound)
 	{
-		IMBObject* object = [objects objectAtIndex:index];
+		IMBObject* object = objects[index];
 		if (object.isSelectable && (object.accessibility == kIMBResourceIsAccessible ||
                                     object.accessibility == kIMBResourceIsAccessibleSecurityScoped)) {
             [indexes addIndex:index];
@@ -1998,9 +1996,9 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 - (NSUInteger) writeItemsAtIndexes:(NSIndexSet*)inIndexes toPasteboard:(NSPasteboard*)inPasteboard
 {
 	NSIndexSet* indexes = [self filteredDraggingIndexes:inIndexes]; 
-	NSArray* objects = [[ibObjectArrayController arrangedObjects] objectsAtIndexes:indexes];
+	NSArray* objects = [ibObjectArrayController.arrangedObjects objectsAtIndexes:indexes];
 	NSMutableArray* pasteboardItems = [NSMutableArray arrayWithCapacity:objects.count];
-	NSArray* types = [NSArray arrayWithObjects:kIMBObjectPasteboardType,(NSString*)kUTTypeFileURL,nil];
+	NSArray* types = @[kIMBObjectPasteboardType,(NSString*)kUTTypeFileURL];
 	IMBParserMessenger* parserMessenger = nil;
 	
 	for (IMBObject* object in objects)
@@ -2026,7 +2024,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
     // can add additional data mimicking iPhoto
     // NOTE: This mimicking only works with the "old" pasteboard api because the associated item type is not UTI-compliant
     
-    parserMessenger = [self.currentNode parserMessenger];
+    parserMessenger = (self.currentNode).parserMessenger;
     [parserMessenger didWriteObjects:objects toPasteboard:inPasteboard];
     
     return pasteboardItems.count;
@@ -2052,10 +2050,8 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 		[[NSNotificationCenter defaultCenter] 
 			postNotificationName:kIMBExpandAndSelectNodeWithIdentifierNotification 
 			object:nil 
-			userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-				self,@"objectViewController",
-				node,@"node",
-				nil]];
+			userInfo:@{@"objectViewController": self,
+				@"node": node}];
 	}
 }
 
@@ -2064,7 +2060,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (IBAction) openSelectedObjects:(id)inSender
 {
-	NSArray* objects = [ibObjectArrayController selectedObjects];
+	NSArray* objects = ibObjectArrayController.selectedObjects;
 	[self openObjects:objects];
 }
 
@@ -2096,7 +2092,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 					
 					if (url)
 					{
-						if (appPath != nil && [url isFileURL])
+						if (appPath != nil && url.fileURL)
 						{
 							[[NSWorkspace imb_threadSafeWorkspace] openFile:url.path withApplication:appPath];
 						}
@@ -2123,7 +2119,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (IBAction) quicklook:(id)inSender
 {
-	if ([QLPreviewPanel sharedPreviewPanelExists] && [[QLPreviewPanel sharedPreviewPanel] isVisible])
+	if ([QLPreviewPanel sharedPreviewPanelExists] && [QLPreviewPanel sharedPreviewPanel].visible)
 	{
 		[[QLPreviewPanel sharedPreviewPanel] orderOut:nil];
 	}
@@ -2154,7 +2150,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 - (NSArray*) filteredSelectedObjects
 {
-	NSArray* objects = [ibObjectArrayController selectedObjects];
+	NSArray* objects = ibObjectArrayController.selectedObjects;
 	NSMutableArray* filteredObjects = [NSMutableArray arrayWithCapacity:objects.count];
 	
 	for (IMBObject* object in objects)
@@ -2182,7 +2178,7 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 
 	if (inIndex >= 0 && inIndex < objects.count)
 	{
-		return [objects objectAtIndex:inIndex];
+		return objects[inIndex];
 	}
 	
 	return nil;
@@ -2198,12 +2194,12 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 {
 	NSView* view = [self selectedObjectView];
 	
-	if ([inEvent type] == NSKeyDown)
+	if (inEvent.type == NSKeyDown)
 	{
 		[view keyDown:inEvent];
 		return YES;
 	}
-	else if ([inEvent type] == NSKeyUp)
+	else if (inEvent.type == NSKeyUp)
 	{
 		[view keyUp:inEvent];
 		return YES;
@@ -2233,14 +2229,14 @@ static NSMutableDictionary* sRegisteredObjectViewControllerClasses = nil;
 		else if (_viewType == kIMBObjectViewTypeList)
 		{
 			frame = [ibListView frameOfCellAtColumn:0 row:index];
-			cell = [[[ibListView tableColumns] objectAtIndex:0] dataCellForRow:index];
+			cell = [ibListView.tableColumns[0] dataCellForRow:index];
 			frame = [cell imageRectForBounds:frame];
 			view = ibListView;
 		}	
 		else if (_viewType == kIMBObjectViewTypeCombo)
 		{
 			frame = [ibComboView frameOfCellAtColumn:0 row:index];
-			cell = [[[ibComboView tableColumns] objectAtIndex:0] dataCellForRow:index];
+			cell = [ibComboView.tableColumns[0] dataCellForRow:index];
 			frame = [cell imageRectForBounds:frame];
 			view = ibComboView;
 		}	

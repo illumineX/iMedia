@@ -121,7 +121,7 @@
 	dispatch_once(&sOnceToken, ^()
 	{
 		sIcon = [[IMBSmartFolderObject icon] copy];
-		[sIcon setSize:NSMakeSize(16.0,16.0)];
+		sIcon.size = NSMakeSize(16.0,16.0);
 	});
 	
 	return sIcon;

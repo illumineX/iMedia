@@ -79,7 +79,7 @@
 @property BOOL imbShouldDisableTitle;
 
 - (void) imbSetTitleColors;
-- (CGFloat) imbPointSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGFloat imbPointSize;
 @end
 
 

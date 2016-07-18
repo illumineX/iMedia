@@ -55,29 +55,30 @@
 
 // Options to control behavior of the framework...
 
-enum
+#ifndef NS_ENUM
+#import <Foundation/Foundation.h>
+#endif
+typedef NS_ENUM(NSUInteger, IMBOptions)
 {
 	kIMBOptionNone = 0,
 	kIMBOptionForceRecursiveLoading = 1
 };
-typedef NSUInteger IMBOptions;
 
 
 // File watcher type for an IMBNode...
 
-enum 
+typedef NS_ENUM(NSUInteger, IMBWatcherType) 
 {
 	kIMBWatcherTypeNone,
 	kIMBWatcherTypeKQueue,
 	kIMBWatcherTypeFSEvent,
 	kIMBWatcherTypeFirstCustom = 1000
 };
-typedef NSUInteger IMBWatcherType;
 
 
 // Badge type for IMBNode. A corresponding icon will be displayed in the cell...
 
-enum 
+typedef NS_ENUM(NSUInteger, IMBBadgeType) 
 {
 	kIMBBadgeTypeNone,
 	kIMBBadgeTypeLoading,
@@ -89,7 +90,6 @@ enum
 	kIMBBadgeTypeResourceMissing,
 	kIMBBadgeTypeNoAccessRights
 };
-typedef NSUInteger IMBBadgeType;
 
 
 // Media types...
@@ -103,7 +103,7 @@ extern NSString* kIMBMediaTypeContact;
 
 // Group types...
 
-enum 
+typedef NS_ENUM(NSUInteger, IMBGroupType) 
 {
 	kIMBGroupTypeLibrary,
 	kIMBGroupTypeFolder,
@@ -112,11 +112,10 @@ enum
 	kIMBGroupTypeDevice,
 	kIMBGroupTypeNone
 };
-typedef NSUInteger IMBGroupType;
 
 // Error codes...
 
-enum 
+typedef NS_ENUM(NSUInteger, IMBErrorCode) 
 {
 	kIMBErrorNone = 0,
 	
@@ -134,12 +133,11 @@ enum
 	kIMBErrorMetadataNotAvailable,
 	kIMBErrorFileNotAvailable,
 };
-typedef NSUInteger IMBErrorCode;
 
 
 // Accessibility states of an item (like library of a top level IMBNode or media of an IMBObject)
 
-enum
+typedef NS_ENUM(NSUInteger, IMBResourceAccessibility)
 {
     /**
      Resource does not exist.
@@ -159,7 +157,6 @@ enum
      */
     kIMBResourceIsAccessibleSecurityScoped
 };
-typedef NSUInteger IMBResourceAccessibility;
 
 
 // File Extended Attributes

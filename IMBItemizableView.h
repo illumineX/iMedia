@@ -17,7 +17,7 @@
 
 /**
  */
-- (NSInteger)firstVisibleItemIndex;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger firstVisibleItemIndex;
 
 @end
 

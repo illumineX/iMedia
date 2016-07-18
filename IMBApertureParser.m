@@ -222,15 +222,15 @@
 - (BOOL) populateNode:(IMBNode*)inNode error:(NSError**)outError
 {
 	NSDictionary* plist = self.plist;
-	NSDictionary* images = [plist objectForKey:@"Master Image List"];
+	NSDictionary* images = plist[@"Master Image List"];
 	
 	// Population of events and faces node fundamentally different from album node
 	
 	if ([self isFacesNode:inNode]) {
-		NSDictionary* faces = [plist objectForKey:@"List of Faces"];
+		NSDictionary* faces = plist[@"List of Faces"];
 		[self populateFacesNode:inNode withFaces:faces images:images];
 	} else {
-		NSArray* albums = [plist objectForKey:@"List of Albums"];
+		NSArray* albums = plist[@"List of Albums"];
 		[self addSubNodesToNode:inNode albums:albums images:images]; 
 		[self populateNode:inNode albums:albums images:images]; 
 	}
@@ -243,8 +243,7 @@
 {
     if ([self mediaSourceAccessibility] == kIMBResourceDoesNotExist) {
         NSString *errorString = NSLocalizedStringWithDefaultValue(@"IMBApertureParser.header.placeholderMessage", nil, IMBBundle(), @"IMBApertureParser.header.placeholderMessage", nil);
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  errorString, NSLocalizedDescriptionKey, nil];
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: errorString};
         return [NSError errorWithDomain:kIMBErrorDomain code:-1 userInfo:userInfo];
     }
     return [super mediaSourceAccessibilityError];
@@ -285,7 +284,7 @@
     {
         if (_version == 0)
         {
-            _version = [[self.plist objectForKey:@"Application Version"] integerValue];
+            _version = [(self.plist)[@"Application Version"] integerValue];
         }
     }	
 	return _version;
@@ -299,16 +298,16 @@
 
 - (NSString*) identifierForId:(NSNumber*) inId inSpace:(NSString*) inIdSpace
 {
-	NSString* path = [(NSURL *) self.mediaSource path];
-	NSString* libraryName = [[[path stringByDeletingLastPathComponent] lastPathComponent] stringByDeletingPathExtension];
+	NSString* path = ((NSURL *) self.mediaSource).path;
+	NSString* libraryName = path.stringByDeletingLastPathComponent.lastPathComponent.stringByDeletingPathExtension;
 	
 	NSString* nodePath = nil;
 	
 	if (inIdSpace)
 	{
-		nodePath = [NSString stringWithFormat:@"/%lu/%@/%@/%@",(unsigned long)[path hash],libraryName,inIdSpace,inId];
+		nodePath = [NSString stringWithFormat:@"/%lu/%@/%@/%@",(unsigned long)path.hash,libraryName,inIdSpace,inId];
 	} else {
-		nodePath = [NSString stringWithFormat:@"/%lu/%@/%@",(unsigned long)[path hash],libraryName,inId];
+		nodePath = [NSString stringWithFormat:@"/%lu/%@/%@",(unsigned long)path.hash,libraryName,inId];
 	}
 	
 	return [self identifierForPath:nodePath];
@@ -326,18 +325,18 @@
 	
 	if (self.version < 3)
 	{
-		return [self identifierForId:[NSNumber numberWithInt:1] inSpace:nil];
+		return [self identifierForId:@1 inSpace:nil];
 	}
 	
 	// Aperture 3...
 	
-	NSArray* albums = [self.plist objectForKey:@"List of Albums"];
+	NSArray* albums = (self.plist)[@"List of Albums"];
 	
 	for (NSDictionary* albumDict in albums)
 	{
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-		NSString* albumType = [albumDict objectForKey:@"Album Type"];
-		NSNumber* albumId = [albumDict objectForKey:@"AlbumId"];
+		NSString* albumType = albumDict[@"Album Type"];
+		NSNumber* albumId = albumDict[@"AlbumId"];
 		NSString* rootNodeIdentifier = nil;
 		
 		if ([albumType isEqualToString:@"5"])
@@ -355,7 +354,7 @@
 
 	// Fallback if nothing is found...
 	
-	return [self identifierForId:[NSNumber numberWithInt:1] inSpace:nil];
+	return [self identifierForId:@1 inSpace:nil];
 }
 
 
@@ -390,7 +389,7 @@
 
 - (BOOL) isLeafAlbumType:(NSString*)inType
 {
-	NSInteger type = [inType integerValue];
+	NSInteger type = inType.integerValue;
 	
 	switch (type)
 	{
@@ -425,8 +424,8 @@
 
 - (BOOL) isAllPhotosAlbum:(NSDictionary*)inAlbumDict
 {
-	return ([[inAlbumDict objectForKey:@"uuid"] isEqualToString:@"allPhotosAlbum"] ||
-            [[inAlbumDict objectForKey:@"Album Type"] isEqualToString:@"94"]);
+	return ([inAlbumDict[@"uuid"] isEqualToString:@"allPhotosAlbum"] ||
+            [inAlbumDict[@"Album Type"] isEqualToString:@"94"]);
 }
 
 
@@ -435,7 +434,7 @@
 
 - (BOOL) isEventsAlbum:(NSDictionary*)inAlbumDict
 {
-	return [[inAlbumDict objectForKey:@"Album Type"] isEqualToString:@"97"];
+	return [inAlbumDict[@"Album Type"] isEqualToString:@"97"];
 }
 
 
@@ -445,7 +444,7 @@
 
 - (BOOL) isFlaggedAlbum:(NSDictionary*)inAlbumDict
 {
-    return [[inAlbumDict objectForKey:@"uuid"] isEqualToString:@"flaggedAlbum"];
+    return [inAlbumDict[@"uuid"] isEqualToString:@"flaggedAlbum"];
 }
 
 
@@ -569,15 +568,15 @@
 
 - (NSArray*) _keylistForAlbumType:(NSString*)inAlbumType
 {
-	NSArray* albums = [self.plist objectForKey:@"List of Albums"];
+	NSArray* albums = (self.plist)[@"List of Albums"];
 
 	for (NSDictionary* albumDict in albums)
 	{
-		NSString* albumType = [albumDict objectForKey:@"Album Type"];
+		NSString* albumType = albumDict[@"Album Type"];
 		
 		if ([albumType isEqualToString:inAlbumType])
 		{
-			return [albumDict objectForKey:@"KeyList"];
+			return albumDict[@"KeyList"];
 		}
 	}
 	
@@ -587,7 +586,7 @@
 
 - (NSArray*) keylistForAlbum:(NSDictionary*)inAlbumDict
 {
-	NSString* albumType = [inAlbumDict objectForKey:@"Album Type"];
+	NSString* albumType = inAlbumDict[@"Album Type"];
 	
 	// In Aperture 3 map keyList of album 99 to root node and Photos node...
 	
@@ -609,7 +608,7 @@
 	
 	// All other album just use their own key list...
 	
-	return [inAlbumDict objectForKey:@"KeyList"];
+	return inAlbumDict[@"KeyList"];
 }
 
 
@@ -642,11 +641,11 @@
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 		
 		NSString* albumType = [self typeForAlbum:albumDict];
-		NSString* albumName = [albumDict objectForKey:@"AlbumName"];
-		NSNumber* parentId = [albumDict objectForKey:@"Parent"];
+		NSString* albumName = albumDict[@"AlbumName"];
+		NSNumber* parentId = albumDict[@"Parent"];
 		
 		// Root node does not have an id space
-		NSString* parentIdSpace = [inParentNode isTopLevelNode] ? nil : [self idSpaceForAlbumType:albumType];
+		NSString* parentIdSpace = inParentNode.isTopLevelNode ? nil : [self idSpaceForAlbumType:albumType];
 		
 		// parent always from same id space for non top-level albums
 		NSString* parentIdentifier = parentId ? [self identifierForId:parentId inSpace:parentIdSpace] : [self identifierForPath:@"/"];
@@ -666,15 +665,14 @@
 
 			// Set the node's identifier. This is needed later to link it to the correct parent node...
 			
-			NSNumber* albumId = [albumDict objectForKey:@"AlbumId"];
+			NSNumber* albumId = albumDict[@"AlbumId"];
 			albumNode.identifier = [self identifierForId:albumId inSpace:[self idSpaceForAlbumType:albumType]];
             
 			// Keep a ref to the album dictionary for later use when we populate this node
 			// so we don't have to loop through the whole album list again to find it.
 			
-			albumNode.attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    albumDict, @"nodeSource",
-                                    [self nodeTypeForNode:albumNode], @"nodeType", nil];
+			albumNode.attributes = @{@"nodeSource": albumDict,
+                                    @"nodeType": [self nodeTypeForNode:albumNode]};
 			
 			
 			// Add the new album node to its parent (inRootNode)...
@@ -701,7 +699,7 @@
 
 - (NSDictionary*) childrenInfoForNode:(NSDictionary*)inNodeDict images:(NSDictionary*)inImages
 {
-    return [NSDictionary dictionary];
+    return @{};
 }
 
 
@@ -724,7 +722,7 @@
 	// We saved a reference to the album dictionary when this node was created
 	// (ivar 'attributes') and now happily reuse it to save an outer loop (over album list) here.
 	
-	NSDictionary* albumDict = [inNode.attributes objectForKey:@"nodeSource"];
+	NSDictionary* albumDict = (inNode.attributes)[@"nodeSource"];
 
 		NSAutoreleasePool* pool1 = [[NSAutoreleasePool alloc] init];
 //			NSArray* imageKeys = [albumDict objectForKey:@"KeyList"];
@@ -733,17 +731,17 @@
 			for (NSString* key in imageKeys)
 			{
 				NSAutoreleasePool* pool2 = [[NSAutoreleasePool alloc] init];
-				NSDictionary* objectDict = [inImages objectForKey:key];
-				NSString* mediaType = [objectDict objectForKey:@"MediaType"];
+				NSDictionary* objectDict = inImages[key];
+				NSString* mediaType = objectDict[@"MediaType"];
 			
 				if (objectDict!=nil && [self shouldUseObject:mediaType])
 				{
-					NSString* path = [objectDict objectForKey:[[self class] objectLocationKey]];
-					NSString* thumbPath = [objectDict objectForKey:@"ThumbPath"];
-					NSString* caption   = [objectDict objectForKey:@"Caption"];
+					NSString* path = objectDict[[[self class] objectLocationKey]];
+					NSString* thumbPath = objectDict[@"ThumbPath"];
+					NSString* caption   = objectDict[@"Caption"];
                     NSMutableDictionary* preliminaryMetadata = [NSMutableDictionary dictionaryWithDictionary:objectDict];
                     
-                    [preliminaryMetadata setObject:key forKey:@"VersionUUID"];
+                    preliminaryMetadata[@"VersionUUID"] = key;
                     
 					IMBObject* object = [[objectClass alloc] init];
 					[objects addObject:object];

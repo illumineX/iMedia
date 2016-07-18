@@ -82,7 +82,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -112,7 +112,7 @@
 - (IMBNode*) unpopulatedTopLevelNode:(NSError**)outError
 {
 	NSURL* url = self.mediaSource;
-	NSString* path = [[url path] stringByStandardizingPath];
+	NSString* path = url.path.stringByStandardizingPath;
 	
     // Check if the folder exists. If not then do not return a node...
 
@@ -134,7 +134,7 @@
 	node.name = name;
 	node.identifier = [self identifierForPath:path];
 	node.mediaSource = url;
-	node.isLeafNode = ![hasSubfolders boolValue];
+	node.isLeafNode = !hasSubfolders.boolValue;
 	node.displayPriority = self.displayPriority;
 	node.isUserAdded = self.isUserAdded;
 	
@@ -210,9 +210,9 @@
 					ok = [url getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error];
 					if (!ok) continue;
 					
-					if ([isSymlink boolValue])
+					if (isSymlink.boolValue)
 					{
-						url = [url URLByResolvingSymlinksInPath];
+						url = url.URLByResolvingSymlinksInPath;
 
 						ok = [url getResourceValue:&uti forKey:NSURLTypeIdentifierKey error:&error];
 						if (!ok) continue;
@@ -226,7 +226,7 @@
 							bookmarkDataIsStale:nil
 							error:&error];
 						
-						url = [url filePathURL];
+						url = url.filePathURL;
 
 						ok = [url getResourceValue:&uti forKey:NSURLTypeIdentifierKey error:&error];
 						if (!ok) continue;
@@ -250,7 +250,7 @@
 				// If we found a folder (that is not a package, then remember it for later. Folders will be added
 				// after regular files...
 				
-				if ([isDirectory boolValue] && ![isPackage boolValue])
+				if (isDirectory.boolValue && !isPackage.boolValue)
 				{
 					if (![IMBConfig isLibraryAtURL:url])
 					{
@@ -293,11 +293,11 @@
 				subnode.icon = [self iconForItemAtURL:url error:NULL];
 				subnode.name = name;
 				
-				NSString* path = [url path];
+				NSString* path = url.path;
 				subnode.identifier = [self identifierForPath:path];
 				
 				subnode.mediaSource = url;
-				subnode.isLeafNode = ![hasSubfolders boolValue];
+				subnode.isLeafNode = !hasSubfolders.boolValue;
 				subnode.groupType = kIMBGroupTypeFolder;
 				subnode.isIncludedInPopup = NO;
 				subnode.watchedPath = path;					// These two lines are important to make file watching work for nested 
@@ -319,7 +319,7 @@
 		}
 		
 		inNode.objects = objects;
-		inNode.isLeafNode = [subnodes count] == 0;
+		inNode.isLeafNode = subnodes.count == 0;
 	}
 	else
     {
@@ -400,17 +400,17 @@
 	NSFileManager* fileManager = [[[NSFileManager alloc] init] autorelease];
 
     IMBResourceAccessibility accessibility = [directory imb_accessibility];
-	if (!(accessibility == kIMBResourceIsAccessible)) return [NSNumber numberWithBool:NO];
+	if (!(accessibility == kIMBResourceIsAccessible)) return @NO;
 	
 	NSArray* contents = [fileManager contentsOfDirectoryAtURL:directory 
-                                   includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsDirectoryKey,NSURLIsPackageKey,nil] 
+                                   includingPropertiesForKeys:@[NSURLIsDirectoryKey,NSURLIsPackageKey] 
                                                       options:NSDirectoryEnumerationSkipsHiddenFiles 
                                                         error:outError];
     
 	if (!contents)
 	{
 		// Mask out file not found error. Disappearing folders are not considered an error here!
-		if (outError!=nil && [*outError code] == 260) *outError = nil;
+		if (outError!=nil && (*outError).code == 260) *outError = nil;
 		return nil;
 	}
 	
@@ -424,12 +424,12 @@
         if (ok)
         {
             // Can stop looking as soon as a folder is found
-            if ([isFolder boolValue])
+            if (isFolder.boolValue)
             {
                 NSNumber* isPackage = nil;
                 ok = [url getResourceValue:&isPackage forKey:NSURLIsPackageKey error:&error];
                 
-                if (ok && ![isPackage boolValue]) return [NSNumber numberWithBool:YES];
+                if (ok && !isPackage.boolValue) return @YES;
             }
         }
         
@@ -441,7 +441,7 @@
         }
     }
     
-    return (knowForSure ? [NSNumber numberWithBool:NO] : nil);
+    return (knowForSure ? @NO : nil);
 }
 
 

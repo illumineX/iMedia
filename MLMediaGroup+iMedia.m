@@ -14,9 +14,9 @@
  */
 - (NSArray *)imb_childGroupsUptoMaxCount:(NSUInteger)maxCount
 {
-    NSArray *childGroups = [self childGroups];
+    NSArray *childGroups = self.childGroups;
     
-    if ([childGroups count] <= maxCount) {
+    if (childGroups.count <= maxCount) {
         return childGroups;
     } else {
         return [childGroups subarrayWithRange:NSMakeRange(0, maxCount)];

@@ -160,7 +160,7 @@ NSString* kIMBObjectPasteboardType = @"com.karelia.imedia.IMBObject";
 #pragma mark Lifetime
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -204,7 +204,7 @@ NSString* kIMBObjectPasteboardType = @"com.karelia.imedia.IMBObject";
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	NSKeyedUnarchiver* coder = (NSKeyedUnarchiver*)inCoder;
 	
@@ -353,11 +353,11 @@ NSString* kIMBObjectPasteboardType = @"com.karelia.imedia.IMBObject";
 {
 	NSString* uti = nil;
 	NSURL *url = [self URL];
-	NSString* extension = [url pathExtension];
+	NSString* extension = url.pathExtension;
 		
-	if ([url isFileURL])
+	if (url.fileURL)
 	{
-		uti = [NSString imb_UTIForFileAtPath:[url path]];
+		uti = [NSString imb_UTIForFileAtPath:url.path];
 	}
 	else if (extension != nil)
 	{
@@ -367,7 +367,7 @@ NSString* kIMBObjectPasteboardType = @"com.karelia.imedia.IMBObject";
 	if (uti != nil && [NSString imb_doesUTI:uti conformsToUTI:(NSString*)kUTTypeAliasFile])
 	{
 		url = [url imb_URLByResolvingSymlinksAndBookmarkFilesInPath];
-		uti = (url ? [NSString imb_UTIForFileAtPath:[url path]] : nil);
+		uti = (url ? [NSString imb_UTIForFileAtPath:url.path] : nil);
 	}
 	
 	return uti;
@@ -398,7 +398,7 @@ NSString* kIMBObjectPasteboardType = @"com.karelia.imedia.IMBObject";
 	{
 		icon = self.imageRepresentation;
 	}
-	else if ([[self URL] isFileURL])
+	else if ([self URL].fileURL)
 	{
 		NSString* iconType = self.type;
 		if (iconType != nil)
@@ -425,8 +425,8 @@ NSString* kIMBObjectPasteboardType = @"com.karelia.imedia.IMBObject";
 
 - (NSString*) tooltipString
 {
-	NSString* name = [self name];
-	NSString* description = [self metadataDescription];
+	NSString* name = self.name;
+	NSString* description = self.metadataDescription;
 	
 	NSMutableString* tooltip = [NSMutableString string];
 	
@@ -568,7 +568,7 @@ NSString* kIMBObjectPasteboardType = @"com.karelia.imedia.IMBObject";
 	if ((self.accessibility == kIMBResourceIsAccessible) && [inType isEqualToString:(NSString*)kUTTypeFileURL])
 	{
         NSURL* url = [self _URLByRequestingAndResolvingBookmark];
-        if (url) [inItem setString:[url absoluteString] forType:(NSString*)kUTTypeFileURL];
+        if (url) [inItem setString:url.absoluteString forType:(NSString*)kUTTypeFileURL];
 	}
 	
 	// using 'public.bookmark' instead kUTTypeBookmark, which is not available before 10.10

@@ -87,15 +87,15 @@
 {
 	if (inPlaylistDict == nil) return NO;
 	
-	NSNumber* visible = [inPlaylistDict objectForKey:@"Visible"];
-	if (visible!=nil && [visible boolValue]==NO) return NO;
+	NSNumber* visible = inPlaylistDict[@"Visible"];
+	if (visible!=nil && visible.boolValue==NO) return NO;
 	
-	if ([[inPlaylistDict objectForKey:@"Distinguished Kind"] intValue]==26) return NO;	// Genius
+	if ([inPlaylistDict[@"Distinguished Kind"] intValue]==26) return NO;	// Genius
 	
 	if ([self.mediaType isEqualToString:kIMBMediaTypeMovie])
 	{
-		if ([inPlaylistDict objectForKey:@"Movies"]) return YES;
-		if ([inPlaylistDict objectForKey:@"TV Shows"]) return YES;
+		if (inPlaylistDict[@"Movies"]) return YES;
+		if (inPlaylistDict[@"TV Shows"]) return YES;
 	}
 	
 	return NO;
@@ -110,11 +110,11 @@
 - (BOOL) shouldUseTrack:(NSDictionary*)inTrackDict
 {
 	if (inTrackDict == nil) return NO;
-	if ([inTrackDict objectForKey:@"Name"] == nil) return NO;
-	if ([[inTrackDict objectForKey:@"Location"] length] == 0) return NO;
-	if ([[inTrackDict objectForKey:@"Has Video"] boolValue] == 0) return NO;
-	if ([[inTrackDict objectForKey:@"Protected"] boolValue] == 1) return NO;	
-	if (![[inTrackDict objectForKey:@"Location"] hasPrefix:@"file:"]) return NO;
+	if (inTrackDict[@"Name"] == nil) return NO;
+	if ([inTrackDict[@"Location"] length] == 0) return NO;
+	if ([inTrackDict[@"Has Video"] boolValue] == 0) return NO;
+	if ([inTrackDict[@"Protected"] boolValue] == 1) return NO;	
+	if (![inTrackDict[@"Location"] hasPrefix:@"file:"]) return NO;
 	
 	return YES;
 }

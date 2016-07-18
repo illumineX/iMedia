@@ -98,9 +98,9 @@
 			NSArray* words2 = [words subarrayWithRange:NSMakeRange(i1,i2-i1+1)];
 			NSString* line = [words2 componentsJoinedByString:@" "];
 			inTextField.stringValue = line;
-			lineSize = [inTextField intrinsicContentSize];
+			lineSize = inTextField.intrinsicContentSize;
 			
-			if ((lineSize.width > inProposedWidth) && ([words2 count] > 1))
+			if ((lineSize.width > inProposedWidth) && (words2.count > 1))
 			{
 				n -= i2 - i1;
 				i1 = i2--;
@@ -162,7 +162,7 @@
 	if (buttonCount > 0)
 	{
 		[_button0 setHidden:NO];
-		buttonSize0 = [_button0 intrinsicContentSize];
+		buttonSize0 = _button0.intrinsicContentSize;
 		totalButtonWidth += buttonSize0.width + 8.0;
 		totalButtonHeight = MAX(totalButtonHeight,buttonSize0.height);
 	}
@@ -170,7 +170,7 @@
 	if (buttonCount > 1)
 	{
 		[_button1 setHidden:NO];
-		buttonSize1 = [_button1 intrinsicContentSize];
+		buttonSize1 = _button1.intrinsicContentSize;
 		totalButtonWidth += buttonSize1.width + 8.0;
 		totalButtonHeight = MAX(totalButtonHeight,buttonSize1.height);
 	}
@@ -178,7 +178,7 @@
 	if (buttonCount > 2)
 	{
 		[_button2 setHidden:NO];
-		buttonSize2 = [_button2 intrinsicContentSize];
+		buttonSize2 = _button2.intrinsicContentSize;
 		totalButtonWidth += buttonSize2.width + 8.0;
 		totalButtonHeight = MAX(totalButtonHeight,buttonSize2.height);
 	}
@@ -187,8 +187,8 @@
 
 	// Calculate the optimum textfield sizes (depending on their content)...
 	
-	NSSize headerSize = [_headerTextField intrinsicContentSize];
-	NSSize bodySize = [_bodyTextField intrinsicContentSize];
+	NSSize headerSize = _headerTextField.intrinsicContentSize;
+	NSSize bodySize = _bodyTextField.intrinsicContentSize;
 	NSSize footerSize /*= [_footerTextField intrinsicContentSize]*/;
 	headerSize.width += 32.0;
 	
@@ -344,10 +344,8 @@
 {
 	IMBButtonBlockType block = [inBlock copy];
 	
-	NSDictionary* buttonInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-		inTitle,@"title",
-		block,@"block",
-		nil];
+	NSDictionary* buttonInfo = @{@"title": inTitle,
+		@"block": block};
 	
 	[block release];
 		
@@ -358,7 +356,7 @@
 - (IBAction) buttonAction:(id)inSender
 {
 	NSButton* button = (NSButton*)inSender;
-	IMBButtonBlockType block = [button.cell representedObject];
+	IMBButtonBlockType block = (button.cell).representedObject;
 	block();
 }
 
@@ -387,17 +385,17 @@
 		else button = _button2;
 		i++;
 		
-		[button setTitle:[buttonInfo objectForKey:@"title"]];
-		[button.cell setRepresentedObject:[buttonInfo objectForKey:@"block"]];
-		[button setTarget:self];
-		[button setAction:@selector(buttonAction:)];
+		button.title = buttonInfo[@"title"];
+		(button.cell).representedObject = buttonInfo[@"block"];
+		button.target = self;
+		button.action = @selector(buttonAction:);
 	}
 	
 	// Set custom colors...
 	
-	if (_headerTextColor) [_headerTextField setTextColor:_headerTextColor];
-	if (_bodyTextColor) [_footerTextField setTextColor:_bodyTextColor];
-	if (_footerTextColor) [_footerTextField setTextColor:_footerTextColor];
+	if (_headerTextColor) _headerTextField.textColor = _headerTextColor;
+	if (_bodyTextColor) _footerTextField.textColor = _bodyTextColor;
+	if (_footerTextColor) _footerTextField.textColor = _footerTextColor;
 
 	// Adjust the layout according to contents...
 	

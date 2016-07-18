@@ -67,11 +67,11 @@
 
 @interface NSPasteboard (iMediaPublic)
 
-- (BOOL) imb_containsIMBObjects;
-- (NSArray*) imb_IMBObjects;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL imb_containsIMBObjects;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *imb_IMBObjects;
 
-- (BOOL) imb_containsFileURLs;
-- (NSArray*) imb_fileURLs;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL imb_containsFileURLs;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *imb_fileURLs;
 
 @end
 

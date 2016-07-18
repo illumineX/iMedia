@@ -144,7 +144,7 @@ IMBMLParserConfigurationFactory IMBMLPhotosParserConfigurationFactory =
     
     BOOL blackListed =  [unqualifiedGroupIdentifiers containsObject:mediaGroup.typeIdentifier];
     
-    return (([[mediaGroup childGroups] count] > 0 && !blackListed) || whiteListed);
+    return ((mediaGroup.childGroups.count > 0 && !blackListed) || whiteListed);
 }
 
 - (MLMediaObject *)keyMediaObjectForMediaGroup:(MLMediaGroup *)mediaGroup
@@ -213,7 +213,7 @@ IMBMLParserConfigurationFactory IMBMLPhotosParserConfigurationFactory =
             }
             return thumbnail;
         } else {
-            return [self _thumbnailForMediaGroup:(MLMediaGroup *)[childGroups firstObject] mosaic:mosaic];
+            return [self _thumbnailForMediaGroup:(MLMediaGroup *)childGroups.firstObject mosaic:mosaic];
         }
     } else if (mediaGroup != nil) {
         // Media group is not a folder
@@ -305,12 +305,12 @@ IMBMLParserConfigurationFactory IMBMLPhotosParserConfigurationFactory =
 
 - (BOOL)isEmptyFolderMediaGroup:(MLMediaGroup *)mediaGroup
 {
-    return ([self isFolderMediaGroup:mediaGroup] && [[mediaGroup childGroups] count] == 0 );
+    return ([self isFolderMediaGroup:mediaGroup] && mediaGroup.childGroups.count == 0 );
 }
 
 - (BOOL)isEmptyButNotFolderMediaGroup:(MLMediaGroup *)mediaGroup
 {
-    return (![self isFolderMediaGroup:mediaGroup] && [[mediaGroup childGroups] count] == 0 );
+    return (![self isFolderMediaGroup:mediaGroup] && mediaGroup.childGroups.count == 0 );
 }
 
 @end

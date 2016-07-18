@@ -105,7 +105,7 @@ static dispatch_once_t sOnceToken = 0;
 }
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -194,7 +194,7 @@ static dispatch_once_t sOnceToken = 0;
 {
     if (inMediaSource)
     {
-        return [inMediaSource URLByDeletingLastPathComponent];
+        return inMediaSource.URLByDeletingLastPathComponent;
     }
     return [super libraryRootURLForMediaSource:inMediaSource];
 }
@@ -213,7 +213,7 @@ static dispatch_once_t sOnceToken = 0;
     ^{
 		if ([[self class] isInstalled])
 		{
-			NSString* mediaType = [self mediaType];
+			NSString* mediaType = self.mediaType;
 			
 			if ([mediaType isEqualTo:kIMBMediaTypeImage])
 			{

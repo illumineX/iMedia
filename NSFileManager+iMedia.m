@@ -56,10 +56,10 @@
 
 - (BOOL)imb_createDirectoryPath:(NSString *)path attributes:(NSDictionary *)attributes
 {
-	if ([path isAbsolutePath])
+	if (path.absolutePath)
 	{
 		NSString*		thePath = @"";
-		NSEnumerator*	enumerator = [[path pathComponents] objectEnumerator];
+		NSEnumerator*	enumerator = [path.pathComponents objectEnumerator];
 		NSString*		component;
 		
 		while ((component = [enumerator nextObject]) != nil)
@@ -145,7 +145,7 @@
 
 - (NSString*)imb_uniqueTemporaryFile:(NSString*)name
 {
-	NSString *processName = [[NSProcessInfo processInfo] processName];
+	NSString *processName = [NSProcessInfo processInfo].processName;
 	NSString *directoryName = [NSString stringWithFormat:@"%@_iMediaTemporary", processName];
 	NSString *directoryPath = [NSTemporaryDirectory() stringByAppendingPathComponent:directoryName];
 	
@@ -158,7 +158,7 @@
 {
 	NSString *temporaryPath = [self imb_uniqueTemporaryPathWithinDirectory:directoryPath];
 	
-	if ([name length] > 0) {
+	if (name.length > 0) {
 		[self createDirectoryAtPath:temporaryPath withIntermediateDirectories:YES attributes:nil error:NULL];
 		
 		return [temporaryPath stringByAppendingPathComponent:name];
@@ -173,7 +173,7 @@
 - (NSString*)imb_uniqueTemporaryPathWithinDirectory:(NSString*)directoryPath
 {
 	NSString *tempFileTemplate = [directoryPath stringByAppendingPathComponent:@"XXXXXXXXXXXX"];
-	const char *tempFileTemplateCString = [tempFileTemplate fileSystemRepresentation];
+	const char *tempFileTemplateCString = tempFileTemplate.fileSystemRepresentation;
 	NSString* tempFilePath = nil;
 	
 	char *tempFileNameCString = (char *)malloc(strlen(tempFileTemplateCString) + 1);
@@ -183,7 +183,7 @@
 
 		char *tmpName = mktemp(tempFileNameCString);
 		
-		tempFilePath = [NSString stringWithUTF8String:tmpName];	
+		tempFilePath = @(tmpName);	
 		
 		free(tempFileNameCString);
 	}
@@ -194,20 +194,20 @@
 
 - (NSString*) imb_volumeNameAtPath:(NSString*)inPath
 {
-	NSString* path = [inPath stringByStandardizingPath];
-	NSArray* components = [path pathComponents];
+	NSString* path = inPath.stringByStandardizingPath;
+	NSArray* components = path.pathComponents;
 
 	if (![path hasPrefix:@"/Volumes/"])
 	{
 		return [self displayNameAtPath:@"/"];
 	}
-	else if ([components count] > 2)
+	else if (components.count > 2)
 	{
-		NSString* volumeName = [components objectAtIndex:2];
+		NSString* volumeName = components[2];
 		NSMutableArray* parts = [NSMutableArray arrayWithArray:[volumeName componentsSeparatedByString:@" "]];
-		NSString* number = [parts lastObject];
+		NSString* number = parts.lastObject;
 		
-		if ([number intValue] > 0)
+		if (number.intValue > 0)
 		{
 			[parts removeLastObject];
 			volumeName = [parts componentsJoinedByString:@" "];
@@ -222,11 +222,11 @@
 
 - (NSString*) imb_relativePathToVolumeAtPath:(NSString*)inPath
 {
-	NSString* path = [inPath stringByStandardizingPath];
+	NSString* path = inPath.stringByStandardizingPath;
 
 	if ([path hasPrefix:@"/Volumes/"])
 	{
-		NSArray* components = [path pathComponents];
+		NSArray* components = path.pathComponents;
 		
 		NSMutableArray* relComponents = [NSMutableArray arrayWithArray:components];
 		[relComponents removeObjectAtIndex:0];
@@ -251,7 +251,7 @@
 	
 	if (ioPath)
 	{
-		NSString* path = [*ioPath stringByStandardizingPath];
+		NSString* path = (*ioPath).stringByStandardizingPath;
 		
 		if ([self fileExistsAtPath:path])
 		{

@@ -83,8 +83,8 @@
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSMutableDictionary* classDict = [NSMutableDictionary dictionary];
-	[classDict setObject:[NSNumber numberWithUnsignedInteger:kIMBObjectViewTypeList] forKey:@"viewType"];
-	[classDict setObject:[NSNumber numberWithDouble:0.5] forKey:@"iconSize"];
+	classDict[@"viewType"] = @(kIMBObjectViewTypeList);
+	classDict[@"iconSize"] = @0.5;
 	[IMBConfig registerDefaultPrefs:classDict forClass:self.class];
 	[pool drain];
 }
@@ -94,9 +94,7 @@
 {
 	[super awakeFromNib];
 	
-	ibObjectArrayController.searchableProperties = [NSArray arrayWithObjects:
-		@"name",
-		nil];
+	ibObjectArrayController.searchableProperties = @[@"name"];
 }
 
 
@@ -152,13 +150,13 @@
 {
 	if (inViewType < 1) inViewType = 1;
 	if (inViewType > 1) inViewType = 1;
-	[super setViewType:inViewType];
+	super.viewType = inViewType;
 }
 
 
 - (NSUInteger) viewType
 {
-	NSUInteger viewType = [super viewType];
+	NSUInteger viewType = super.viewType;
 	if (viewType < 1) viewType = 1;
 	if (viewType > 1) viewType = 1;
 	return viewType;
@@ -187,7 +185,7 @@
 - (NSUInteger) writeItemsAtIndexes:(NSIndexSet*)inIndexes toPasteboard:(NSPasteboard*)inPasteboard
 {
 	NSIndexSet* indexes = [self filteredDraggingIndexes:inIndexes]; 
-	NSArray* objects = [[ibObjectArrayController arrangedObjects] objectsAtIndexes:indexes];
+	NSArray* objects = [ibObjectArrayController.arrangedObjects objectsAtIndexes:indexes];
 	NSMutableArray* pasteboardItems = [NSMutableArray arrayWithCapacity:objects.count];
 	IMBParserMessenger* parserMessenger = nil;
 	
@@ -197,7 +195,7 @@
 		
 		NSURL* url = object.URL;
 		NSPasteboardItem* item = [[NSPasteboardItem alloc] init];
-		if (url) [item setString:[url absoluteString] forType:(NSString*)kUTTypeURL];
+		if (url) [item setString:url.absoluteString forType:(NSString*)kUTTypeURL];
 		[pasteboardItems addObject:item];
 		[item release];
 	}

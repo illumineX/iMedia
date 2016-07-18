@@ -125,9 +125,9 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 
 - (void) addSpecialAlbumsToAlbumsInLibrary:(NSMutableDictionary*)inLibraryDict
 {	
-	NSArray* oldAlbumList = [inLibraryDict objectForKey:@"List of Albums"];
+	NSArray* oldAlbumList = inLibraryDict[@"List of Albums"];
 	
-    if (oldAlbumList != nil && [oldAlbumList count]>0)
+    if (oldAlbumList != nil && oldAlbumList.count>0)
 	{
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 		
@@ -148,15 +148,15 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
             insertionIndex = [self indexOfEventsAlbumInAlbumList:oldAlbumList];
             
             if (insertionIndex != NSNotFound &&
-                (eventsDict = [oldAlbumList objectAtIndex:insertionIndex]))
+                (eventsDict = oldAlbumList[insertionIndex]))
             {
-				NSNumber *allPhotosId = [NSNumber numberWithUnsignedInt:ALL_PHOTOS_NODE_ID];
+				NSNumber *allPhotosId = @(ALL_PHOTOS_NODE_ID);
 				NSString *allPhotosName = [self localizedNameForAlbumName:@"Photos"];
                 NSDictionary* allPhotos = [[NSDictionary alloc] initWithObjectsAndKeys:
                                            allPhotosId,   @"AlbumId",
                                            allPhotosName, @"AlbumName",
                                            @"94",  @"Album Type",
-                                           [eventsDict objectForKey:@"Parent"], @"Parent", nil];
+                                           eventsDict[@"Parent"], @"Parent", nil];
 				
                 // events album right before photos album
                 
@@ -167,20 +167,20 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
         }
         
 		if (insertionIndex != NSNotFound &&
-            (photosDict = [oldAlbumList objectAtIndex:insertionIndex]))
+            (photosDict = oldAlbumList[insertionIndex]))
 		{
             // Events
 			
-			if ([inLibraryDict objectForKey:@"List of Rolls"])
+			if (inLibraryDict[@"List of Rolls"])
 			{
-				NSNumber *eventsId = [NSNumber numberWithUnsignedInt:EVENTS_NODE_ID];
+				NSNumber *eventsId = @(EVENTS_NODE_ID);
 				NSString *eventsName = NSLocalizedStringWithDefaultValue(@"IMB.iPhotoParser.events", nil, IMBBundle(), @"Events", @"Events node shown in iPhoto library");
 				
 				NSDictionary* events = [[NSDictionary alloc] initWithObjectsAndKeys:
 										eventsId,   @"AlbumId",
 										eventsName, @"AlbumName",
 										@"Events",  @"Album Type",
-										[photosDict objectForKey:@"Parent"], @"Parent", nil];
+										photosDict[@"Parent"], @"Parent", nil];
 				
                 // events album right before photos album
                 
@@ -191,16 +191,16 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 			
 			// Faces album right after photos album
 			
-			if ([inLibraryDict objectForKey:@"List of Faces"])
+			if (inLibraryDict[@"List of Faces"])
 			{
-				NSNumber *facesId = [NSNumber numberWithUnsignedInt:FACES_NODE_ID];
+				NSNumber *facesId = @(FACES_NODE_ID);
 				NSString *facesName = NSLocalizedStringWithDefaultValue(@"IMB.iPhotoParser.faces", nil, IMBBundle(), @"Faces", @"Faces node shown in iPhoto library");
 				
 				NSDictionary* faces = [[NSDictionary alloc] initWithObjectsAndKeys:
 									   facesId,   @"AlbumId",
 									   facesName, @"AlbumName",
 									   @"Faces",  @"Album Type",
-									   [photosDict objectForKey:@"Parent"], @"Parent", nil];
+									   photosDict[@"Parent"], @"Parent", nil];
 				
 				[newAlbumList insertObject:faces atIndex:insertionIndex + 1];
 				IMBRelease(faces);
@@ -210,17 +210,17 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
         // Photo Stream album right before Flagged album
         
         insertionIndex = [self indexOfFlaggedAlbumInAlbumList:newAlbumList];
-        if ([self supportsPhotoStreamFeatureInVersion:[inLibraryDict objectForKey:@"Application Version"]] &&
+        if ([self supportsPhotoStreamFeatureInVersion:inLibraryDict[@"Application Version"]] &&
             insertionIndex != NSNotFound)
         {
-            NSNumber *albumId = [NSNumber numberWithUnsignedInt:PHOTO_STREAM_NODE_ID];
+            NSNumber *albumId = @(PHOTO_STREAM_NODE_ID);
             NSString *albumName = NSLocalizedStringWithDefaultValue(@"IMB.iPhotoParser.photostream", nil, IMBBundle(), @"Photo Stream", @"Photo Stream node shown in iPhoto library");
             
             NSDictionary* album = [[NSDictionary alloc] initWithObjectsAndKeys:
                                    albumId,   @"AlbumId",
                                    albumName, @"AlbumName",
                                    @"Photo Stream",  @"Album Type",
-                                   [photosDict objectForKey:@"Parent"], @"Parent", nil];
+                                   photosDict[@"Parent"], @"Parent", nil];
             
             [newAlbumList insertObject:album atIndex:insertionIndex];
             IMBRelease(album);
@@ -243,7 +243,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 {
 	NSDictionary* result = nil;
 	NSError* error = nil;
-	NSString* path = [self.mediaSource path];
+	NSString* path = (self.mediaSource).path;
 	
     NSFileManager *fileManager = [[NSFileManager alloc] init];
 	NSDictionary* metadata = [fileManager attributesOfItemAtPath:path error:&error];
@@ -253,7 +253,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
     
     if (metadata)
     {
-		NSDate* modificationDate = [metadata objectForKey:NSFileModificationDate];
+		NSDate* modificationDate = metadata[NSFileModificationDate];
 		
 		@synchronized(self)
 		{
@@ -281,7 +281,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 							NSXMLDocument *xmlDoc = [[NSXMLDocument alloc] initWithData:data
 																				options:NSXMLDocumentTidyXML error:&e];
 							dict = [NSPropertyListSerialization
-									propertyListFromData:[xmlDoc XMLData]
+									propertyListFromData:xmlDoc.XMLData
 									mutabilityOption:0					// Apple doc: The opt parameter is currently unused and should be set to 0.
 									format:NULL errorDescription:&eString];
 							[xmlDoc release];
@@ -336,7 +336,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 - (IMBNode*) unpopulatedTopLevelNode:(NSError**)outError
 {
 	NSImage* icon = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:self.appPath];
-	[icon setSize:NSMakeSize(16.0,16.0)];
+	icon.size = NSMakeSize(16.0,16.0);
     
 	IMBNode* node = [[[IMBNode alloc] initWithParser:self topLevel:YES] autorelease];
 
@@ -353,8 +353,8 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 	{
 		if (self.shouldDisplayLibraryName)
         {
-            NSString* path = (NSString*)[node.mediaSource path];
-            NSString* libraryName = [[[path stringByDeletingLastPathComponent] lastPathComponent] stringByDeletingPathExtension];
+            NSString* path = (NSString*)(node.mediaSource).path;
+            NSString* libraryName = path.stringByDeletingLastPathComponent.lastPathComponent.stringByDeletingPathExtension;
             node.name = [NSString stringWithFormat:@"%@ (%@)",node.name, libraryName];
         } else {
             node.name = [NSString stringWithFormat:@"%@",node.name];
@@ -366,7 +366,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 	node.watcherType = kIMBWatcherTypeFSEvent;
     
 	NSURL* url = self.mediaSource;
-	NSString* path = [[url path] stringByDeletingLastPathComponent];
+	NSString* path = url.path.stringByDeletingLastPathComponent;
 	node.watchedPath = path;
 	
 	// JUST TEMP: remove these 2 lines later...
@@ -419,22 +419,22 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 - (NSUInteger) childrenCountOfNodeObject:(IMBNodeObject*)inNodeObject userInfo:(NSDictionary*)inUserInfo
 {
 //	return [[inNodeObject.preliminaryMetadata objectForKey:@"PhotoCount"] integerValue];
-	return [[inNodeObject.preliminaryMetadata objectForKey:@"KeyList"] count];	// More reliable for Aperture! Avoids out-of-bounds exceptions.
+	return [(inNodeObject.preliminaryMetadata)[@"KeyList"] count];	// More reliable for Aperture! Avoids out-of-bounds exceptions.
 }
 
 
 - (NSString*) imagePathForChildOfNodeObject:(IMBNodeObject*)inNodeObject atIndex:(NSUInteger)inIndex userInfo:(NSDictionary*)inUserInfo
 {
-	NSString* imageKey = [[inNodeObject.preliminaryMetadata objectForKey:@"KeyList"] objectAtIndex:inIndex];
+	NSString* imageKey = (inNodeObject.preliminaryMetadata)[@"KeyList"][inIndex];
 	
 	// Faces
-	if ([[inUserInfo objectForKey:@"nodeObjectType"] isEqualToString:kIMBiPhotoNodeObjectTypeFace])
+	if ([inUserInfo[@"nodeObjectType"] isEqualToString:kIMBiPhotoNodeObjectTypeFace])
 	{
 		// Get the metadata of the nth image in which this face occurs 
-		NSDictionary* imageFaceMetadata = [[[inNodeObject preliminaryMetadata] objectForKey:@"ImageFaceMetadataList"] objectAtIndex:inIndex];
+		NSDictionary* imageFaceMetadata = inNodeObject.preliminaryMetadata[@"ImageFaceMetadataList"][inIndex];
 		
 		// What is the number of this face inside of this image?
-		NSNumber* faceIndex = [imageFaceMetadata objectForKey:@"face index"];
+		NSNumber* faceIndex = imageFaceMetadata[@"face index"];
 		
 		// A clipped image of this face in this image is stored in the filesystem
 		NSString* imagePath = [self imagePathForFaceIndex:faceIndex inImageWithKey:imageKey];
@@ -451,13 +451,13 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 
 - (NSString*) imagePathForKeyChildOfNodeObject:(IMBNodeObject*)inNodeObject userInfo:(NSDictionary*)inUserInfo
 {
-	NSString* imageKey = [inNodeObject.preliminaryMetadata objectForKey:@"KeyPhotoKey"];
+	NSString* imageKey = (inNodeObject.preliminaryMetadata)[@"KeyPhotoKey"];
 	
 	// Faces
-	if ([[inUserInfo objectForKey:@"nodeObjectType"] isEqualToString:kIMBiPhotoNodeObjectTypeFace])
+	if ([inUserInfo[@"nodeObjectType"] isEqualToString:kIMBiPhotoNodeObjectTypeFace])
 	{
 		// Get this face's index inside of this image
-		NSNumber* faceIndex = [[inNodeObject preliminaryMetadata] objectForKey:@"key image face index"];
+		NSNumber* faceIndex = inNodeObject.preliminaryMetadata[@"key image face index"];
 		
 		// Get the path to this face's occurence
 		NSString* imagePath = [self imagePathForFaceIndex:faceIndex inImageWithKey:imageKey];
@@ -494,7 +494,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 
 - (NSString*) rootNodeIdentifier
 {
-    NSString *errMsg = [NSString stringWithFormat:@"%s: Please use a custom subclass of %@...",__FUNCTION__, [self className]];
+    NSString *errMsg = [NSString stringWithFormat:@"%s: Please use a custom subclass of %@...",__FUNCTION__, self.className];
 	NSLog(@"%@", errMsg);
 	[[NSException exceptionWithName:@"IMBProgrammerError" reason:errMsg userInfo:nil] raise];
 	
@@ -659,7 +659,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 
 - (NSString*) imageLocationForObject:(NSDictionary*)inObjectDict
 {
-	return [inObjectDict objectForKey:@"ThumbPath"];
+	return inObjectDict[@"ThumbPath"];
 }
 
 
@@ -670,8 +670,8 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 {
     NSString* imagePath = nil;
     
-	NSDictionary* images = [[self plist] objectForKey:@"Master Image List"];
-	NSDictionary* imageDict = [images objectForKey:inImageKey];
+	NSDictionary* images = self.plist[@"Master Image List"];
+	NSDictionary* imageDict = images[inImageKey];
     
     if (imageDict) {
         imagePath = [self imageLocationForObject:imageDict];
@@ -694,9 +694,9 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 	
     if (imagePath) {
         return [NSString stringWithFormat:@"%@_face%@.%@",
-                [imagePath stringByDeletingPathExtension],
+                imagePath.stringByDeletingPathExtension,
                 inFaceIndex,
-                [imagePath pathExtension]];
+                imagePath.pathExtension];
     } else {
         NSBundle* bundle = [NSBundle bundleForClass:[self class]];
         NSString* path = [bundle pathForResource:@"missing-thumbnail" ofType:@"jpg"];
@@ -732,10 +732,10 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 	
 	for (NSString* imageDictKey in [inImages keyEnumerator])
 	{
-		imageDict = [inImages objectForKey:imageDictKey];
+		imageDict = inImages[imageDictKey];
 		
 		// Get all known faces that appear on this image
-		facesOnImage = [imageDict objectForKey:@"Faces"];
+		facesOnImage = imageDict[@"Faces"];
 		
 		NSString* imageFaceKey = nil;
 		NSMutableArray* imageFaceMetadataList = nil;
@@ -745,8 +745,8 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 			// Get face dictionary for given face key.
 			// Face dictionary will be the basis of our subnode to be created.
 			
-			imageFaceKey = [imageFaceDict objectForKey:@"face key"];
-			faceDict = [facesDict objectForKey:imageFaceKey];
+			imageFaceKey = imageFaceDict[@"face key"];
+			faceDict = facesDict[imageFaceKey];
 			
 			// It might well be that found face in image is now longer known...
 			if (faceDict)
@@ -756,37 +756,35 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 				
 				// First convert to a mutable dictionary to be able to add the extra pairs
 				faceDict = [NSMutableDictionary dictionaryWithDictionary:faceDict];
-				[facesDict setObject:faceDict forKey:imageFaceKey];
+				facesDict[imageFaceKey] = faceDict;
 				
                 // Provide key image key under event-compatible key "KeyPhotoKey" once current image matches.
                 // NOTE: iPhoto 9.4 changed the value stored under "key image" from image key to image GUID.
                 
-                NSString* keyImage = [faceDict objectForKey:@"key image"];
-                NSString* imageGUID = [imageDict objectForKey:@"GUID"];
+                NSString* keyImage = faceDict[@"key image"];
+                NSString* imageGUID = imageDict[@"GUID"];
                 
                 if ((imageGUID  && [imageGUID isEqualToString:keyImage]) ||     // Should be YES once for >= iPhoto 9.4
                     [imageDictKey isEqualToString:keyImage])                    // Should be YES once for < iPhoto 9.4
                 {
-                    [faceDict setObject:imageDictKey forKey:@"KeyPhotoKey"];
+                    faceDict[@"KeyPhotoKey"] = imageDictKey;
                 }
                 
 				// Add image face meta data to this face (need this later)
 				// (Create meta data list when first occurence of face in some image is detected)
 				
-				imageFaceMetadataList = [faceDict objectForKey:@"ImageFaceMetadataList"];
+				imageFaceMetadataList = faceDict[@"ImageFaceMetadataList"];
 				if (!imageFaceMetadataList)
 				{
 					imageFaceMetadataList = [NSMutableArray array];
-					[faceDict setObject:imageFaceMetadataList forKey:@"ImageFaceMetadataList"];
+					faceDict[@"ImageFaceMetadataList"] = imageFaceMetadataList;
 				}
-                NSNumber *faceIndex = [imageFaceDict objectForKey:@"face index"];
+                NSNumber *faceIndex = imageFaceDict[@"face index"];
                 NSString *path = [self imagePathForFaceIndex:faceIndex inImageWithKey:imageDictKey];
-				imageFaceMetadata = [NSDictionary dictionaryWithObjectsAndKeys:
-									 imageDictKey, @"image key",
-									 faceIndex, @"face index",
-									 [imageDict objectForKey:@"DateAsTimerInterval"], @"DateAsTimerInterval",
-                                     path, @"path",
-                                     nil];
+				imageFaceMetadata = @{@"image key": imageDictKey,
+									 @"face index": faceIndex,
+									 @"DateAsTimerInterval": imageDict[@"DateAsTimerInterval"],
+                                     @"path": path};
 				
 				[imageFaceMetadataList addObject:imageFaceMetadata];
 				
@@ -802,17 +800,17 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 	// For each face dictionary sort associated images by date (this is how iPhoto displays them)
 	
 	NSSortDescriptor* dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"DateAsTimerInterval" ascending:YES];
-	NSArray* sortDescriptors = [NSArray arrayWithObject:dateDescriptor];
+	NSArray* sortDescriptors = @[dateDescriptor];
 	[dateDescriptor release];
 	
 	NSArray* imageFaceMetadataList = nil;
 	for (NSString* faceKey in [facesDict keyEnumerator])
 	{
-		faceDict = [facesDict objectForKey:faceKey];
+		faceDict = facesDict[faceKey];
 		
 		// Sort images related to face by date
 		
-		imageFaceMetadataList = [faceDict objectForKey:@"ImageFaceMetadataList"];
+		imageFaceMetadataList = faceDict[@"ImageFaceMetadataList"];
 		if (imageFaceMetadataList)
 		{
 			imageFaceMetadataList = [imageFaceMetadataList sortedArrayUsingDescriptors:sortDescriptors];
@@ -823,10 +821,10 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 			// Create an empty metadata list to avoid crash.
 			imageFaceMetadataList = [NSArray array];
 		}
-		[faceDict setObject:imageFaceMetadataList forKey:@"ImageFaceMetadataList"]; // JJ/2012-09-21: again?????
+		faceDict[@"ImageFaceMetadataList"] = imageFaceMetadataList; // JJ/2012-09-21: again?????
 		
         // Also store a sorted key list in face dictionary
-		[faceDict setObject:[imageFaceMetadataList valueForKey:@"image key"] forKey:@"KeyList"];
+		faceDict[@"KeyList"] = [imageFaceMetadataList valueForKey:@"image key"];
 	}
 	
 	[pool drain];
@@ -834,10 +832,10 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 	// Sort faces dictionary by names (this is how iPhoto displays faces)
 	
 	NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-	sortDescriptors = [NSArray arrayWithObject:nameDescriptor];
+	sortDescriptors = @[nameDescriptor];
 	[nameDescriptor release];
 	
-	NSArray* sortedFaces = [[facesDict allValues] sortedArrayUsingDescriptors:sortDescriptors];
+	NSArray* sortedFaces = [facesDict.allValues sortedArrayUsingDescriptors:sortDescriptors];
 	
 	return sortedFaces;
 }
@@ -877,7 +875,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 	
 	for (id faceDict in sortedFaces)
 	{
-		NSString* subnodeName = [faceDict objectForKey:@"name"];
+		NSString* subnodeName = faceDict[@"name"];
 		
 		if ([self shouldUseAlbumType:subNodeType] && 
 			[self shouldUseAlbum:faceDict images:inImages])
@@ -909,14 +907,13 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 			subnode.watcherType = kIMBWatcherTypeNone;  // subfolders. See IMBLibraryController _reloadNodesWithWatchedPath:
 			
 			// Keep a ref to face dictionary for potential later use
-			subnode.attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  faceDict, @"nodeSource",
-                                  [self nodeTypeForNode:subnode], @"nodeType", nil];
+			subnode.attributes = @{@"nodeSource": faceDict,
+                                  @"nodeType": [self nodeTypeForNode:subnode]};
 			
 			// Set the node's identifier. This is needed later to link it to the correct parent node.
 			// Note that a faces dictionary always has a "key" key...
 			
-			NSNumber* subnodeId = [faceDict objectForKey:@"key"];
+			NSNumber* subnodeId = faceDict[@"key"];
 			subnode.identifier = [self identifierForId:subnodeId inSpace:FACES_ID_SPACE];
 			
 			// Add the new subnode to its parent (inRootNode)...
@@ -939,11 +936,11 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
             // NOTE: Since faces represent multiple resources we do not set their "location" property
 
 			object.name = subnode.name;
-			object.parserIdentifier = [self identifier];
+			object.parserIdentifier = self.identifier;
 			object.index = index++;
 			
-			thumbnailPath = [self imagePathForFaceIndex:[faceDict objectForKey:@"key image face index"]
-                                         inImageWithKey:[faceDict objectForKey:@"KeyPhotoKey"]];
+			thumbnailPath = [self imagePathForFaceIndex:faceDict[@"key image face index"]
+                                         inImageWithKey:faceDict[@"KeyPhotoKey"]];
 			object.imageLocation = (id)[NSURL fileURLWithPath:thumbnailPath isDirectory:NO];
 			object.imageRepresentationType = [self requestedImageRepresentationType];
 			object.imageRepresentation = nil;
@@ -1056,7 +1053,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 
 - (BOOL) isNode:(IMBNode*)inNode withId:(NSUInteger)inId inSpace:(NSString *)inIdSpace
 {	
-	NSNumber* nodeId = [NSNumber numberWithUnsignedInteger:inId];
+	NSNumber* nodeId = @(inId);
 	NSString* nodeIdentifier = [self identifierForId:nodeId inSpace:inIdSpace];
 	
 	return [inNode.identifier isEqualToString:nodeIdentifier];
@@ -1132,11 +1129,11 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
 
 - (NSString *)validatedResourceKey:(NSString *)inKey relativeToResourceList:(NSDictionary *)inResources otherCandidates:(NSArray *)inKeyList
 {
-    if ([inResources objectForKey:inKey]) return inKey;
+    if (inResources[inKey]) return inKey;
 
     for (id aKey in inKeyList)
     {
-        if ([inResources objectForKey:aKey]) return aKey;
+        if (inResources[aKey]) return aKey;
     }
     return nil;
 }
@@ -1152,16 +1149,16 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
     // Check for valid key photo key in node dict and try to replace with some other if necessary
     // (We've had occurences where key photo key was invalid (not key in master image list))
     
-    NSString* keyPhotoKeyCandidate = [ioNodeDict objectForKey:@"KeyPhotoKey"];
+    NSString* keyPhotoKeyCandidate = ioNodeDict[@"KeyPhotoKey"];
     NSString* validKeyPhotoKey = [self validatedResourceKey:keyPhotoKeyCandidate
                                      relativeToResourceList:inMasterImages
-                                            otherCandidates:[ioNodeDict objectForKey:@"KeyList"]];
+                                            otherCandidates:ioNodeDict[@"KeyList"]];
     
     if (!validKeyPhotoKey)
     {
-        NSString *nodeName = [ioNodeDict objectForKey:@"name"] ?
-                             [ioNodeDict objectForKey:@"name"] :
-                             [ioNodeDict objectForKey:@"RollName"];
+        NSString *nodeName = ioNodeDict[@"name"] ?
+                             ioNodeDict[@"name"] :
+                             ioNodeDict[@"RollName"];
         
         NSLog(@"%s Could not create skimmable node %@ because could not determine key photo", __FUNCTION__, nodeName);
         return NO;
@@ -1170,7 +1167,7 @@ NSString* const kIMBiPhotoNodeObjectTypeFace  = @"faces";
     if (![keyPhotoKeyCandidate isEqualToString:validKeyPhotoKey])
     {
         // Replace
-        [ioNodeDict setObject:validKeyPhotoKey forKey:@"KeyPhotoKey"];
+        ioNodeDict[@"KeyPhotoKey"] = validKeyPhotoKey;
     }
     return YES;
 }

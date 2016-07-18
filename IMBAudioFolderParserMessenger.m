@@ -79,7 +79,7 @@
 }
 					
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -92,7 +92,7 @@
 }
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super initWithCoder:inCoder]))
 	{
@@ -113,10 +113,10 @@
 - (NSString*) metadataDescriptionForMetadata:(NSDictionary*)inMetadata
 {
 	NSMutableString* description = [NSMutableString string];
-	NSNumber* duration = [inMetadata objectForKey:@"duration"];
-	NSString* artist = [inMetadata objectForKey:@"artist"];
-	NSString* album = [inMetadata objectForKey:@"album"];
-	NSString* comment = [inMetadata objectForKey:@"comment"];
+	NSNumber* duration = inMetadata[@"duration"];
+	NSString* artist = inMetadata[@"artist"];
+	NSString* album = inMetadata[@"album"];
+	NSString* comment = inMetadata[@"comment"];
 	if (comment) comment = [comment stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
 	if (artist)
@@ -193,7 +193,7 @@
 	[pool drain];
 }
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -226,7 +226,7 @@
 	[pool drain];
 }
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -258,7 +258,7 @@
 	[pool drain];
 }
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -296,7 +296,7 @@
 	[pool drain];
 }
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -328,7 +328,7 @@
 	[pool drain];
 }
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{

@@ -209,12 +209,10 @@ CGImageSourceRef IMB_CGImageSourceCreateWithImageItem(id <IMBImageItem> item, CF
         // Really, it's caller's responsibility to do both of those
 		CFURLRef url = (CFURLRef)([rep isKindOfClass:[NSString class]] ? [NSURL fileURLWithPath:rep] : rep);
 		
-		NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
-								 (id)kCFBooleanTrue,(id)kCGImageSourceCreateThumbnailWithTransform,
-								 (id)kCFBooleanFalse,(id)kCGImageSourceCreateThumbnailFromImageIfAbsent,
-								 (id)kCFBooleanTrue,(id)kCGImageSourceCreateThumbnailFromImageAlways,	// bug in rotation so let's use the full size always
-								 [NSNumber numberWithInteger:kIMBMaxThumbnailSize],(id)kCGImageSourceThumbnailMaxPixelSize, 
-								 nil];
+		NSDictionary* options = @{(id)kCGImageSourceCreateThumbnailWithTransform: (id)kCFBooleanTrue,
+								 (id)kCGImageSourceCreateThumbnailFromImageIfAbsent: (id)kCFBooleanFalse,
+								 (id)kCGImageSourceCreateThumbnailFromImageAlways: (id)kCFBooleanTrue,	// bug in rotation so let's use the full size always
+								 (id)kCGImageSourceThumbnailMaxPixelSize: [NSNumber numberWithInteger:kIMBMaxThumbnailSize]};
 		result = CGImageSourceCreateWithURL(url, (CFDictionaryRef)options);
 		// Will this work?
 		// Will it be equivalent to the QL method?
@@ -241,14 +239,14 @@ CGSize IMBImageItemGetSize(id <IMBImageItem> item)
 	CIImage *image = [CIImage imageWithIMBImageItem:item];
     if (image)
     {
-        result = [image extent].size;
+        result = image.extent.size;
     }
     else
     {
         NSImage *image = [NSImage imageWithIMBImageItem:item];
         if (image)
         {
-            result = NSSizeToCGSize([image size]);
+            result = NSSizeToCGSize(image.size);
         }
 	}
     

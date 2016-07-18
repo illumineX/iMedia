@@ -59,9 +59,9 @@
 
 // Do not send -init. Use designated initializer instead.
 
-- (id) init
+- (instancetype) init
 {
-    NSString *error = [NSString stringWithFormat:@"Must not send -init to instance of class %@. Send -initWithView: instead.", [self className]];
+    NSString *error = [NSString stringWithFormat:@"Must not send -init to instance of class %@. Send -initWithView: instead.", self.className];
     [self imb_throwProgrammerErrorExceptionWithReason:error];
     
     return nil;
@@ -70,7 +70,7 @@
 
 // Designated initializer
 
-- (id) initWithView:(NSView *)inView
+- (instancetype) initWithView:(NSView *)inView
 {
     self = [super init];
     if (self) {
@@ -79,7 +79,7 @@
         if (inView && [inView respondsToSelector:setterOnView]) {
             [inView performSelector:setterOnView withObject:self];
         } else {
-            NSString *error = [NSString stringWithFormat:@"Cannnot -setImb_Appearance: on view %@. View must implement this property.", [inView className]];
+            NSString *error = [NSString stringWithFormat:@"Cannnot -setImb_Appearance: on view %@. View must implement this property.", inView.className];
             [self imb_throwProgrammerErrorExceptionWithReason:error];
         }
         _view = inView;

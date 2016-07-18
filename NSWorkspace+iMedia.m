@@ -68,11 +68,11 @@
 		
 		NSString *threadID = [NSString stringWithFormat:@"%p",[NSThread currentThread]];
 
-		instance = [sPerThreadInstances objectForKey:threadID];
+		instance = sPerThreadInstances[threadID];
 		if (instance == nil)
 		{
 			instance = [[[NSWorkspace alloc] init] autorelease];
-			[sPerThreadInstances setObject:instance forKey:threadID];
+			sPerThreadInstances[threadID] = instance;
 		}	 
 	}
 
@@ -84,7 +84,7 @@
 	if (path)
 	{
 		NSImage *icon = [self iconForFile:path];
-		[icon setSize:size];
+		icon.size = size;
 		return icon;
 	}
 	

@@ -122,7 +122,7 @@ extern NSString* const kIMBiPhotoNodeObjectTypeFace;  // = @"faces"
 
 // Returns IKImageBrowserCGImageRepresentationType
 
-- (NSString*) requestedImageRepresentationType;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *requestedImageRepresentationType;
 
 // Returns events id space  (EVENTS_ID_SPACE) for album types "Event" and "Events".
 // Returns faces id space  (FACES_ID_SPACE) for album types "Face" and "Faces".

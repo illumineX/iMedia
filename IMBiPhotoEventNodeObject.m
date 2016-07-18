@@ -76,7 +76,7 @@
 }
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if (self = [super initWithCoder:inCoder])
 	{
@@ -109,19 +109,19 @@
 
 - (void) setCurrentSkimmingIndex:(NSUInteger)currentSkimmingIndex
 {
-    [super setCurrentSkimmingIndex:currentSkimmingIndex];
+    super.currentSkimmingIndex = currentSkimmingIndex;
     
-	NSArray* keyList = [self.preliminaryMetadata objectForKey:@"KeyList"];
+	NSArray* keyList = (self.preliminaryMetadata)[@"KeyList"];
 	
     if (currentSkimmingIndex < keyList.count)
     {
         // We are currently skimming on the image
         
-        self.currentImageKey = [keyList objectAtIndex:currentSkimmingIndex];
+        self.currentImageKey = keyList[currentSkimmingIndex];
     } else {
         // We just initialized the object or left the image while skimming and thus restore the key image
         
-        self.currentImageKey = [self.preliminaryMetadata objectForKey:@"KeyPhotoKey"];
+        self.currentImageKey = (self.preliminaryMetadata)[@"KeyPhotoKey"];
     }
 }
 
@@ -156,7 +156,7 @@
 
 - (NSUInteger) imageCount
 {
-	return [[self.preliminaryMetadata objectForKey:@"KeyList"] count];
+	return [(self.preliminaryMetadata)[@"KeyList"] count];
 }
 
 

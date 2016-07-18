@@ -120,7 +120,7 @@ static NSString* kBookmarksPrefsKey = @"accessRightsBookmarks";
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -151,13 +151,13 @@ static NSString* kBookmarksPrefsKey = @"accessRightsBookmarks";
 
 - (BOOL) hasBookmarkForURL:(NSURL*)inURL
 {
-	NSString* path = [inURL path];
+	NSString* path = inURL.path;
 	
 	for (NSData* bookmark in self.bookmarks)
 	{
 		NSURL* url = [[self class] _urlForBookmark:bookmark];
 
-		if (url && [path hasPathPrefix:[url path]])
+		if (url && [path hasPathPrefix:url.path])
 		{
 			return YES;
 		}
@@ -235,7 +235,7 @@ static NSString* kBookmarksPrefsKey = @"accessRightsBookmarks";
 {
     // Only SSBs are persistent
     
-    NSMutableArray* SSBs = [NSMutableArray arrayWithCapacity:[self.bookmarks count]];
+    NSMutableArray* SSBs = [NSMutableArray arrayWithCapacity:(self.bookmarks).count];
     NSData* anSSB = nil;
     NSURL* aURL = nil;
 	for (NSData* bookmark in self.bookmarks)
@@ -262,14 +262,14 @@ static NSString* kBookmarksPrefsKey = @"accessRightsBookmarks";
 
 + (NSURL*) commonAncestorForURLs:(NSArray*)inURLs
 {
-	if ([inURLs count] == 0) return nil;
+	if (inURLs.count == 0) return nil;
 
-	NSURL* firstURL = [inURLs objectAtIndex:0];
-	NSString* commonPath = [[firstURL path] stringByStandardizingPath];
+	NSURL* firstURL = inURLs[0];
+	NSString* commonPath = firstURL.path.stringByStandardizingPath;
 	
 	for (NSURL* url in inURLs)
 	{
-		NSString* path = [[url path] stringByStandardizingPath];
+		NSString* path = url.path.stringByStandardizingPath;
         commonPath = [commonPath imb_commonSubPathWithPath:path];
 	}
 	

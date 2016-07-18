@@ -131,7 +131,7 @@ static dispatch_once_t sOnceToken = 0;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -145,7 +145,7 @@ static dispatch_once_t sOnceToken = 0;
 }
 
 
-- (id) initWithCoder:(NSCoder*)inCoder
+- (instancetype) initWithCoder:(NSCoder*)inCoder
 {
 	if ((self = [super initWithCoder:inCoder]))
 	{
@@ -217,9 +217,9 @@ static dispatch_once_t sOnceToken = 0;
 - (NSString*) metadataDescriptionForMetadata:(NSDictionary*)inMetadata
 {
 	NSMutableString* description = [NSMutableString string];
-	NSNumber* duration = [inMetadata objectForKey:@"duration"];
-	NSString* artist = [inMetadata objectForKey:@"artist"];
-	NSString* album = [inMetadata objectForKey:@"album"];
+	NSNumber* duration = inMetadata[@"duration"];
+	NSString* artist = inMetadata[@"artist"];
+	NSString* album = inMetadata[@"album"];
 	
 	if (artist)
 	{

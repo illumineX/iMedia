@@ -80,9 +80,9 @@
 
 - (void) awakeFromNib
 {
-	[ibProgressBar setMinValue:0.0];
-	[ibProgressBar setMaxValue:1.0];
-	[ibProgressBar setDoubleValue:0.0];
+	ibProgressBar.minValue = 0.0;
+	ibProgressBar.maxValue = 1.0;
+	ibProgressBar.doubleValue = 0.0;
 	[ibProgressBar setIndeterminate:YES];
 	[ibProgressBar setUsesThreadedAnimation:YES];
 	[ibProgressBar startAnimation:nil];
@@ -94,20 +94,20 @@
 
 - (void) setTitle:(NSString*)inTitle
 {
-	[ibTitleField setStringValue:inTitle];
+	ibTitleField.stringValue = inTitle;
 }
 
 
 - (void) setProgress:(double)inFraction
 {
-	[ibProgressBar setDoubleValue:inFraction];
+	ibProgressBar.doubleValue = inFraction;
 	[ibProgressBar setIndeterminate:NO];
 }
 
 
 - (void) setMessage:(NSString*)inMessage
 {
-	[ibMessageField setStringValue:inMessage];
+	ibMessageField.stringValue = inMessage;
 }
 
 
@@ -116,13 +116,13 @@
 
 - (void) setCancelTarget:(id)inTarget
 {
-	[ibCancelButton setTarget:inTarget];
+	ibCancelButton.target = inTarget;
 }
 
 
 - (void) setCancelAction:(SEL)inAction
 {
-	[ibCancelButton setAction:inAction];
+	ibCancelButton.action = inAction;
 }
 
 

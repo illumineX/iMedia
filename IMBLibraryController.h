@@ -108,7 +108,7 @@ extern NSString* kIMBDidCreateTopLevelNodeNotification;
 // Create singleton instance of the controller. Don't forget to set the delegate early in the app lifetime...
 
 + (IMBLibraryController*) sharedLibraryControllerWithMediaType:(NSString*)inMediaType;
-- (id) initWithMediaType:(NSString*)inMediaType;
+- (instancetype) initWithMediaType:(NSString*)inMediaType NS_DESIGNATED_INITIALIZER;
 
 // Accessors...
 
@@ -135,12 +135,12 @@ extern NSString* kIMBDidCreateTopLevelNodeNotification;
 // Node accessors (must only be called on the main thread)...
 
 @property (retain,readonly) NSMutableArray* subnodes;	
-- (NSUInteger) countOfSubnodes;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSUInteger countOfSubnodes;
 - (IMBNode*) objectInSubnodesAtIndex:(NSUInteger)inIndex;
 - (IMBNode*) nodeWithIdentifier:(NSString*)inIdentifier;
 - (IMBNode*) topLevelNodeForParserIdentifier:(NSString*)inParserIdentifier;
 
-- (NSArray*) topLevelNodesWithoutAccessRights;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *topLevelNodesWithoutAccessRights;
 - (NSArray*) libraryRootURLsForNodes:(NSArray*)inNodes;
 
 - (void) logNodes;

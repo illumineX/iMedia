@@ -146,7 +146,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 		{
 			for (NSString* mediaType in sRegisteredParserMessengerClasses)
 			{
-				NSMutableSet* parserMessengerClasses = [sRegisteredParserMessengerClasses objectForKey:mediaType];
+				NSMutableSet* parserMessengerClasses = sRegisteredParserMessengerClasses[mediaType];
 				[parserMessengerClasses removeObject:inParserMessengerClass];
 			}
 		}
@@ -167,12 +167,12 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 			sRegisteredParserMessengerClasses = [[NSMutableDictionary alloc] init];
 		}
 		
-		NSMutableSet* parserMessengerClasses = [sRegisteredParserMessengerClasses objectForKey:inMediaType];
+		NSMutableSet* parserMessengerClasses = sRegisteredParserMessengerClasses[inMediaType];
 		
 		if (parserMessengerClasses == nil)
 		{
 			parserMessengerClasses = [[NSMutableSet alloc] init];
-			[sRegisteredParserMessengerClasses setObject:parserMessengerClasses forKey:inMediaType];
+			sRegisteredParserMessengerClasses[inMediaType] = parserMessengerClasses;
 			[parserMessengerClasses release];
 		}
 
@@ -188,7 +188,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 
 #pragma mark
 
-- (id) init
+- (instancetype) init
 {
 	if (self = [super init])
 	{
@@ -276,18 +276,18 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 
 - (void) unloadParserMessengers
 {
-	NSArray* keys = [_loadedParserMessengers allKeys];
-	NSUInteger n = [keys count];
+	NSArray* keys = _loadedParserMessengers.allKeys;
+	NSUInteger n = keys.count;
 	
 	for (NSUInteger i=0; i<n; i++)
     {
-		NSString* mediaType = [keys objectAtIndex:i];
-        NSArray* parserMessengers = [_loadedParserMessengers objectForKey:mediaType];
+		NSString* mediaType = keys[i];
+        NSArray* parserMessengers = _loadedParserMessengers[mediaType];
         NSUInteger m = parserMessengers.count;
 		
         for (NSUInteger j=0; j<m; j++)
         {
-			IMBParserMessenger* parserMessenger = [parserMessengers objectAtIndex:0];
+			IMBParserMessenger* parserMessenger = parserMessengers[0];
 			[self removeParserMessenger:parserMessenger];
         }
     }
@@ -301,7 +301,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 
 - (NSArray*) loadedParserMessengersForMediaType:(NSString*)inMediaType
 {
-	return [_loadedParserMessengers objectForKey:inMediaType];
+	return _loadedParserMessengers[inMediaType];
 }
 
 
@@ -313,7 +313,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
     // Check if inParserFactory is already in the list. If yes then bail out early...
 	
 	NSString* mediaType = inParserMessenger.mediaType;
-	NSMutableArray* parserMessengers = [_loadedParserMessengers objectForKey:mediaType];
+	NSMutableArray* parserMessengers = _loadedParserMessengers[mediaType];
 	
 	for (IMBParserMessenger* parserMessenger in parserMessengers)
 	{
@@ -334,7 +334,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 	if (parserMessengers == nil)
     {
         parserMessengers = [[NSMutableArray alloc] initWithCapacity:1];
-        [_loadedParserMessengers setObject:parserMessengers forKey:mediaType];
+        _loadedParserMessengers[mediaType] = parserMessengers;
         [parserMessengers release];
     }
     
@@ -357,7 +357,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 - (BOOL) removeParserMessenger:(IMBParserMessenger*)inParserMessenger
 {
 	NSString* mediaType = inParserMessenger.mediaType;
-	NSMutableArray* parserMessengers = [_loadedParserMessengers objectForKey:mediaType];
+	NSMutableArray* parserMessengers = _loadedParserMessengers[mediaType];
 	NSUInteger index = [parserMessengers indexOfObjectIdenticalTo:inParserMessenger];
 	
 	if (index != NSNotFound) 
@@ -453,7 +453,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 			}
 		}
 		
-		[prefs setObject:userAddedParserMessengers forKey:@"userAddedParserMessengers"];
+		prefs[@"userAddedParserMessengers"] = userAddedParserMessengers;
 		[IMBConfig setPrefs:prefs forClass:[self class]];
 	}
 }
@@ -466,7 +466,7 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 - (void) loadUserAddedParserMessengersFromPreferences
 {
 	NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithDictionary:[IMBConfig prefsForClass:self.class]];
-	NSArray* userAddedParserMessengers = [prefs objectForKey:@"userAddedParserMessengers"];
+	NSArray* userAddedParserMessengers = prefs[@"userAddedParserMessengers"];
 	
 	for (NSData* data in userAddedParserMessengers)
 	{
@@ -494,11 +494,11 @@ static NSMutableDictionary* sRegisteredParserMessengerClasses = nil;
 {
     NSString *description = @"";
     
-    NSArray *sortedKeys = [[_loadedParserMessengers allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSArray *sortedKeys = [_loadedParserMessengers.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     for (NSString *key in sortedKeys) {
-        description = [NSString stringWithFormat:@"%@\nMedia Type %@:\n\n", description, [key capitalizedString]];
+        description = [NSString stringWithFormat:@"%@\nMedia Type %@:\n\n", description, key.capitalizedString];
         for (IMBParserMessenger *messenger in _loadedParserMessengers[key]) {
-            description = [NSString stringWithFormat:@"%@%@\n", description, [messenger description]];
+            description = [NSString stringWithFormat:@"%@%@\n", description, messenger.description];
         }
     }
     return description;

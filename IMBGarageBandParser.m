@@ -76,7 +76,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-- (id) init
+- (instancetype) init
 {
 	if ((self = [super init]))
 	{
@@ -121,7 +121,7 @@
 - (IMBNode*) unpopulatedTopLevelNode:(NSError**)outError
 {
 	NSImage* icon = [[NSWorkspace imb_threadSafeWorkspace] iconForFile:self.appPath];
-	[icon setSize:NSMakeSize(16.0,16.0)];
+	icon.size = NSMakeSize(16.0,16.0);
 	
 	// Need to set this before instatiating the node, so that check for access rights works correctly...
 	
@@ -234,16 +234,16 @@
 	
 	if (metadata)
 	{
-		[metadata setObject:[url path] forKey:@"path"];
+		metadata[@"path"] = url.path;
 
-		NSNumber* duration = [metadata objectForKey:@"com_apple_garageband_metadata_songDuration"];
-		[metadata setObject:duration forKey:@"duration"];
+		NSNumber* duration = metadata[@"com_apple_garageband_metadata_songDuration"];
+		metadata[@"duration"] = duration;
 
-		NSString* artist = [metadata objectForKey:@"com_apple_garageband_metadata_artistName"];
-		[metadata setObject:artist forKey:@"artist"];
+		NSString* artist = metadata[@"com_apple_garageband_metadata_artistName"];
+		metadata[@"artist"] = artist;
 
-		NSString* album = [metadata objectForKey:@"com_apple_garageband_metadata_albumName"];
-		[metadata setObject:album forKey:@"album"];
+		NSString* album = metadata[@"com_apple_garageband_metadata_albumName"];
+		metadata[@"album"] = album;
 	}
 	
 	if (outError) *outError = nil;

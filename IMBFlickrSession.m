@@ -61,7 +61,7 @@
 @implementation OFFlickrAPIRequest (private)
 
 - (void) setShouldWaitUntilDone: (BOOL) wait {
-	[HTTPRequest setShouldWaitUntilDone:wait];
+	HTTPRequest.shouldWaitUntilDone = wait;
 }
 
 @end
@@ -112,20 +112,20 @@
 	//	build query arguments based on method...
 	if (node.query) {
 		if (node.method == IMBFlickrNodeMethod_TagSearch) {
-			[arguments setObject:node.query forKey:@"tags"];
-			[arguments setObject:@"all" forKey:@"tag_mode"];
+			arguments[@"tags"] = node.query;
+			arguments[@"tag_mode"] = @"all";
 		} else if (node.method == IMBFlickrNodeMethod_TextSearch) {
-			[arguments setObject:node.query forKey:@"text"];
+			arguments[@"text"] = node.query;
 		}
 	}
 	
 	//	translate our user kinds into Flickr license kind ids...
 	if (node.license == IMBFlickrNodeLicense_CreativeCommons) {
-		[arguments setObject:[NSString stringWithFormat:@"%lu", (unsigned long)IMBFlickrNodeFlickrLicenseID_Attribution] forKey:@"license"];
+		arguments[@"license"] = [NSString stringWithFormat:@"%lu", (unsigned long)IMBFlickrNodeFlickrLicenseID_Attribution];
 	} else if (node.license == IMBFlickrNodeLicense_DerivativeWorks) {
-		[arguments setObject:[NSString stringWithFormat:@"%lu", (unsigned long)node.license] forKey:@"license"];
+		arguments[@"license"] = [NSString stringWithFormat:@"%lu", (unsigned long)node.license];
 	} else if (node.license == IMBFlickrNodeLicense_CommercialUse) {
-		[arguments setObject:[NSString stringWithFormat:@"%lu", (unsigned long)IMBFlickrNodeFlickrLicenseID_NoKnownCopyrightRestrictions] forKey:@"license"];
+		arguments[@"license"] = [NSString stringWithFormat:@"%lu", (unsigned long)IMBFlickrNodeFlickrLicenseID_NoKnownCopyrightRestrictions];
 	}
 	
 	//	determine sort order...
@@ -146,18 +146,18 @@
 		sortOrder = @"relevance";		
 	}
 	if (sortOrder) {
-		[arguments setObject:sortOrder forKey:@"sort"];
+		arguments[@"sort"] = sortOrder;
 	}
 	
 	//	limit the search to a specific number of items...
-	[arguments setObject:@"30" forKey:@"per_page"];
+	arguments[@"per_page"] = @"30";
 	
 	// We are only doing photos.  Maybe later we want to do videos?
-	[arguments setObject:@"photos" forKey:@"media"];
+	arguments[@"media"] = @"photos";
 	
 	// Extra metadata needed
 	// http://www.flickr.com/services/api/flickr.photos.search.html
-	[arguments setObject:@"description,license,owner_name,original_format,geo,tags,o_dims,url_o,url_l,url_m,url_s,usage" forKey:@"extras"];
+	arguments[@"extras"] = @"description,license,owner_name,original_format,geo,tags,o_dims,url_o,url_l,url_m,url_s,usage";
 	// Useful keys we can get from this:
 	// description -> array with ... description
 	// original_format -> originalformat, orignalsecret
@@ -167,7 +167,7 @@
 	
 	//	load the specified page...
 	NSString* page = [NSString stringWithFormat:@"%ld", (long)node.page + 1];
-	[arguments setObject:page forKey:@"page"];
+	arguments[@"page"] = page;
 	
 	return arguments;
 }
@@ -210,7 +210,7 @@
     #endif
     
 	//	save Flickr response in our iMB node for later population of the browser...
-	self.response = (inResponseDictionary) ? inResponseDictionary : [NSDictionary dictionary];
+	self.response = (inResponseDictionary) ? inResponseDictionary : @{};
 }
 
 
@@ -293,59 +293,59 @@
 		IMBFlickrObject* obj = [[IMBFlickrObject alloc] init];
 		
 		// Only store a location if we are allowed to download
-		BOOL canDownload = [[photoDict objectForKey:@"can_download"] boolValue];
+		BOOL canDownload = [photoDict[@"can_download"] boolValue];
 		if (canDownload) {
 			obj.location = [self imageURLForDesiredSize:parserMessenger.desiredSize fromPhotoDict:photoDict context:_flickrContextWeakRef];
 		}
 		obj.shouldDisableTitle = !canDownload;
         
-		obj.name = [photoDict objectForKey:@"title"];
+		obj.name = photoDict[@"title"];
 		
 		// A lot of the metadata comes from the "extras" key we request
 		NSMutableDictionary* metadata = [NSMutableDictionary dictionary];
 		[metadata addEntriesFromDictionary:photoDict];		// give metaData the whole thing!
 		NSURL* webPageURL = [_flickrContextWeakRef photoWebPageURLFromDictionary:photoDict];
-		[metadata setObject:webPageURL forKey:@"webPageURL"];
+		metadata[@"webPageURL"] = webPageURL;
 		
 		NSURL* quickLookURL = [self imageURLForDesiredSize:kIMBFlickrSizeSpecifierMedium fromPhotoDict:photoDict context:_flickrContextWeakRef];
-		[metadata setObject:quickLookURL forKey:@"quickLookURL"];
+		metadata[@"quickLookURL"] = quickLookURL;
         
 		// But give it a better 'description' without the nested item
-		NSString* descHTML = [[photoDict objectForKey:@"description"] objectForKey:@"_text"];
+		NSString* descHTML = photoDict[@"description"][@"_text"];
 		if (descHTML) {
 			NSData* HTMLData = [descHTML dataUsingEncoding:NSUTF8StringEncoding];
-			NSDictionary* options = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:NSUTF8StringEncoding] forKey:NSCharacterEncodingDocumentOption];
+			NSDictionary* options = @{NSCharacterEncodingDocumentOption: [NSNumber numberWithInt:NSUTF8StringEncoding]};
 			NSAttributedString* descAttributed = [[[NSAttributedString alloc] initWithHTML:HTMLData options:options documentAttributes:nil] autorelease];
 			if (descAttributed) {
-				NSString* desc = [descAttributed string];
-				if (nil != desc) [metadata setObject:desc forKey:@"comment"];
+				NSString* desc = descAttributed.string;
+				if (nil != desc) metadata[@"comment"] = desc;
 			}
             #ifdef VERBOSE
                 else NSLog (@"Unable to make attributed string out of %@", descHTML);
             #endif
 		}
         
-		id width = [metadata objectForKey:@"width_o"];
-		if (width == nil) width = [metadata objectForKey:@"width_l"];
-		if (width == nil) width = [metadata objectForKey:@"width_m"];
-		if (width == nil) width = [metadata objectForKey:@"width_s"];
+		id width = metadata[@"width_o"];
+		if (width == nil) width = metadata[@"width_l"];
+		if (width == nil) width = metadata[@"width_m"];
+		if (width == nil) width = metadata[@"width_s"];
         
-		id height = [metadata objectForKey:@"height_o"];
-		if (height == nil) height = [metadata objectForKey:@"height_l"];
-		if (height == nil) height = [metadata objectForKey:@"height_m"];
-		if (height == nil) height = [metadata objectForKey:@"height_s"];
+		id height = metadata[@"height_o"];
+		if (height == nil) height = metadata[@"height_l"];
+		if (height == nil) height = metadata[@"height_m"];
+		if (height == nil) height = metadata[@"height_s"];
 		
-		NSString* can_download = [photoDict objectForKey:@"can_download"];
-		NSString* license = [photoDict objectForKey:@"license"];
-		NSString* ownerName = [photoDict objectForKey:@"ownername"];
-		NSString* photoID = [photoDict objectForKey:@"id"];
+		NSString* can_download = photoDict[@"can_download"];
+		NSString* license = photoDict[@"license"];
+		NSString* ownerName = photoDict[@"ownername"];
+		NSString* photoID = photoDict[@"id"];
         
-		if (nil != can_download)	[metadata setObject:can_download forKey:@"can_download"];
-		if (nil != license)			[metadata setObject:license forKey:@"license"];
-		if (nil != ownerName)		[metadata setObject:ownerName forKey:@"ownername"];
-		if (nil != photoID)			[metadata setObject:photoID forKey:@"id"];
-		if (nil != width)			[metadata setObject:width forKey:@"width"];
-		if (nil != height)			[metadata setObject:height forKey:@"height"];
+		if (nil != can_download)	metadata[@"can_download"] = can_download;
+		if (nil != license)			metadata[@"license"] = license;
+		if (nil != ownerName)		metadata[@"ownername"] = ownerName;
+		if (nil != photoID)			metadata[@"id"] = photoID;
+		if (nil != width)			metadata[@"width"] = width;
+		if (nil != height)			metadata[@"height"] = height;
         
 		obj.preliminaryMetadata = [NSDictionary dictionaryWithDictionary:metadata];
         
@@ -381,32 +381,32 @@
 	NSURL* imageURL = nil;
 	
     if (!imageURL && kIMBFlickrSizeSpecifierOriginal == size) {
-		if ([photoDict objectForKey:@"url_o"]) {
-			imageURL = [NSURL URLWithString:[photoDict objectForKey:@"url_o"]];
+		if (photoDict[@"url_o"]) {
+			imageURL = [NSURL URLWithString:photoDict[@"url_o"]];
 		} else {
 			size = kIMBFlickrSizeSpecifierLarge;    // downgrade to requesting large if no original
 		}
 	}
     
 	if (!imageURL && kIMBFlickrSizeSpecifierLarge == size) {
-		if ([photoDict objectForKey:@"url_l"]) {
-			imageURL = [NSURL URLWithString:[photoDict objectForKey:@"url_l"]];
+		if (photoDict[@"url_l"]) {
+			imageURL = [NSURL URLWithString:photoDict[@"url_l"]];
 		} else {
 			size = kIMBFlickrSizeSpecifierMedium;   // downgrade to requesting medium if no large
 		}
 	}
 	
 	if (!imageURL && kIMBFlickrSizeSpecifierMedium == size)	{
-		if ([photoDict objectForKey:@"url_m"]) {
-			imageURL = [NSURL URLWithString:[photoDict objectForKey:@"url_m"]];
+		if (photoDict[@"url_m"]) {
+			imageURL = [NSURL URLWithString:photoDict[@"url_m"]];
 		} else {
 			size = kIMBFlickrSizeSpecifierSmall;    // downgrade to requesting small if no medium
 		}
 	}
 	
 	if (!imageURL && kIMBFlickrSizeSpecifierSmall == size) {
-		if ([photoDict objectForKey:@"url_s"]) {
-			imageURL = [NSURL URLWithString:[photoDict objectForKey:@"url_s"]];
+		if (photoDict[@"url_s"]) {
+			imageURL = [NSURL URLWithString:photoDict[@"url_s"]];
 		}
 	}
 	

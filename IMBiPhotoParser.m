@@ -123,19 +123,19 @@
 - (BOOL) populateNode:(IMBNode*)inNode error:(NSError**)outError
 {
 	NSDictionary* plist = self.plist;
-	NSDictionary* images = [plist objectForKey:@"Master Image List"];
-	NSArray* albums = [plist objectForKey:@"List of Albums"];
+	NSDictionary* images = plist[@"Master Image List"];
+	NSArray* albums = plist[@"List of Albums"];
 	
 	// Population of events, faces, photo stream and regular album node fundamentally different
 	
 	if ([self isEventsNode:inNode])
 	{
-		NSArray* events = [plist objectForKey:@"List of Rolls"];
+		NSArray* events = plist[@"List of Rolls"];
 		[self populateEventsNode:inNode withEvents:events images:images];
 	} 
 	else if ([self isFacesNode:inNode])
 	{
-		NSDictionary* faces = [plist objectForKey:@"List of Faces"];
+		NSDictionary* faces = plist[@"List of Faces"];
 		[self populateFacesNode:inNode withFaces:faces images:images];
 	} 
 	else if ([self isPhotoStreamNode:inNode])
@@ -160,9 +160,9 @@
 	if (inNode.isTopLevelNode && photosNodeIndex != NSNotFound)
 	{
 		NSArray* subnodes = inNode.subnodes;
-		if (photosNodeIndex < [subnodes count])	// Karelia case 136310, make sure offset exists
+		if (photosNodeIndex < subnodes.count)	// Karelia case 136310, make sure offset exists
 		{
-			IMBNode* photosNode = [subnodes objectAtIndex:photosNodeIndex];	// assumes subnodes exists same as albums!
+			IMBNode* photosNode = subnodes[photosNodeIndex];	// assumes subnodes exists same as albums!
 			result = [self populateNode:photosNode error:outError];
 			inNode.objects = photosNode.objects;
 		}
@@ -194,7 +194,7 @@
 {	
 	IMBNode* eventsNode = nil;
 	
-	if (inNode.isTopLevelNode && [inNode.subnodes count]>0)
+	if (inNode.isTopLevelNode && (inNode.subnodes).count>0)
 	{
 		// We should find the events node at index 0 but this logic is more bullet proof.
 		
@@ -284,7 +284,7 @@
 {
 	// Usage of Events or Faces or Photo Stream album is not determined here
 	
-	NSUInteger albumId = [[inAlbumDict objectForKey:@"AlbumId"] unsignedIntegerValue];
+	NSUInteger albumId = [inAlbumDict[@"AlbumId"] unsignedIntegerValue];
 	if (albumId == EVENTS_NODE_ID || albumId == FACES_NODE_ID || albumId == PHOTO_STREAM_NODE_ID)
 	{
 		return YES;
@@ -292,11 +292,11 @@
 	
 	// Usage of other albums is determined by media type of key list images
 	
-	NSArray* imageKeys = [inAlbumDict objectForKey:@"KeyList"];
+	NSArray* imageKeys = inAlbumDict[@"KeyList"];
 	
 	for (NSString* key in imageKeys)
 	{
-		NSDictionary* imageDict = [inImages objectForKey:key];
+		NSDictionary* imageDict = inImages[key];
 		
 		if ([self shouldUseObject:imageDict])
 		{
@@ -316,7 +316,7 @@
 	
 	if (inObjectDict)
 	{
-		NSString* mediaType = [inObjectDict objectForKey:@"MediaType"];
+		NSString* mediaType = inObjectDict[@"MediaType"];
 		if (mediaType == nil) mediaType = @"Image";
 		
 		if ([mediaType isEqualToString:iPhotoMediaType])
@@ -386,7 +386,7 @@
 
 - (BOOL) isAllPhotosAlbum:(NSDictionary*)inAlbumDict
 {
-	return [(NSNumber *)[inAlbumDict objectForKey:@"Master"] unsignedIntegerValue] == 1;
+	return ((NSNumber *)inAlbumDict[@"Master"]).unsignedIntegerValue == 1;
 }
 
 
@@ -395,7 +395,7 @@
 
 - (BOOL) isEventsAlbum:(NSDictionary*)inAlbumDict
 {
-	return [[inAlbumDict objectForKey:@"Album Type"] isEqualToString:@"Events"];
+	return [inAlbumDict[@"Album Type"] isEqualToString:@"Events"];
 }
 
 
@@ -404,7 +404,7 @@
 
 - (BOOL) isEventAlbum:(NSDictionary*)inAlbumDict
 {
-	return [[inAlbumDict objectForKey:@"Album Type"] isEqualToString:@"Event"];
+	return [inAlbumDict[@"Album Type"] isEqualToString:@"Event"];
 }
 
 
@@ -413,7 +413,7 @@
 
 - (BOOL) isFlaggedAlbum:(NSDictionary*)inAlbumDict
 {
-    NSString *albumType = [inAlbumDict objectForKey:@"Album Type"];
+    NSString *albumType = inAlbumDict[@"Album Type"];
     
 	return ([albumType isEqualTo:@"Shelf"] ||        // iPhoto 8
             [albumType isEqualTo:@"Flagged"]);       // iPhoto 9
@@ -439,8 +439,8 @@
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 		
 		NSString* albumType = [self typeForAlbum:albumDict];
-		NSString* albumName = [albumDict objectForKey:@"AlbumName"];
-		NSNumber* parentId = [albumDict objectForKey:@"Parent"];
+		NSString* albumName = albumDict[@"AlbumName"];
+		NSNumber* parentId = albumDict[@"Parent"];
         
 		NSString* albumIdSpace = [self idSpaceForAlbumType:albumType];
         
@@ -467,16 +467,15 @@
 			// that older versions of iPhoto didn't have AlbumId, so we are generating fake AlbumIds in this case
 			// for backwards compatibility...
 			
-			NSNumber* albumId = [albumDict objectForKey:@"AlbumId"];
-			if (albumId == nil) albumId = [NSNumber numberWithInt:_fakeAlbumID++]; 
+			NSNumber* albumId = albumDict[@"AlbumId"];
+			if (albumId == nil) albumId = @(_fakeAlbumID++); 
 			albumNode.identifier = [self identifierForId:albumId inSpace:albumIdSpace];
 			
 			// Keep a ref to the album dictionary for later use when we populate this node
 			// so we don't have to loop through the whole album list again to find it.
 			
-			albumNode.attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    albumDict, @"nodeSource",
-                                    [self nodeTypeForNode:albumNode], @"nodeType", nil];
+			albumNode.attributes = @{@"nodeSource": albumDict,
+                                    @"nodeType": [self nodeTypeForNode:albumNode]};
 			
 			// Add the new album node to its parent (inRootNode)...
 			
@@ -511,14 +510,14 @@
 		// Oops, could not locate face image here. Provide alternate path
 		NSLog(@"Could not find face image at %@", imagePath);
 		
-		NSString* pathPrefix = [[[self mediaSource] path] stringByDeletingLastPathComponent];
+		NSString* pathPrefix = self.mediaSource.path.stringByDeletingLastPathComponent;
 		NSString* replacement = @"/Data.noindex/";
 		NSScanner* aScanner =  [[NSScanner alloc] initWithString:imagePath];
 		
 		if (([aScanner scanString:pathPrefix intoString:nil] && [aScanner scanString:@"/Data/" intoString:nil]) ||
 			[aScanner scanString:@"/Thumbnails/" intoString:nil])
 		{
-			NSString* suffixString = [imagePath substringFromIndex:[aScanner scanLocation]];
+			NSString* suffixString = [imagePath substringFromIndex:aScanner.scanLocation];
 			imagePath = [NSString stringWithFormat:@"%@%@%@", pathPrefix, replacement, suffixString];
 			NSLog(@"Trying %@...", imagePath);
 		}
@@ -541,9 +540,9 @@
 	// Note that everything regarding 'ImageFaceMetadata' is only relevant
 	// when providing a faces node. Otherwise it will be nil'ed.
 	
-	NSArray* imageKeys = [inNodeDict objectForKey:@"KeyList"];
+	NSArray* imageKeys = inNodeDict[@"KeyList"];
 	NSMutableArray* relevantImageKeys = [NSMutableArray array];
-	NSArray* imageFaceMetadataList = [inNodeDict objectForKey:@"ImageFaceMetadataList"];
+	NSArray* imageFaceMetadataList = inNodeDict[@"ImageFaceMetadataList"];
 	NSMutableArray* relevantImageFaceMetadataList = imageFaceMetadataList ? [NSMutableArray array] : nil;
 	
 	// Loop setup
@@ -551,12 +550,12 @@
 	NSDictionary* imageFaceMetadata = nil;
 	NSDictionary* imageDict = nil;
 	
-	for (NSUInteger i = 0; i < [imageKeys count]; i++)
+	for (NSUInteger i = 0; i < imageKeys.count; i++)
 	{
-		key = [imageKeys objectAtIndex:i];
-		imageFaceMetadata = [imageFaceMetadataList objectAtIndex:i];
+		key = imageKeys[i];
+		imageFaceMetadata = imageFaceMetadataList[i];
 		
-		imageDict = [inImages objectForKey:key];
+		imageDict = inImages[key];
 		
 		if ([self shouldUseObject:imageDict])
 		{
@@ -571,20 +570,19 @@
 	NSString* keyPhotoKey = nil;
 	NSNumber* keyImageFaceIndex = nil;
 	
-	if ([[self iPhotoMediaType] isEqualToString:@"Movie"] && [relevantImageKeys count] > 0)
+	if ([[self iPhotoMediaType] isEqualToString:@"Movie"] && relevantImageKeys.count > 0)
 	{
-		keyPhotoKey = [relevantImageKeys objectAtIndex:0];
-		keyImageFaceIndex = [[relevantImageFaceMetadataList objectAtIndex:0] objectForKey:@"face index"];
+		keyPhotoKey = relevantImageKeys[0];
+		keyImageFaceIndex = relevantImageFaceMetadataList[0][@"face index"];
 	} else {
-		keyPhotoKey = [inNodeDict objectForKey:@"KeyPhotoKey"];
+		keyPhotoKey = inNodeDict[@"KeyPhotoKey"];
 	}
 
-    return [NSDictionary dictionaryWithObjectsAndKeys:
-			relevantImageKeys, @"KeyList",
-			[NSNumber numberWithUnsignedInteger:[relevantImageKeys count]], @"PhotoCount", 
-			keyPhotoKey, @"KeyPhotoKey",
-			relevantImageFaceMetadataList, @"ImageFaceMetadataList",   // May be nil
-			keyImageFaceIndex, @"key image face index", nil];          // May be nil
+    return @{@"KeyList": relevantImageKeys,
+			@"PhotoCount": @(relevantImageKeys.count), 
+			@"KeyPhotoKey": keyPhotoKey,
+			@"ImageFaceMetadataList": relevantImageFaceMetadataList,   // May be nil
+			@"key image face index": keyImageFaceIndex};          // May be nil
 }
 
 
@@ -621,7 +619,7 @@
 	{
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
-		NSString* subnodeName = [subnodeDict objectForKey:@"RollName"];
+		NSString* subnodeName = subnodeDict[@"RollName"];
 		
 		if ([self shouldUseAlbumType:subNodeType] && 
 			[self shouldUseAlbum:subnodeDict images:inImages])
@@ -654,16 +652,15 @@
 			
 			// Keep a ref to the subnode dictionary for potential later use
 			
-			subnode.attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  subnodeDict, @"nodeSource",
-                                  [self nodeTypeForNode:subnode], @"nodeType", nil];
+			subnode.attributes = @{@"nodeSource": subnodeDict,
+                                  @"nodeType": [self nodeTypeForNode:subnode]};
 			
 			// Set the node's identifier. This is needed later to link it to the correct parent node. Please note 
 			// that older versions of iPhoto didn't have AlbumId, so we are generating fake AlbumIds in this case
 			// for backwards compatibility...
 			
-			NSNumber* subnodeId = [subnodeDict objectForKey:@"RollID"];
-			if (subnodeId == nil) subnodeId = [NSNumber numberWithInt:_fakeAlbumID++]; 
+			NSNumber* subnodeId = subnodeDict[@"RollID"];
+			if (subnodeId == nil) subnodeId = @(_fakeAlbumID++); 
 			subnode.identifier = [self identifierForId:subnodeId inSpace:EVENTS_ID_SPACE];
 			
 			// Add the new subnode to its parent (inRootNode)...
@@ -686,10 +683,10 @@
             
             // NOTE: Since events represent multiple resources we do not set their "location" property
             
-            object.parserIdentifier = [self identifier];
+            object.parserIdentifier = self.identifier;
             object.index = index++;
             
-            thumbnailPath = [self thumbnailPathForImageKey:[subnodeDict objectForKey:@"KeyPhotoKey"]];
+            thumbnailPath = [self thumbnailPathForImageKey:subnodeDict[@"KeyPhotoKey"]];
             object.imageLocation = (id)[NSURL fileURLWithPath:thumbnailPath isDirectory:NO];
             object.imageRepresentationType = IKImageBrowserCGImageRepresentationType;
             object.imageRepresentation = nil;
@@ -717,21 +714,21 @@
 	// We saved a reference to the album dictionary when this node was created
 	// (ivar 'attributes') and now happily reuse it to save an outer loop (over album list) here.
 	
-	NSDictionary* albumDict = [inNode.attributes objectForKey:@"nodeSource"];
-	NSArray* imageKeys = [albumDict objectForKey:@"KeyList"];
+	NSDictionary* albumDict = (inNode.attributes)[@"nodeSource"];
+	NSArray* imageKeys = albumDict[@"KeyList"];
 	
 	for (NSString* key in imageKeys)
 	{
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-		NSDictionary* imageDict = [inImages objectForKey:key];
+		NSDictionary* imageDict = inImages[key];
 		
 		if ([self shouldUseObject:imageDict])
 		{
-			NSString* path = [imageDict objectForKey:@"ImagePath"];
-			NSString* name = [imageDict objectForKey:@"Caption"];
+			NSString* path = imageDict[@"ImagePath"];
+			NSString* name = imageDict[@"Caption"];
 			if ([name isEqualToString:@""])
 			{
-				name = [[path lastPathComponent] stringByDeletingPathExtension];	// fallback to filename
+				name = path.lastPathComponent.stringByDeletingPathExtension;	// fallback to filename
 			}
 			
 			IMBObject* object = [[objectClass alloc] init];
@@ -743,13 +740,13 @@
 			object.name = name;
             
             NSMutableDictionary *metadata = [imageDict mutableCopy];
-            [metadata setObject:key forKey:@"iPhotoKey"];   // so pasteboard-writing code can retrieve it later
+            metadata[@"iPhotoKey"] = key;   // so pasteboard-writing code can retrieve it later
 			object.preliminaryMetadata = metadata;	// This metadata from the XML file is available immediately
             [metadata release];
             
 			object.metadata = nil;					// Build lazily when needed (takes longer)
 			object.metadataDescription = nil;		// Build lazily when needed (takes longer)
-			object.parserIdentifier = [self identifier];
+			object.parserIdentifier = self.identifier;
 			object.index = index++;
 			
             
@@ -764,7 +761,7 @@
 	NSSortDescriptor* dateDescriptor = [[[NSSortDescriptor alloc]
                                          initWithKey:@"preliminaryMetadata.DateAsTimerInterval"
                                          ascending:YES] autorelease];
-	NSArray* sortDescriptors = [NSArray arrayWithObject:dateDescriptor];
+	NSArray* sortDescriptors = @[dateDescriptor];
     
     inNode.objects = [objects sortedArrayUsingDescriptors:sortDescriptors];
 }
@@ -782,18 +779,18 @@
 	
 	for (NSString *imageKey in inImages)
 	{
-        imageDict = [inImages objectForKey:imageKey];
+        imageDict = inImages[imageKey];
 		
         // Being a member of Photo Stream is determined by having a non-empty Photo Stream asset id.
         // Add objects with the same asset id only once.
         
-        NSString *photoStreamAssetId = [imageDict objectForKey:@"PhotoStreamAssetId"];
+        NSString *photoStreamAssetId = imageDict[@"PhotoStreamAssetId"];
 		if (photoStreamAssetId && photoStreamAssetId.length > 0 &&
             ![assetIds member:photoStreamAssetId] &&
             [self shouldUseObject:imageDict])
 		{
             NSMutableDictionary *metadata = [imageDict mutableCopy];
-            [metadata setObject:imageKey forKey:@"iPhotoKey"];   // so pasteboard-writing code can retrieve it later
+            metadata[@"iPhotoKey"] = imageKey;   // so pasteboard-writing code can retrieve it later
             [assetIds addObject:photoStreamAssetId];
             [photoStreamObjectDictionaries addObject:metadata];
             [metadata release];
@@ -802,7 +799,7 @@
     // After collecting all Photo Stream object dictionaries sort them by date
     
 	NSSortDescriptor* dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"DateAsTimerInterval" ascending:YES];
-	NSArray* sortDescriptors = [NSArray arrayWithObject:dateDescriptor];
+	NSArray* sortDescriptors = @[dateDescriptor];
 	[dateDescriptor release];
 	
     NSArray *sortedObjectDictionaries = [photoStreamObjectDictionaries sortedArrayUsingDescriptors:sortDescriptors];
@@ -840,11 +837,11 @@
 	{
 		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 		
-        NSString* path = [imageDict objectForKey:@"ImagePath"];
-        NSString* name = [imageDict objectForKey:@"Caption"];
+        NSString* path = imageDict[@"ImagePath"];
+        NSString* name = imageDict[@"Caption"];
         if ([name isEqualToString:@""])
         {
-            name = [[path lastPathComponent] stringByDeletingPathExtension];	// fallback to filename
+            name = path.lastPathComponent.stringByDeletingPathExtension;	// fallback to filename
         }
         
         IMBObject* object = [[objectClass alloc] init];
@@ -857,7 +854,7 @@
         object.preliminaryMetadata = imageDict;	// This metadata from the XML file is available immediately
         object.metadata = nil;					// Build lazily when needed (takes longer)
         object.metadataDescription = nil;		// Build lazily when needed (takes longer)
-        object.parserIdentifier = [self identifier];
+        object.parserIdentifier = self.identifier;
         object.index = index++;
         
         object.imageLocation = (id)[NSURL fileURLWithPath:[self imageLocationForObject:imageDict] isDirectory:NO];

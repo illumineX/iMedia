@@ -235,7 +235,7 @@
 	CGFloat height = CGImageGetHeight(inImage);
 	NSRect rect = [self imageRectForFrame:inImageRect imageWidth:width imageHeight:height];
 	
-    CGContextRef context = (CGContextRef) [[NSGraphicsContext currentContext] graphicsPort];
+    CGContextRef context = (CGContextRef) [NSGraphicsContext currentContext].graphicsPort;
     [self willDrawImageInRect:rect context:context];
 	CGContextSetInterpolationQuality(context, kCGInterpolationHigh);	// artwork is pretty bad if you don't set this.
 	CGContextDrawImage(context,NSRectToCGRect(rect),inImage);
@@ -271,13 +271,13 @@
 		
 		CGFloat dashes[2] = {8.0,4.0};
 		[[NSColor colorWithCalibratedWhite:0.0 alpha:0.15] set];
-		[path setLineWidth:2.0];
+		path.lineWidth = 2.0;
 		[path setLineDash:dashes count:2 phase:0.0];
 		[path stroke];
 
 		if (_badge) 
 		{
-			CGContextRef context = (CGContextRef) [[NSGraphicsContext currentContext] graphicsPort];
+			CGContextRef context = (CGContextRef) [NSGraphicsContext currentContext].graphicsPort;
 			[self willDrawImageInRect:imageRect context:context];
 			NSRect badgeRect = [self badgeRectForImageRect:imageRect];
 			[_badge drawInRect:badgeRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
@@ -297,7 +297,7 @@
             CGFloat height = image.size.height;
             NSRect rect = [self imageRectForFrame:imageRect imageWidth:width imageHeight:height];
             
-            CGContextRef context = (CGContextRef) [[NSGraphicsContext currentContext] graphicsPort];
+            CGContextRef context = (CGContextRef) [NSGraphicsContext currentContext].graphicsPort;
             [self willDrawImageInRect:rect context:context];
             [image drawInRect:rect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
             CGContextRestoreGState(context);
