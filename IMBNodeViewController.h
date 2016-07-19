@@ -151,9 +151,9 @@ extern NSString* kIMBExpandAndSelectNodeWithIdentifierNotification;
 
 
 // Selecting a node...
+@property (NS_NONATOMIC_IOSONLY, readonly) IMBNode *selectedNode;
 
 - (void) selectNode:(IMBNode*)inNode;
-@property (NS_NONATOMIC_IOSONLY, readonly, copy) IMBNode *selectedNode@property (NS_NONATOMIC_IOSONLY, readonly, strong) IMBNode *selectedNode;
 
 - (void) expandSelectedNode;
 
