@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -72,7 +72,7 @@
 
 // Is there even a way to do a asynchronous QuickLook preview load?  I don't see any methods for notification when
 // something is loaded. Maybe some hints here: QuickLookDownloader sample code from Apple, along with 
-// http://development.christopherdrum.com/blog/?p=109
+// https://development.christopherdrum.com/blog/?p=109
 
 
 - (NSURL*) previewItemURL
@@ -142,7 +142,7 @@
 {
 	NSDictionary *metadata = self.metadata;
 	
-	NSURL *shortWebPageURL = [NSURL URLWithString:[@"http://flic.kr/p/" stringByAppendingString:
+	NSURL *shortWebPageURL = [NSURL URLWithString:[@"https://flic.kr/p/" stringByAppendingString:
 												   [IMBFlickrNode base58EncodedValue:[metadata[@"id"] longLongValue]]]];
 	
 	NSString *licenseDescription = [IMBFlickrNode descriptionOfLicense:[metadata[@"license"] intValue]];

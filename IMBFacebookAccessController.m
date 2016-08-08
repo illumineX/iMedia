@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2013 by Karelia Software et al.
  
@@ -213,7 +213,7 @@
 {
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     cookieStorage.cookieAcceptPolicy = NSHTTPCookieAcceptPolicyOnlyFromMainDocumentDomain;
-    NSArray *domains = @[@"http://facebook.com/", @"https://facebook.com/"];
+    NSArray *domains = @[@"https://facebook.com/", @"https://facebook.com/"];
     for (NSString *domain in domains) {
         NSArray *cookies = [cookieStorage cookiesForURL:[NSURL URLWithString:domain]];
         for (NSHTTPCookie *cookie in cookies) {

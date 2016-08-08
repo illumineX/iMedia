@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -234,7 +234,7 @@ NSString* const IMBFlickrNodeProperty_UUID = @"uuid";
 #pragma mark
 #pragma mark Utilities
 
-/// From http://gist.github.com/101674
+/// From https://gist.github.com/101674
 + (NSString*) base58EncodedValue: (long long) num {
 	NSString* alphabet = @"123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 	NSInteger baseCount = alphabet.length;

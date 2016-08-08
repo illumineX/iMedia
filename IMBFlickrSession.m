@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -105,7 +105,7 @@
 #pragma mark
 #pragma mark Flickr Request Handling
 
-///	Make the properties of the receiver into a dictionary with keys and values that can be directly passed to the Flick method call. Have a look at http://www.flickr.com/services/api/flickr.photos.search.html for details and arguments of a search query.
+///	Make the properties of the receiver into a dictionary with keys and values that can be directly passed to the Flick method call. Have a look at https://www.flickr.com/services/api/flickr.photos.search.html for details and arguments of a search query.
 - (NSDictionary*) argumentsForNode: (IMBFlickrNode*) node {
 	NSMutableDictionary* arguments = [NSMutableDictionary dictionary];
 	
@@ -156,7 +156,7 @@
 	arguments[@"media"] = @"photos";
 	
 	// Extra metadata needed
-	// http://www.flickr.com/services/api/flickr.photos.search.html
+	// https://www.flickr.com/services/api/flickr.photos.search.html
 	arguments[@"extras"] = @"description,license,owner_name,original_format,geo,tags,o_dims,url_o,url_l,url_m,url_s,usage";
 	// Useful keys we can get from this:
 	// description -> array with ... description

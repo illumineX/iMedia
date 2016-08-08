@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -158,9 +158,9 @@
 	
 	// If we don't find it, add an entry to the info.plist of the APP,
 	// along the lines of what is documented here: 
-	// http://developer.apple.com/documentation/Carbon/Conceptual/understanding_utis/understand_utis_conc/chapter_2_section_4.html
+	// https://developer.apple.com/documentation/Carbon/Conceptual/understanding_utis/understand_utis_conc/chapter_2_section_4.html
 	// A good starting point for informal ones is:
-	// http://www.huw.id.au/code/fileTypeIDs.html
+	// https://www.huw.id.au/code/fileTypeIDs.html
 	
 	return UTI;
 }
@@ -183,7 +183,7 @@
 }
 
 // See list here:
-// http://developer.apple.com/documentation/Carbon/Conceptual/understanding_utis/utilist/chapter_4_section_1.html
+// https://developer.apple.com/documentation/Carbon/Conceptual/understanding_utis/utilist/chapter_4_section_1.html
 
 + (BOOL) imb_doesUTI:(NSString *)aUTI conformsToUTI:(NSString *)aConformsToUTI
 {

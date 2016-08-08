@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -94,8 +94,8 @@
 }
 
 // Will resolve an alias into a path.. this code was taken from
-// see http://cocoa.karelia.com/Foundation_Categories/
-// see http://developer.apple.com/documentation/Cocoa/Conceptual/LowLevelFileMgmt/Tasks/ResolvingAliases.html
+// see https://cocoa.karelia.com/Foundation_Categories/
+// see https://developer.apple.com/documentation/Cocoa/Conceptual/LowLevelFileMgmt/Tasks/ResolvingAliases.html
 - (NSString *)imb_pathResolved:(NSString *)path
 {
 	NSString *resolvedPath = NULL;

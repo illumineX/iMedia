@@ -83,7 +83,7 @@
 // Initialize the CoreImage filter.
 		transitionFilter = [[CIFilter filterWithName:@"CIPerspectiveTransform"] retain];
 		[transitionFilter setDefaults];
-// These parameters come from http://boredzo.org/imageshadowadder/ by Peter Hosey,
+// These parameters come from https://boredzo.org/imageshadowadder/ by Peter Hosey,
 // and reproduce reasonably well the standard Tiger NSWindow shadow.
 // You should change these when flipping NSPanels and/or on Leopard.
 		shadow = [[NSShadow alloc] init];
@@ -253,7 +253,7 @@
 	AbsoluteTime startTime = UpTime();
 // time will vary from 0.0 to 1.0. 0.5 means halfway.
 	NSTimeInterval time = animation.currentValue;
-// This code was adapted from http://www.macs.hw.ac.uk/~rpointon/osx/coreimage.html by Robert Pointon.
+// This code was adapted from https://www.macs.hw.ac.uk/~rpointon/osx/coreimage.html by Robert Pointon.
 // First we calculate the perspective.
 	CGFloat radius = originalRect.size.width/2;
 	CGFloat width = radius;

@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -84,7 +84,7 @@ typedef NS_ENUM(NSUInteger, IMBFlickrNodeLicense) {
     IMBFlickrNodeLicense_CommercialUse
 };
 
-///	License kinds and ids as found under http://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html
+///	License kinds and ids as found under https://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html
 //typedef enum {
 //	IMBFlickrNodeFlickrLicenseID_Undefined = 0,
 //	IMBFlickrNodeFlickrLicenseID_AttributionNonCommercialShareAlike = 1,

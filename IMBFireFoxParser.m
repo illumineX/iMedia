@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -47,7 +47,7 @@
 // Author: Dan Wood
 // Documentation on firefox bookmarks:
 // https://developer.mozilla.org/en/The_Places_database
-// http://www.forensicswiki.org/index.php?title=Mozilla_Firefox_3_History_File_Format
+// https://www.forensicswiki.org/index.php?title=Mozilla_Firefox_3_History_File_Format
 
 #import "IMBFireFoxParser.h"
 #import <WebKit/WebKit.h>

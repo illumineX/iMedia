@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -235,8 +235,8 @@
 - (void) loadFlickrAPIKeyAndSharedSecretFromKeychain {
     // To test this, get your own API key from flickr (noncommercial at first, but you are planning on supporting flickr in iMedia on a commmercial app, you will have to apply for a commercial API key at least 30 days before shipping)
     
-    // Supply your own Flickr API key and shared secret, or apply for key and secret at: http://flickr.com/services/api/keys/apply
-    // If you already have an API key, you will find it here:  http://www.flickr.com/services/api/keys/
+    // Supply your own Flickr API key and shared secret, or apply for key and secret at: https://flickr.com/services/api/keys/apply
+    // If you already have an API key, you will find it here:  https://www.flickr.com/services/api/keys/
     
     // For your actual app, you would put in the hard-wired strings here.
     

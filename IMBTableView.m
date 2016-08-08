@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -254,7 +254,7 @@ enum IMBMouseOperation
 
 
 // Careful -- this only works in special cases; see
-// http://www.cocoabuilder.com/archive/cocoa/234849-mousedragged-with-nstableview.html
+// https://www.cocoabuilder.com/archive/cocoa/234849-mousedragged-with-nstableview.html
 
 - (void) mouseDragged:(NSEvent*)inEvent;
 {

@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -44,7 +44,7 @@
  */
 
 
-// Author: Jörg Jacobsen	(inspired by Pieter Omvlee (http://pieteromvlee.net/slides/IKImageBrowserView.pdf)
+// Author: Jörg Jacobsen	(inspired by Pieter Omvlee (https://pieteromvlee.net/slides/IKImageBrowserView.pdf)
 //							and Terrence Talbot (SVDesignChooserViewController))
 
 //----------------------------------------------------------------------------------------------------------------------

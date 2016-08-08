@@ -1,5 +1,5 @@
 /*
- iMedia Browser Framework <http://karelia.com/imedia/>
+ iMedia Browser Framework <https://karelia.com/imedia/>
  
  Copyright (c) 2005-2012 by Karelia Software et al.
  
@@ -535,7 +535,7 @@ static IMBPanelController* sSharedPanelController = nil;
 		NSString* availableLink = NSLocalizedStringWithDefaultValue(
 			@"IMB.availableLink",
 			nil,IMBBundle(),
-			@"Available at <a href='http://karelia.com/imedia/'>karelia.com/imedia</a>",
+			@"Available at <a href='https://karelia.com/imedia/'>karelia.com/imedia</a>",
 			@"HTML markup to show link to iMedia home page");
 	
 		NSString* credits = NSLocalizedStringWithDefaultValue(

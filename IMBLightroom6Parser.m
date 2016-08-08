@@ -1,5 +1,5 @@
 /*
- *   iMedia Browser Framework <http://karelia.com/imedia/>
+ *   iMedia Browser Framework <https://karelia.com/imedia/>
  *
  *   Copyright (c) 2005-2015 by Karelia Software et al.
  *
