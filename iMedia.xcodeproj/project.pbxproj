@@ -2727,7 +2727,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 1110;
 				TargetAttributes = {
 					307F9690183D090D004F87E0 = {
 						TestTargetID = 8DC2EF4F0486A6940098B216;
