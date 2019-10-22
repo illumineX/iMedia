@@ -34,7 +34,7 @@ DEVELOPMENT_TEAM = // "None"
 // iMedia git repository. In this file each developer using iMedia can override the value of DEVELOPMENT_TEAM
 // with his or her own team ID. That way iMedia can build under Xcode 8 again.
 
-#include "../DevelopmentTeam.xcconfig"
+//#include "../DevelopmentTeam.xcconfig"
 
 // Select automatic provisioning profile.
 
