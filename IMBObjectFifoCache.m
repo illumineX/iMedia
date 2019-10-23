@@ -195,7 +195,7 @@ static NSUInteger sCacheSize = 512;
 
 	if (_objects != nil)
 	{
-		while ([_objects indexOfObject:inObject])
+		while ([_objects indexOfObject:inObject] != NSNotFound)
 		{
 			[_objects removeObject:inObject];
 		}
